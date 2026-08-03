@@ -22,8 +22,8 @@ export const getImageUrl = (image) => {
   // Ensure leading slash for relative upload paths
   const cleanPath = url.startsWith('/') ? url : `/${url}`;
 
-  // Resolve backend origin
-  const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+  // Resolve backend origin dynamically from VITE_API_URL or default production host
+  const apiUrl = import.meta.env.VITE_API_URL || 'https://slv-design-studio-backend.onrender.com/api';
   const backendBase = apiUrl.replace(/\/api\/?$/, '');
 
   return `${backendBase}${cleanPath}`;
