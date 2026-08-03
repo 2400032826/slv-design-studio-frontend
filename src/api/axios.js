@@ -1,6 +1,22 @@
 import axios from 'axios'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://slv-design-studio-backend.onrender.com/api'
+// Production-grade API URL resolution with automatic localhost override for deployed environments
+const getApiUrl = () => {
+  const envUrl = import.meta.env.VITE_API_URL
+
+  // If deployed on Vercel/production or if VITE_API_URL is missing/localhost, force Render production backend
+  const isProductionHost =
+    import.meta.env.PROD ||
+    (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1')
+
+  if (isProductionHost || !envUrl || envUrl.includes('localhost') || envUrl.includes('127.0.0.1')) {
+    return 'https://slv-design-studio-backend.onrender.com/api'
+  }
+
+  return envUrl
+}
+
+const API_URL = getApiUrl()
 
 const api = axios.create({
   baseURL: API_URL,

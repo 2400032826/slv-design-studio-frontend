@@ -14,17 +14,31 @@ export const getImageUrl = (image) => {
 
   if (!url || typeof url !== 'string') return null;
 
+  const RENDER_BACKEND_HOST = 'https://slv-design-studio-backend.onrender.com';
+
   // Cloudinary or external absolute URL
   if (url.startsWith('http://') || url.startsWith('https://')) {
+    // If an image URL stored in DB contains localhost:5000, rewrite it to Render backend host
+    if (url.includes('localhost:5000') || url.includes('127.0.0.1:5000')) {
+      return url.replace(/https?:\/\/(localhost|127\.0\.0\.1):5000/, RENDER_BACKEND_HOST);
+    }
     return url;
   }
 
   // Ensure leading slash for relative upload paths
   const cleanPath = url.startsWith('/') ? url : `/${url}`;
 
-  // Resolve backend origin dynamically from VITE_API_URL or default production host
-  const apiUrl = import.meta.env.VITE_API_URL || 'https://slv-design-studio-backend.onrender.com/api';
-  const backendBase = apiUrl.replace(/\/api\/?$/, '');
+  // Resolve backend origin dynamically
+  let apiUrl = import.meta.env.VITE_API_URL;
+  const isProductionHost =
+    import.meta.env.PROD ||
+    (typeof window !== 'undefined' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1');
 
-  return `${backendBase}${cleanPath}`;
+  if (isProductionHost || !apiUrl || apiUrl.includes('localhost') || apiUrl.includes('127.0.0.1')) {
+    apiUrl = `${RENDER_BACKEND_HOST}/api`;
+  }
+
+  const baseHost = apiUrl.replace(/\/api\/?$/, '');
+
+  return `${baseHost}${cleanPath}`;
 };
