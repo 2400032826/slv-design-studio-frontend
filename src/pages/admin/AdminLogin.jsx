@@ -7,6 +7,8 @@ import { adminLoginSuccess } from '../../store/slices/authSlice'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 
+const RENDER_BACKEND_URL = 'https://slv-design-studio-backend.onrender.com/api'
+
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' })
   const [showPass, setShowPass] = useState(false)
@@ -14,11 +16,24 @@ export default function AdminLogin() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+  const getAdminLoginEndpoint = () => {
+    let baseUrl = import.meta.env.VITE_API_URL
+    if (!baseUrl || baseUrl.includes('local') || baseUrl.includes('127.0.0.1')) {
+      baseUrl = RENDER_BACKEND_URL
+    }
+    const cleanBase = baseUrl.replace(/\/+$/, '')
+    return cleanBase.endsWith('/api') ? `${cleanBase}/auth/admin-login` : `${cleanBase}/api/auth/admin-login`
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
     try {
-      const { data } = await api.post('/auth/admin-login', form)
+      const endpointUrl = getAdminLoginEndpoint()
+      console.log('🚀 Admin Login requesting endpoint:', endpointUrl)
+
+      // Passing absolute URL guarantees Axios uses production Render host
+      const { data } = await api.post(endpointUrl, form)
       dispatch(adminLoginSuccess(data))
       toast.success('Welcome, Admin! 👑')
       navigate('/admin/dashboard')
