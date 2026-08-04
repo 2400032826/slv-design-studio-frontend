@@ -1,17 +1,19 @@
 import axios from 'axios'
 
-const RENDER_BACKEND_API = 'https://slv-design-studio-backend.onrender.com/api'
+const PROD_API_URL = 'https://slv-design-studio-backend.onrender.com/api'
 
-// Production-grade API URL resolution with automatic local override for deployed environments
 const getApiUrl = () => {
   const envUrl = import.meta.env.VITE_API_URL
 
-  const isProductionHost =
+  // If in production/Vercel or if envUrl is missing or points to localhost, force Render backend
+  if (
     import.meta.env.PROD ||
-    (typeof window !== 'undefined' && !window.location.hostname.includes('local' + 'host') && window.location.hostname !== '127.0.0.1')
-
-  if (isProductionHost || !envUrl || envUrl.includes('local' + 'host') || envUrl.includes('127.0.0.1')) {
-    return RENDER_BACKEND_API
+    !envUrl ||
+    envUrl.includes('local' + 'host') ||
+    envUrl.includes('127.0.0.1') ||
+    (typeof window !== 'undefined' && window.location.hostname !== 'localhost')
+  ) {
+    return PROD_API_URL
   }
 
   return envUrl
@@ -59,11 +61,8 @@ api.interceptors.response.use(
       (error.response?.data?.isBlocked || error.response?.data?.message?.toLowerCase().includes('blocked'))
 
     if (isBlocked) {
-      // CRITICAL SECURITY ACTION: Clear local credentials & force redirect to login
       localStorage.removeItem('slv_token')
       localStorage.removeItem('slv_user')
-
-      // Redirect immediately to clear session state
       if (!window.location.pathname.startsWith('/admin')) {
         window.location.href = '/?blocked=true'
       }
