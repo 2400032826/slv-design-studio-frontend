@@ -2,12 +2,10 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useDispatch } from 'react-redux'
 import { useNavigate } from 'react-router-dom'
-import { Lock, Mail, Eye, EyeOff, Shield } from 'lucide-react'
+import { Lock, Mail, Eye, EyeOff, Shield, Loader2 } from 'lucide-react'
 import { adminLoginSuccess } from '../../store/slices/authSlice'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
-
-const RENDER_BACKEND_URL = 'https://slv-design-studio-backend.onrender.com/api'
 
 export default function AdminLogin() {
   const [form, setForm] = useState({ email: '', password: '' })
@@ -16,26 +14,18 @@ export default function AdminLogin() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const getAdminLoginEndpoint = () => {
-    let baseUrl = import.meta.env.VITE_API_URL
-    if (!baseUrl || baseUrl.includes('local') || baseUrl.includes('127.0.0.1')) {
-      baseUrl = RENDER_BACKEND_URL
-    }
-    const cleanBase = baseUrl.replace(/\/+$/, '')
-    return cleanBase.endsWith('/api') ? `${cleanBase}/auth/admin-login` : `${cleanBase}/api/auth/admin-login`
-  }
-
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (loading) return
     setLoading(true)
     try {
-      const endpointUrl = getAdminLoginEndpoint()
-      const { data } = await api.post(endpointUrl, form)
+      // Calls shared API client: baseURL + /auth/admin-login
+      const { data } = await api.post('/auth/admin-login', form)
       dispatch(adminLoginSuccess(data))
       toast.success('Welcome, Admin! 👑')
       navigate('/admin/dashboard')
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Invalid credentials')
+      toast.error(err.response?.data?.message || 'Invalid admin credentials')
     } finally {
       setLoading(false)
     }
@@ -68,6 +58,7 @@ export default function AdminLogin() {
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="w-full pl-11 pr-4 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   placeholder="admin@email.com"
+                  disabled={loading}
                   required
                 />
               </div>
@@ -83,6 +74,7 @@ export default function AdminLogin() {
                   onChange={(e) => setForm({ ...form, password: e.target.value })}
                   className="w-full pl-11 pr-12 py-3 bg-white/10 border border-white/20 rounded-xl text-white placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-gold-500 focus:border-transparent"
                   placeholder="••••••••"
+                  disabled={loading}
                   required
                 />
                 <button type="button" onClick={() => setShowPass(!showPass)} className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white transition-colors">
@@ -91,9 +83,19 @@ export default function AdminLogin() {
               </div>
             </div>
 
-            <button type="submit" disabled={loading}
-              className="w-full py-4 bg-gradient-gold text-purple-900 font-bold rounded-xl hover:shadow-gold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60">
-              {loading ? <div className="w-5 h-5 border-2 border-purple-900/30 border-t-purple-900 rounded-full animate-spin mx-auto" /> : 'Login to Admin Panel'}
+            <button
+              type="submit"
+              disabled={loading}
+              className="w-full py-4 bg-gradient-gold text-purple-900 font-bold rounded-xl hover:shadow-gold transition-all hover:scale-[1.02] active:scale-95 disabled:opacity-60 flex items-center justify-center gap-2"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="w-5 h-5 animate-spin text-purple-900" />
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                'Login to Admin Panel'
+              )}
             </button>
           </form>
 

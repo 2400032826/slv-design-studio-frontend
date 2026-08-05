@@ -1,115 +1,120 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, Sparkles, Star, ChevronDown } from 'lucide-react'
+import { ArrowRight, Sparkles, Star, ChevronDown, Award, ShieldCheck } from 'lucide-react'
 
-const slides = [
+const heroSlides = [
   {
-    title: 'Premium Computer Embroidery',
-    subtitle: 'Stunning designs stitched with precision',
-    tag: 'New Collection 2024',
-    cta: 'Explore Designs',
-    ctaLink: '/products',
-    gradient: 'from-purple-950 via-purple-900/90 to-pink-900/80',
+    title: 'Exquisite Computer Embroidery',
+    subtitle: 'Bespoke Maggam, Zardosi & Threadwork Tailored to Perfection',
+    tag: 'Haute Couture 2024',
+    bgImage: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=1600',
+    primaryCta: 'Explore Collections',
+    primaryLink: '/products',
   },
   {
-    title: 'Bridal & Wedding Blouses',
-    subtitle: 'Crafted with love for your special day',
-    tag: 'Wedding Special',
-    cta: 'View Bridal Collection',
-    ctaLink: '/products?category=bridal',
-    gradient: 'from-gray-950 via-purple-950/90 to-purple-900/80',
+    title: 'Bridal Blouse & Lehenga Tailoring',
+    subtitle: 'Timeless Elegance & Custom Fits for Your Most Magical Occasions',
+    tag: 'Royal Bridal Edition',
+    bgImage: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?q=80&w=1600',
+    primaryCta: 'View Bridal Gallery',
+    primaryLink: '/gallery',
   },
   {
-    title: 'Custom Design & Printing',
-    subtitle: 'Your vision, our expertise',
-    tag: 'Customize Now',
-    cta: 'Start Customizing',
-    ctaLink: '/customize',
-    gradient: 'from-purple-950 via-pink-900/80 to-gray-950',
+    title: 'High-Definition Fabric Printing',
+    subtitle: 'Vibrant DTF & Digital Textile Prints on Pure Silk, Organza & Velvet',
+    tag: 'Bespoke Printing',
+    bgImage: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?q=80&w=1600',
+    primaryCta: 'Start Customizing',
+    primaryLink: '/customize',
   },
 ]
 
-const words = ['Embroidery', 'Printing', 'Stitching', 'Fashion', 'Design']
+const animatedWords = ['Boutique', 'Embroidery', 'Stitching', 'Printing', 'Couture']
 
 export default function HeroSection() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [wordIndex, setWordIndex] = useState(0)
 
   useEffect(() => {
-    const slideTimer = setInterval(() => setCurrentSlide((p) => (p + 1) % slides.length), 6000)
+    const slideTimer = setInterval(() => setCurrentSlide((prev) => (prev + 1) % heroSlides.length), 7000)
     return () => clearInterval(slideTimer)
   }, [])
 
   useEffect(() => {
-    const wordTimer = setInterval(() => setWordIndex((p) => (p + 1) % words.length), 2500)
+    const wordTimer = setInterval(() => setWordIndex((prev) => (prev + 1) % animatedWords.length), 3000)
     return () => clearInterval(wordTimer)
   }, [])
 
-  const slide = slides[currentSlide]
+  const slide = heroSlides[currentSlide]
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-hero">
-      {/* Animated background orbs */}
-      <div className="absolute inset-0 overflow-hidden">
+    <section className="relative min-h-[92vh] flex items-center justify-center overflow-hidden bg-charcoal-950">
+      {/* Background High-Fashion Image Carousel with Overlay */}
+      <AnimatePresence mode="wait">
         <motion.div
-          className="absolute w-96 h-96 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(201,168,76,0.15) 0%, transparent 70%)', top: '10%', right: '15%' }}
-          animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0.8, 0.5] }}
-          transition={{ duration: 6, repeat: Infinity }}
-        />
+          key={currentSlide}
+          initial={{ opacity: 0, scale: 1.05 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: 0.98 }}
+          transition={{ duration: 1.2, ease: 'easeOut' }}
+          className="absolute inset-0 z-0"
+        >
+          <img
+            src={slide.bgImage}
+            alt={slide.title}
+            className="w-full h-full object-cover object-center filter brightness-[0.4] contrast-125"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-charcoal-950 via-maroon-950/70 to-charcoal-950/80" />
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Ambient Radial Glowing Orbs */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <motion.div
-          className="absolute w-80 h-80 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(233,30,140,0.12) 0%, transparent 70%)', bottom: '20%', left: '10%' }}
-          animate={{ scale: [1.3, 1, 1.3], opacity: [0.5, 0.8, 0.5] }}
+          className="absolute w-[500px] h-[500px] rounded-full blur-3xl opacity-20 bg-gold-500"
+          style={{ top: '10%', right: '10%' }}
+          animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.3, 0.15] }}
           transition={{ duration: 8, repeat: Infinity }}
         />
         <motion.div
-          className="absolute w-64 h-64 rounded-full"
-          style={{ background: 'radial-gradient(circle, rgba(45,27,105,0.3) 0%, transparent 70%)', top: '50%', left: '50%' }}
-          animate={{ scale: [1, 1.5, 1], x: [-50, 50, -50] }}
+          className="absolute w-[450px] h-[450px] rounded-full blur-3xl opacity-20 bg-maroon-600"
+          style={{ bottom: '10%', left: '5%' }}
+          animate={{ scale: [1.2, 1, 1.2], opacity: [0.2, 0.35, 0.2] }}
           transition={{ duration: 10, repeat: Infinity }}
         />
       </div>
 
-      {/* Floating particles */}
-      {[...Array(12)].map((_, i) => (
+      {/* Floating Gold Sparkle Particles */}
+      {[...Array(10)].map((_, i) => (
         <motion.div
           key={i}
-          className="absolute w-1 h-1 bg-gold-500 rounded-full"
-          style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-          animate={{ y: [0, -30, 0], opacity: [0, 1, 0] }}
-          transition={{ duration: 3 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 5 }}
+          className="absolute w-1.5 h-1.5 bg-gold-400/80 rounded-full z-10 pointer-events-none"
+          style={{ left: `${Math.random() * 90 + 5}%`, top: `${Math.random() * 85 + 10}%` }}
+          animate={{ y: [0, -35, 0], opacity: [0.2, 1, 0.2] }}
+          transition={{ duration: 4 + Math.random() * 4, repeat: Infinity, delay: Math.random() * 4 }}
         />
       ))}
 
-      {/* Animated grid lines */}
-      <div className="absolute inset-0 opacity-5"
-        style={{
-          backgroundImage: 'linear-gradient(rgba(201,168,76,0.5) 1px, transparent 1px), linear-gradient(90deg, rgba(201,168,76,0.5) 1px, transparent 1px)',
-          backgroundSize: '80px 80px'
-        }}
-      />
-
-      <div className="relative z-10 section-container text-center py-20">
-        {/* Badge */}
+      <div className="relative z-10 section-container text-center py-24 md:py-32">
+        {/* Luxury Tag Badge */}
         <AnimatePresence mode="wait">
           <motion.div
-            key={currentSlide}
+            key={currentSlide + 'tag'}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 20 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-gold-500/10 border border-gold-500/30 rounded-full text-gold-400 text-sm font-medium mb-8"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gold-500/10 border border-gold-500/30 rounded-full text-gold-400 text-xs font-semibold uppercase tracking-[0.25em] mb-8 backdrop-blur-md shadow-gold"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-3.5 h-3.5" />
             {slide.tag}
           </motion.div>
         </AnimatePresence>
 
-        {/* Main heading */}
-        <h1 className="font-display text-5xl md:text-6xl lg:text-7xl font-bold text-white mb-4 leading-tight">
+        {/* Headline */}
+        <h1 className="font-display text-4xl sm:text-6xl lg:text-7xl font-bold text-white mb-6 leading-[1.1] tracking-tight">
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.2 }}
             className="block"
@@ -117,13 +122,13 @@ export default function HeroSection() {
             Customize Your Style
           </motion.span>
           <motion.span
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 25 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.4 }}
-            className="block"
+            className="block italic font-normal text-beige-100"
           >
-            with Premium{' '}
-            <span className="relative">
+            with Luxury{' '}
+            <span className="relative font-bold not-italic">
               <AnimatePresence mode="wait">
                 <motion.span
                   key={wordIndex}
@@ -133,7 +138,7 @@ export default function HeroSection() {
                   exit={{ opacity: 0, y: -20, rotateX: -90 }}
                   transition={{ duration: 0.5 }}
                 >
-                  {words[wordIndex]}
+                  {animatedWords[wordIndex]}
                 </motion.span>
               </AnimatePresence>
             </span>
@@ -147,87 +152,89 @@ export default function HeroSection() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="text-white/70 text-lg md:text-xl max-w-2xl mx-auto mb-10"
+            className="text-beige-200/80 text-base sm:text-lg md:text-xl max-w-2xl mx-auto mb-10 font-light leading-relaxed"
           >
             {slide.subtitle}
           </motion.p>
         </AnimatePresence>
 
-        {/* Rating */}
+        {/* Star Rating Trust Bar */}
         <motion.div
-          className="flex items-center justify-center gap-2 mb-10"
+          className="flex items-center justify-center gap-3 mb-10"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
+          transition={{ delay: 0.6 }}
         >
-          <div className="flex">
+          <div className="flex gap-1">
             {[...Array(5)].map((_, i) => (
-              <Star key={i} className="w-5 h-5 fill-gold-500 text-gold-500" />
+              <Star key={i} className="w-4 h-4 fill-gold-500 text-gold-500" />
             ))}
           </div>
-          <span className="text-white/60 text-sm">500+ Happy Customers</span>
+          <span className="text-beige-200/70 text-xs font-semibold uppercase tracking-wider">
+            Rated 4.9/5 by 500+ Happy Customers
+          </span>
         </motion.div>
 
-        {/* CTA Buttons */}
+        {/* Luxury CTA Actions */}
         <motion.div
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.6 }}
         >
-          <Link to="/products" className="btn-primary text-base px-8 py-4 text-lg font-semibold group">
-            Order Now
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+          <Link to={slide.primaryLink} className="btn-gold text-sm tracking-wider uppercase font-bold px-8 py-4 group shadow-gold">
+            {slide.primaryCta}
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
-          <Link to="/customize" className="btn-gold text-base px-8 py-4 text-lg font-semibold">
-            <Sparkles className="w-5 h-5" /> Customize Design
+          <Link to="/customize" className="btn-primary text-sm tracking-wider uppercase font-bold px-8 py-4">
+            <Sparkles className="w-4 h-4" /> Book Custom Fitting
           </Link>
-          <Link to="/contact" className="btn-outline text-base px-8 py-4 text-lg">
-            Contact Us
+          <Link to="/contact" className="btn-outline border-beige-300/40 text-beige-100 hover:bg-beige-100 hover:text-maroon-950 text-sm tracking-wider uppercase px-7 py-4">
+            Contact Boutique
           </Link>
         </motion.div>
 
-        {/* Stats */}
+        {/* Key Metrics Bar */}
         <motion.div
-          className="flex flex-wrap justify-center gap-8 mt-16"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1 }}
+          className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-4xl mx-auto mt-20 p-6 rounded-3xl glass-dark border border-gold-500/20 shadow-luxury"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.9 }}
         >
           {[
-            { value: '500+', label: 'Happy Customers' },
-            { value: '10+', label: 'Years Experience' },
-            { value: '25+', label: 'Services' },
-            { value: '1000+', label: 'Designs Created' },
+            { value: '500+', label: 'Delighted Clients' },
+            { value: '10+', label: 'Years Master Crafting' },
+            { value: '1000+', label: 'Custom Designs Handcrafted' },
+            { value: '100%', label: 'Quality Guarantee' },
           ].map(({ value, label }) => (
-            <div key={label} className="text-center">
-              <p className="font-display text-3xl font-bold text-gold-400">{value}</p>
-              <p className="text-white/50 text-sm mt-1">{label}</p>
+            <div key={label} className="text-center p-2">
+              <p className="font-display text-2xl md:text-3xl font-bold text-gradient-gold">{value}</p>
+              <p className="text-beige-200/60 text-xs uppercase tracking-wider font-semibold mt-1">{label}</p>
             </div>
           ))}
         </motion.div>
 
-        {/* Slide indicators */}
-        <div className="flex justify-center gap-2 mt-12">
-          {slides.map((_, i) => (
+        {/* Carousel Indicators */}
+        <div className="flex justify-center gap-2.5 mt-10">
+          {heroSlides.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentSlide(i)}
-              className={`transition-all duration-300 rounded-full ${
-                i === currentSlide ? 'w-8 h-2 bg-gold-500' : 'w-2 h-2 bg-white/30 hover:bg-white/60'
+              className={`transition-all duration-500 rounded-full ${
+                i === currentSlide ? 'w-8 h-2 bg-gold-500 shadow-gold' : 'w-2 h-2 bg-beige-100/30 hover:bg-beige-100/60'
               }`}
             />
           ))}
         </div>
       </div>
 
-      {/* Scroll indicator */}
+      {/* Down Scroll Indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
         animate={{ y: [0, 8, 0] }}
         transition={{ duration: 2, repeat: Infinity }}
       >
-        <ChevronDown className="w-6 h-6 text-gold-400" />
+        <ChevronDown className="w-5 h-5 text-gold-400" />
       </motion.div>
     </section>
   )

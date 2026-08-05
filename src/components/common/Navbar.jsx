@@ -3,12 +3,11 @@ import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import {
-  ShoppingCart, Heart, Search, Menu, X, User, Sun, Moon,
-  ChevronDown, Phone, Mail, Star, LogOut, Settings, Package
+  ShoppingCart, Heart, Search, Menu, X, User,
+  ChevronDown, Phone, Mail, Sparkles, LogOut, Settings, Package
 } from 'lucide-react'
 import { toggleCart, openCart, selectCartCount } from '../../store/slices/cartSlice'
 import { logout, showLogin } from '../../store/slices/authSlice'
-import { toggleTheme } from '../../store/slices/themeSlice'
 import SearchModal from './SearchModal'
 import DarkModeToggle from './DarkModeToggle'
 
@@ -32,7 +31,6 @@ export default function Navbar() {
   const location = useLocation()
   const cartCount = useSelector(selectCartCount)
   const { isAuthenticated, user } = useSelector((state) => state.auth)
-  const { mode } = useSelector((state) => state.theme)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -50,51 +48,51 @@ export default function Navbar() {
 
   return (
     <>
-      {/* Top bar */}
-      <div className="hidden md:block bg-purple-950 text-white/80 text-xs py-2">
+      {/* Top Luxury Announcement Bar */}
+      <div className="bg-maroon-950 text-beige-100 text-xs py-2 border-b border-gold-500/20">
         <div className="section-container flex justify-between items-center">
           <div className="flex items-center gap-6">
             <a href="tel:+919731912413" className="flex items-center gap-1.5 hover:text-gold-400 transition-colors">
-              <Phone className="w-3 h-3" /> +91 9731912413
+              <Phone className="w-3 h-3 text-gold-400" /> +91 9731912413
             </a>
-            <a href="mailto:slvdesignstudio@gmail.com" className="flex items-center gap-1.5 hover:text-gold-400 transition-colors">
-              <Mail className="w-3 h-3" /> slvdesignstudio@gmail.com
+            <a href="mailto:slvdesignstudio@gmail.com" className="hidden sm:flex items-center gap-1.5 hover:text-gold-400 transition-colors">
+              <Mail className="w-3 h-3 text-gold-400" /> slvdesignstudio@gmail.com
             </a>
           </div>
           <div className="flex items-center gap-4">
-            <span className="flex items-center gap-1 text-gold-400">
-              <Star className="w-3 h-3 fill-gold-400" /> SLV Women's Fashion Studio • Premium Boutique & Embroidery
+            <span className="flex items-center gap-1.5 text-gold-400 font-medium">
+              <Sparkles className="w-3 h-3 fill-gold-400" /> SLV Women's Fashion Studio • Bespoke Embroidery & Luxury Tailoring
             </span>
           </div>
         </div>
       </div>
 
-      {/* Main Navbar */}
+      {/* Main Luxury Navigation Bar */}
       <motion.nav
         className={`sticky top-0 z-50 transition-all duration-300 ${
           scrolled
-            ? 'bg-white/90 dark:bg-gray-950/90 backdrop-blur-xl shadow-lg border-b border-gold-200/30'
-            : 'bg-white dark:bg-gray-950'
+            ? 'bg-beige-50/90 dark:bg-charcoal-950/90 backdrop-blur-2xl shadow-luxury border-b border-gold-500/15'
+            : 'bg-beige-50 dark:bg-charcoal-950 border-b border-beige-200/60 dark:border-charcoal-800'
         }`}
         initial={{ y: -100 }}
         animate={{ y: 0 }}
         transition={{ duration: 0.5, ease: 'easeOut' }}
       >
         <div className="section-container">
-          <div className="flex items-center justify-between h-16 md:h-20">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
+          <div className="flex items-center justify-between h-20">
+            {/* Brand Logo */}
+            <Link to="/" className="flex items-center gap-3.5 group">
               <div className="relative">
-                <div className="w-10 h-10 md:w-12 md:h-12 bg-gradient-royal rounded-xl flex items-center justify-center shadow-pink group-hover:shadow-gold transition-all duration-300">
-                  <span className="text-white font-display font-bold text-lg">S</span>
+                <div className="w-11 h-11 bg-gradient-maroon rounded-2xl flex items-center justify-center shadow-maroon group-hover:shadow-gold transition-all duration-500 border border-gold-500/30">
+                  <span className="text-gold-300 font-display font-bold text-xl">S</span>
                 </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gold-500 rounded-full border-2 border-white dark:border-gray-950" />
+                <div className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-gold-500 rounded-full border-2 border-beige-50 dark:border-charcoal-950 shadow-gold" />
               </div>
               <div>
-                <p className="font-display font-bold text-base md:text-lg text-purple-900 dark:text-white leading-tight">
+                <p className="font-display font-bold text-lg md:text-xl text-maroon-950 dark:text-beige-50 leading-tight tracking-tight">
                   SLV Women's
                 </p>
-                <p className="text-xs text-gold-500 font-semibold tracking-wider uppercase">Fashion Studio</p>
+                <p className="text-[10px] text-gold-600 dark:text-gold-400 font-bold tracking-[0.25em] uppercase">Fashion Studio</p>
               </div>
             </Link>
 
@@ -104,10 +102,10 @@ export default function Navbar() {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                  className={`px-4 py-2 rounded-full text-xs uppercase tracking-widest font-semibold transition-all duration-300 ${
                     location.pathname === link.path
-                      ? 'text-gold-600 bg-gold-50 dark:bg-gold-900/20'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-gold-600 hover:bg-gold-50 dark:hover:bg-gold-900/20'
+                      ? 'text-maroon-900 dark:text-gold-400 bg-gold-500/10 border border-gold-500/20 shadow-sm'
+                      : 'text-charcoal-700 dark:text-beige-200 hover:text-gold-600 dark:hover:text-gold-400 hover:bg-gold-500/5'
                   }`}
                 >
                   {link.label}
@@ -115,82 +113,86 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* Right Actions */}
-            <div className="flex items-center gap-2">
+            {/* Right Quick Actions */}
+            <div className="flex items-center gap-2.5">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="p-2.5 rounded-full hover:bg-beige-200/50 dark:hover:bg-charcoal-800 transition-colors"
                 title="Search"
               >
-                <Search className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Search className="w-5 h-5 text-charcoal-700 dark:text-beige-200" />
               </button>
 
               <DarkModeToggle />
 
-              {/* Wishlist */}
-              <Link to="/dashboard/wishlist" className="hidden sm:flex p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" title="Wishlist">
-                <Heart className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              {/* Wishlist Icon */}
+              <Link
+                to="/dashboard/wishlist"
+                className="hidden sm:flex p-2.5 rounded-full hover:bg-beige-200/50 dark:hover:bg-charcoal-800 transition-colors"
+                title="Wishlist"
+              >
+                <Heart className="w-5 h-5 text-charcoal-700 dark:text-beige-200 hover:text-maroon-700" />
               </Link>
 
-              {/* Cart */}
+              {/* Cart Icon */}
               <button
                 onClick={handleCartClick}
-                className="relative p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-                title="Cart"
+                className="relative p-2.5 rounded-full hover:bg-beige-200/50 dark:hover:bg-charcoal-800 transition-colors"
+                title="Shopping Bag"
               >
-                <ShoppingCart className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <ShoppingCart className="w-5 h-5 text-charcoal-700 dark:text-beige-200" />
                 {cartCount > 0 && (
                   <motion.span
                     key={cartCount}
                     initial={{ scale: 0 }}
                     animate={{ scale: 1 }}
-                    className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-royal text-white text-xs rounded-full flex items-center justify-center font-bold"
+                    className="absolute top-0 right-0 w-5 h-5 bg-gradient-maroon text-white text-[11px] rounded-full flex items-center justify-center font-bold shadow-maroon border border-gold-500/40"
                   >
                     {cartCount > 9 ? '9+' : cartCount}
                   </motion.span>
                 )}
               </button>
 
-              {/* User */}
+              {/* User Session Handler */}
               {isAuthenticated ? (
                 <div className="relative">
                   <button
                     onClick={() => setUserDropdown(!userDropdown)}
-                    className="flex items-center gap-2 p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                    className="flex items-center gap-2 p-1.5 rounded-full border border-gold-500/30 hover:bg-beige-200/50 dark:hover:bg-charcoal-800 transition-colors"
                   >
-                    <div className="w-8 h-8 bg-gradient-royal rounded-full flex items-center justify-center text-white text-sm font-bold">
+                    <div className="w-8 h-8 bg-gradient-maroon rounded-full flex items-center justify-center text-gold-300 text-xs font-bold border border-gold-500/40">
                       {user?.name?.[0]?.toUpperCase() || 'U'}
                     </div>
-                    <ChevronDown className="w-4 h-4 text-gray-500 hidden sm:block" />
+                    <ChevronDown className="w-3.5 h-3.5 text-charcoal-600 dark:text-beige-300 hidden sm:block mr-1" />
                   </button>
 
                   <AnimatePresence>
                     {userDropdown && (
                       <motion.div
-                        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                        exit={{ opacity: 0, y: 8, scale: 0.95 }}
-                        className="absolute right-0 mt-2 w-56 bg-white dark:bg-gray-900 rounded-2xl shadow-2xl border border-gray-100 dark:border-gray-800 overflow-hidden"
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute right-0 mt-3 w-60 bg-white dark:bg-charcoal-900 rounded-3xl shadow-luxury border border-beige-200 dark:border-charcoal-800 overflow-hidden"
                       >
-                        <div className="p-4 border-b border-gray-100 dark:border-gray-800 bg-gradient-hero">
-                          <p className="text-white font-semibold">{user?.name}</p>
-                          <p className="text-white/60 text-xs">{user?.email}</p>
+                        <div className="p-5 border-b border-beige-200/60 dark:border-charcoal-800 bg-gradient-maroon text-white">
+                          <p className="font-display font-semibold text-base leading-tight">{user?.name}</p>
+                          <p className="text-beige-200/80 text-xs mt-0.5">{user?.email}</p>
                         </div>
-                        <div className="py-2">
-                          <Link to="/dashboard" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <User className="w-4 h-4" /> My Dashboard
+                        <div className="py-2.5">
+                          <Link to="/dashboard" className="flex items-center gap-3 px-5 py-2.5 text-xs uppercase tracking-wider font-semibold text-charcoal-700 dark:text-beige-200 hover:bg-beige-100 dark:hover:bg-charcoal-800 hover:text-gold-600">
+                            <User className="w-4 h-4 text-gold-500" /> My Dashboard
                           </Link>
-                          <Link to="/dashboard/orders" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <Package className="w-4 h-4" /> My Orders
+                          <Link to="/dashboard/orders" className="flex items-center gap-3 px-5 py-2.5 text-xs uppercase tracking-wider font-semibold text-charcoal-700 dark:text-beige-200 hover:bg-beige-100 dark:hover:bg-charcoal-800 hover:text-gold-600">
+                            <Package className="w-4 h-4 text-gold-500" /> My Orders
                           </Link>
-                          <Link to="/dashboard/wishlist" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <Heart className="w-4 h-4" /> Wishlist
+                          <Link to="/dashboard/wishlist" className="flex items-center gap-3 px-5 py-2.5 text-xs uppercase tracking-wider font-semibold text-charcoal-700 dark:text-beige-200 hover:bg-beige-100 dark:hover:bg-charcoal-800 hover:text-gold-600">
+                            <Heart className="w-4 h-4 text-gold-500" /> Wishlist
                           </Link>
-                          <Link to="/dashboard/profile" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800">
-                            <Settings className="w-4 h-4" /> Profile Settings
+                          <Link to="/dashboard/profile" className="flex items-center gap-3 px-5 py-2.5 text-xs uppercase tracking-wider font-semibold text-charcoal-700 dark:text-beige-200 hover:bg-beige-100 dark:hover:bg-charcoal-800 hover:text-gold-600">
+                            <Settings className="w-4 h-4 text-gold-500" /> Profile Settings
                           </Link>
-                          <hr className="my-1 border-gray-100 dark:border-gray-800" />
-                          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">
+                          <hr className="my-1.5 border-beige-200 dark:border-charcoal-800" />
+                          <button onClick={handleLogout} className="w-full flex items-center gap-3 px-5 py-2.5 text-xs uppercase tracking-wider font-bold text-maroon-700 hover:bg-maroon-50 dark:hover:bg-maroon-900/20">
                             <LogOut className="w-4 h-4" /> Logout
                           </button>
                         </div>
@@ -201,41 +203,41 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => dispatch(showLogin())}
-                  className="hidden sm:flex btn-primary text-sm px-4 py-2"
+                  className="hidden sm:flex btn-primary text-xs tracking-wider uppercase px-5 py-2.5"
                 >
                   <User className="w-4 h-4" /> Login
                 </button>
               )}
 
-              {/* Mobile Menu Button */}
+              {/* Mobile Drawer Trigger */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                className="lg:hidden p-2.5 rounded-full hover:bg-beige-200/50 dark:hover:bg-charcoal-800 transition-colors"
               >
-                {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+                {mobileOpen ? <X className="w-6 h-6 text-charcoal-900 dark:text-white" /> : <Menu className="w-6 h-6 text-charcoal-900 dark:text-white" />}
               </button>
             </div>
           </div>
         </div>
 
-        {/* Mobile Menu */}
+        {/* Mobile Navigation Drawer */}
         <AnimatePresence>
           {mobileOpen && (
             <motion.div
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: 'auto', opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="lg:hidden border-t border-gray-200 dark:border-gray-800 bg-white dark:bg-gray-950 overflow-hidden"
+              className="lg:hidden border-t border-beige-200 dark:border-charcoal-800 bg-beige-50 dark:bg-charcoal-950 overflow-hidden shadow-luxury"
             >
-              <div className="section-container py-4 space-y-1">
+              <div className="section-container py-6 space-y-2">
                 {navLinks.map((link) => (
                   <Link
                     key={link.path}
                     to={link.path}
-                    className={`block px-4 py-3 rounded-xl font-medium text-sm ${
+                    className={`block px-5 py-3 rounded-2xl font-semibold text-xs uppercase tracking-widest ${
                       location.pathname === link.path
-                        ? 'bg-gradient-royal text-white'
-                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800'
+                        ? 'bg-gradient-maroon text-white shadow-maroon'
+                        : 'text-charcoal-800 dark:text-beige-200 hover:bg-beige-100 dark:hover:bg-charcoal-900'
                     }`}
                   >
                     {link.label}
@@ -244,7 +246,7 @@ export default function Navbar() {
                 {!isAuthenticated && (
                   <button
                     onClick={() => dispatch(showLogin())}
-                    className="w-full btn-primary mt-4"
+                    className="w-full btn-primary mt-6 text-xs uppercase tracking-widest"
                   >
                     <User className="w-4 h-4" /> Login / Register
                   </button>
