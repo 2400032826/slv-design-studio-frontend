@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
-import { X, Mail, User, ArrowRight, Sparkles } from 'lucide-react'
+import { X, Mail, User, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
 import { hideLogin, loginSuccess } from '../../store/slices/authSlice'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
@@ -14,14 +14,28 @@ export default function LoginModal() {
   const [name, setName] = useState('')
   const [step, setStep] = useState('email')
   const [loading, setLoading] = useState(false)
+  const [coldStartNotice, setColdStartNotice] = useState(false)
   const [isNewUser, setIsNewUser] = useState(false)
+
+  useEffect(() => {
+    let timer
+    if (loading) {
+      // If request takes longer than 2.5 seconds, display Render cold-start explanation
+      timer = setTimeout(() => setColdStartNotice(true), 2500)
+    } else {
+      setColdStartNotice(false)
+    }
+    return () => clearTimeout(timer)
+  }, [loading])
 
   const handleSendOTP = async (e) => {
     e.preventDefault()
+    if (loading) return // Guard against double clicks
     if (!email) return toast.error('Please enter your email address')
     if (isNewUser && !name.trim()) return toast.error('Please enter your full name')
 
     setLoading(true)
+    setColdStartNotice(false)
     try {
       const { data } = await api.post('/auth/send-otp', {
         email: email.trim(),
@@ -47,7 +61,7 @@ export default function LoginModal() {
       setStep('otp')
       toast.success(data.message || 'OTP sent to your email!')
     } catch (err) {
-      toast.error(err.response?.data?.message || 'Failed to send OTP')
+      toast.error(err.response?.data?.message || 'Failed to send OTP. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -59,11 +73,13 @@ export default function LoginModal() {
   }
 
   const handleClose = () => {
+    if (loading) return // Don't allow closing mid-request
     dispatch(hideLogin())
     setStep('email')
     setEmail('')
     setName('')
     setIsNewUser(false)
+    setColdStartNotice(false)
   }
 
   return (
@@ -86,7 +102,11 @@ export default function LoginModal() {
             {/* Header */}
             <div className="bg-gradient-hero p-8 text-center relative overflow-hidden">
               <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(rgba(201,168,76,0.5) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
-              <button onClick={handleClose} className="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors">
+              <button
+                onClick={handleClose}
+                disabled={loading}
+                className="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-40"
+              >
                 <X className="w-4 h-4" />
               </button>
               <div className="relative">
@@ -113,6 +133,7 @@ export default function LoginModal() {
                         onChange={(e) => setEmail(e.target.value)}
                         className="input-field pl-11"
                         placeholder="your@email.com"
+                        disabled={loading}
                         required
                       />
                     </div>
@@ -130,6 +151,7 @@ export default function LoginModal() {
                             onChange={(e) => setName(e.target.value)}
                             className="input-field pl-11"
                             placeholder="Enter your full name"
+                            disabled={loading}
                             autoFocus
                             required={isNewUser}
                           />
@@ -141,9 +163,38 @@ export default function LoginModal() {
                     )}
                   </AnimatePresence>
 
-                  <button type="submit" disabled={loading} className="w-full btn-primary py-4 text-base">
+                  {/* Cold start / loading notification banner */}
+                  <AnimatePresence>
+                    {loading && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-2xl space-y-1.5"
+                      >
+                        <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300 text-sm font-semibold">
+                          <Loader2 className="w-4 h-4 animate-spin text-amber-600 dark:text-amber-400" />
+                          <span>Generating & Sending OTP...</span>
+                        </div>
+                        {coldStartNotice && (
+                          <p className="text-xs text-center text-amber-700/90 dark:text-amber-300/80 leading-relaxed font-medium pt-1 border-t border-amber-200/60 dark:border-amber-800/40">
+                            ⚡ Please wait, the server is starting up. This may take up to 30–60 seconds on the first request.
+                          </p>
+                        )}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="w-full btn-primary py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                  >
                     {loading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="flex items-center justify-center gap-2">
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                        <span>Processing Request...</span>
+                      </div>
                     ) : (
                       <><Sparkles className="w-5 h-5" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-5 h-5" /></>
                     )}
