@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Star, ChevronLeft, ChevronRight, Quote } from 'lucide-react'
 
 const testimonials = [
-  { name: 'Priya Sharma', role: 'Bride, Bangalore', rating: 5, text: 'SLV Design Studio created the most beautiful bridal blouse for my wedding. The embroidery work was exquisite and exactly what I envisioned. Highly recommended!', avatar: 'PS' },
+  { name: 'Priya Sharma', role: 'Bride, Bangalore', rating: 5, text: "SLV Women's Fashion Studio created the most beautiful bridal blouse for my wedding. The embroidery work was exquisite and exactly what I envisioned. Highly recommended!", avatar: 'PS' },
   { name: 'Anitha Reddy', role: 'Fashion Enthusiast', rating: 5, text: 'I ordered customized kurti stitching and printing from them. The quality exceeded my expectations! Will definitely order again.', avatar: 'AR' },
   { name: 'Sunita Nair', role: 'Regular Customer', rating: 5, text: 'The school uniform embroidery they did for my kids was perfect. Logo embroidery was crisp and durable even after many washes.', avatar: 'SN' },
   { name: 'Meena Krishnan', role: 'Business Owner', rating: 5, text: 'Ordered corporate uniform embroidery for my entire team. Professional finish, on-time delivery, and competitive pricing. Excellent work!', avatar: 'MK' },

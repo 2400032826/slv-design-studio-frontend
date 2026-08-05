@@ -93,7 +93,7 @@ export default function LoginModal() {
                 <div className="w-16 h-16 bg-gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-gold">
                   <span className="text-purple-900 font-display font-bold text-2xl">S</span>
                 </div>
-                <h2 className="font-display text-2xl font-bold text-white">SLV Design Studio</h2>
+                <h2 className="font-display text-2xl font-bold text-white">SLV Women's Fashion Studio</h2>
                 <p className="text-white/70 text-sm mt-1">
                   {step === 'email' ? (isNewUser ? 'Create Your Account' : 'Login or Create Account') : 'Verify Your Email'}
                 </p>

@@ -92,7 +92,7 @@ export default function Checkout() {
       const productName = firstItem?.product?.name || 'Boutique Custom Wear'
       const qty = items.reduce((acc, i) => acc + i.quantity, 0)
 
-      const waMessage = `Hello SLV Design Studio,
+      const waMessage = `Hello SLV Women's Fashion Studio,
 I have placed a new order.
 
 Order ID: ${bookedOrder.orderNumber}

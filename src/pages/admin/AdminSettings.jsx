@@ -6,7 +6,7 @@ import { AdminSidebar } from './AdminDashboard'
 export default function AdminSettings() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [settings, setSettings] = useState({
-    businessName: 'SLV Design Studio',
+    businessName: "SLV Women's Fashion Studio",
     tagline: 'Customize Your Style with Premium Embroidery & Printing',
     phone: '+91 9731912413',
     email: 'slvdesignstudio@gmail.com',

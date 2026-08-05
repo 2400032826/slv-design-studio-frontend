@@ -3,8 +3,8 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, Heart } from 'lucide-react'
 
 const services = [
-  'Computer Embroidery', 'DTF Printing', 'Blouse Stitching', 'Men\'s Tailoring',
-  'Kurti Stitching', 'Wedding Collections', '1 Gram Gold Jewellery', 'Custom Gifts',
+  'Computer Embroidery', 'DTF Printing', 'Blouse Stitching', 'Custom Tailoring',
+  'Kurti Stitching', 'Bridal Collections', '1 Gram Gold Jewellery', 'Custom Gifts',
 ]
 
 const quickLinks = [
@@ -32,12 +32,12 @@ export default function Footer() {
                 <span className="text-white font-display font-bold text-xl">S</span>
               </div>
               <div>
-                <p className="font-display font-bold text-xl text-white">SLV Design</p>
-                <p className="text-xs text-gold-500 font-semibold tracking-wider uppercase">Studio</p>
+                <p className="font-display font-bold text-base md:text-lg text-white">SLV Women's</p>
+                <p className="text-xs text-gold-500 font-semibold tracking-wider uppercase">Fashion Studio</p>
               </div>
             </Link>
             <p className="text-white/60 text-sm leading-relaxed mb-6">
-              Customize Your Style with Premium Embroidery & Printing. Your trusted boutique for all fashion needs.
+              Customize Your Style with Premium Women's Embroidery & Tailoring. Your trusted boutique for all custom fashion needs.
             </p>
             <div className="flex gap-3">
               {[
@@ -90,7 +90,7 @@ export default function Footer() {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-gold-500 mt-0.5 flex-shrink-0" />
-                <p className="text-white/60 text-sm">SLV Design Studio,<br />Karnataka, India</p>
+                <p className="text-white/60 text-sm">SLV Women's Fashion Studio,<br />Karnataka, India</p>
               </li>
               <li>
                 <a href="tel:+919731912413" className="flex items-center gap-3 text-white/60 text-sm hover:text-gold-400 transition-colors">
@@ -132,7 +132,7 @@ export default function Footer() {
 
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-white/40 text-sm">
-            © {year} SLV Design Studio. All rights reserved.
+            © {year} SLV Women's Fashion Studio. All rights reserved.
           </p>
           <p className="text-white/40 text-sm flex items-center gap-1">
             Made with <Heart className="w-3 h-3 text-pink-500 fill-pink-500" /> for premium fashion

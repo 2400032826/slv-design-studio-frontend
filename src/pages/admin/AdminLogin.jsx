@@ -30,9 +30,6 @@ export default function AdminLogin() {
     setLoading(true)
     try {
       const endpointUrl = getAdminLoginEndpoint()
-      console.log('🚀 Admin Login requesting endpoint:', endpointUrl)
-
-      // Passing absolute URL guarantees Axios uses production Render host
       const { data } = await api.post(endpointUrl, form)
       dispatch(adminLoginSuccess(data))
       toast.success('Welcome, Admin! 👑')
@@ -56,8 +53,8 @@ export default function AdminLogin() {
             <div className="w-16 h-16 bg-gradient-royal rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-pink">
               <Shield className="w-8 h-8 text-white" />
             </div>
-            <h1 className="font-display text-2xl font-bold text-white">Admin Panel</h1>
-            <p className="text-white/60 text-sm mt-1">SLV Design Studio</p>
+            <h1 className="font-display text-2xl font-bold text-white">Admin Portal</h1>
+            <p className="text-white/60 text-sm mt-1">SLV Women's Fashion Studio</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">

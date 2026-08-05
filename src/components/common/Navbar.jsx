@@ -63,7 +63,7 @@ export default function Navbar() {
           </div>
           <div className="flex items-center gap-4">
             <span className="flex items-center gap-1 text-gold-400">
-              <Star className="w-3 h-3 fill-gold-400" /> Premium Boutique & Embroidery
+              <Star className="w-3 h-3 fill-gold-400" /> SLV Women's Fashion Studio • Premium Boutique & Embroidery
             </span>
           </div>
         </div>
@@ -91,10 +91,10 @@ export default function Navbar() {
                 <div className="absolute -top-1 -right-1 w-3 h-3 bg-gold-500 rounded-full border-2 border-white dark:border-gray-950" />
               </div>
               <div>
-                <p className="font-display font-bold text-lg md:text-xl text-purple-900 dark:text-white leading-tight">
-                  SLV Design
+                <p className="font-display font-bold text-base md:text-lg text-purple-900 dark:text-white leading-tight">
+                  SLV Women's
                 </p>
-                <p className="text-xs text-gold-500 font-semibold tracking-wider uppercase">Studio</p>
+                <p className="text-xs text-gold-500 font-semibold tracking-wider uppercase">Fashion Studio</p>
               </div>
             </Link>
 

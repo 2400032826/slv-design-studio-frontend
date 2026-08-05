@@ -4,7 +4,7 @@ import { ChevronDown, HelpCircle, Search } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const faqs = [
-  { category: 'Services', q: 'What services does SLV Design Studio offer?', a: 'We offer computer embroidery, DTF printing, screen printing, blouse stitching, kurti and lehenga stitching, tailoring, saree fall & pico, 1 gram gold jewellery, and customized gifts.' },
+  { category: 'Services', q: "What services does SLV Women's Fashion Studio offer?", a: 'We offer computer embroidery, DTF printing, screen printing, blouse stitching, kurti and lehenga stitching, tailoring, saree fall & pico, 1 gram gold jewellery, and customized gifts.' },
   { category: 'Orders', q: 'How do I place a custom order?', a: 'Use our Customize page to select your service, choose design options, add measurements, upload reference files, and add to cart. You can then checkout and we will contact you to confirm the details before starting.' },
   { category: 'Delivery', q: 'What is the delivery time?', a: 'Standard delivery takes 5-7 business days. Express delivery (2-3 days) is available for an additional ₹200. Custom and complex designs may take 7-14 days depending on complexity.' },
   { category: 'Orders', q: 'Can I upload my own design or logo?', a: 'Yes! You can upload images, PDFs, AI files, CDR files, and photos of your reference design on our Customize page. We support all major design file formats including Adobe Illustrator and CorelDRAW.' },
@@ -38,7 +38,7 @@ export default function FAQ() {
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="section-title text-white">
             Frequently Asked <span className="text-gradient-gold">Questions</span>
           </motion.h1>
-          <p className="text-white/60 mt-3 mb-8">Everything you need to know about SLV Design Studio</p>
+          <p className="text-white/60 mt-3 mb-8">Everything you need to know about SLV Women's Fashion Studio</p>
 
           {/* Search */}
           <div className="max-w-xl mx-auto relative">

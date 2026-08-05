@@ -28,7 +28,7 @@ export function PageLoader() {
           animate={{ opacity: [0.5, 1, 0.5] }}
           transition={{ duration: 2, repeat: Infinity }}
         >
-          SLV Design Studio
+          SLV Women's Fashion Studio
         </motion.p>
         <p className="text-white/60 text-sm mt-2">Loading premium experience...</p>
       </div>

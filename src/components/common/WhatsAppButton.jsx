@@ -2,7 +2,7 @@ import { motion } from 'framer-motion'
 
 export default function WhatsAppButton() {
   const phone = '919731912413'
-  const message = 'Hello! I would like to know more about SLV Design Studio services.'
+  const message = "Hello! I would like to know more about SLV Women's Fashion Studio services."
   const url = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
 
   return (

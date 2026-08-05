@@ -133,7 +133,7 @@ export default function Contact() {
         >
           <div className="text-center">
             <MapPin className="w-12 h-12 text-gold-500 mx-auto mb-3" />
-            <p className="text-gray-500 dark:text-gray-400">SLV Design Studio, Karnataka, India</p>
+            <p className="text-gray-500 dark:text-gray-400">SLV Women's Fashion Studio, Karnataka, India</p>
             <a href="https://maps.google.com/?q=Karnataka,India" target="_blank" rel="noopener noreferrer" className="btn-gold mt-4 inline-flex text-sm">
               View on Google Maps
             </a>
