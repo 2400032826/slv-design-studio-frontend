@@ -20,7 +20,6 @@ export default function LoginModal() {
   useEffect(() => {
     let timer
     if (loading) {
-      // If request takes longer than 2.5 seconds, display Render cold-start explanation
       timer = setTimeout(() => setColdStartNotice(true), 2500)
     } else {
       setColdStartNotice(false)
@@ -30,7 +29,7 @@ export default function LoginModal() {
 
   const handleSendOTP = async (e) => {
     e.preventDefault()
-    if (loading) return // Guard against double clicks
+    if (loading) return
     if (!email) return toast.error('Please enter your email address')
     if (isNewUser && !name.trim()) return toast.error('Please enter your full name')
 
@@ -42,14 +41,13 @@ export default function LoginModal() {
         name: name.trim() || undefined,
       })
 
-      // New user detected and name hasn't been provided yet
       if (data.requiresName) {
         setIsNewUser(true)
         toast.custom(
           (t) => (
-            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-purple-900 text-white px-4 py-3 rounded-2xl shadow-xl flex items-center gap-2 border border-gold-500/50`}>
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-burgundy-700 text-white px-4 py-3 rounded-xl shadow-card flex items-center gap-2 border border-gold-400`}>
               <Sparkles className="w-5 h-5 text-gold-400 flex-shrink-0" />
-              <span className="text-sm font-medium">Welcome! Please enter your name to register.</span>
+              <span className="text-xs font-semibold">Welcome! Please enter your full name to register.</span>
             </div>
           ),
           { duration: 4000 }
@@ -73,7 +71,7 @@ export default function LoginModal() {
   }
 
   const handleClose = () => {
-    if (loading) return // Don't allow closing mid-request
+    if (loading) return
     dispatch(hideLogin())
     setStep('email')
     setEmail('')
@@ -91,17 +89,15 @@ export default function LoginModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <motion.div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={handleClose} />
+          <motion.div className="absolute inset-0 bg-charcoal-950/80 backdrop-blur-sm" onClick={handleClose} />
           <motion.div
-            className="relative w-full max-w-md bg-white dark:bg-gray-900 rounded-3xl overflow-hidden shadow-2xl"
-            initial={{ scale: 0.9, opacity: 0, y: 20 }}
+            className="relative w-full max-w-md bg-cardbg dark:bg-charcoal-900 rounded-2xl overflow-hidden shadow-card border border-subtleborder dark:border-charcoal-800"
+            initial={{ scale: 0.95, opacity: 0, y: 15 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-            transition={{ type: 'spring', damping: 25 }}
+            exit={{ scale: 0.95, opacity: 0, y: 15 }}
           >
             {/* Header */}
-            <div className="bg-gradient-hero p-8 text-center relative overflow-hidden">
-              <div className="absolute inset-0 opacity-20" style={{ backgroundImage: 'radial-gradient(rgba(201,168,76,0.5) 1px, transparent 1px)', backgroundSize: '20px 20px' }} />
+            <div className="bg-burgundy-700 p-8 text-center relative text-white">
               <button
                 onClick={handleClose}
                 disabled={loading}
@@ -110,12 +106,12 @@ export default function LoginModal() {
                 <X className="w-4 h-4" />
               </button>
               <div className="relative">
-                <div className="w-16 h-16 bg-gradient-gold rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-gold">
-                  <span className="text-purple-900 font-display font-bold text-2xl">S</span>
+                <div className="w-14 h-14 bg-gold-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-subtle">
+                  <span className="text-charcoal-900 font-display font-bold text-2xl">S</span>
                 </div>
                 <h2 className="font-display text-2xl font-bold text-white">SLV Women's Fashion Studio</h2>
-                <p className="text-white/70 text-sm mt-1">
-                  {step === 'email' ? (isNewUser ? 'Create Your Account' : 'Login or Create Account') : 'Verify Your Email'}
+                <p className="text-warmwhite/80 text-xs uppercase tracking-widest mt-1 font-semibold">
+                  {step === 'email' ? (isNewUser ? 'Register Account' : 'Customer Login') : 'Verify OTP Code'}
                 </p>
               </div>
             </div>
@@ -124,14 +120,16 @@ export default function LoginModal() {
               {step === 'email' ? (
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Email Address</label>
+                    <label className="block text-xs uppercase tracking-wider font-bold text-charcoal-700 dark:text-warmwhite mb-2">
+                      Email Address
+                    </label>
                     <div className="relative">
-                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" />
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
-                        className="input-field pl-11"
+                        className="input-field pl-10"
                         placeholder="your@email.com"
                         disabled={loading}
                         required
@@ -142,42 +140,44 @@ export default function LoginModal() {
                   <AnimatePresence>
                     {isNewUser && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Full Name</label>
+                        <label className="block text-xs uppercase tracking-wider font-bold text-charcoal-700 dark:text-warmwhite mb-2">
+                          Full Name
+                        </label>
                         <div className="relative">
-                          <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" />
                           <input
                             type="text"
                             value={name}
                             onChange={(e) => setName(e.target.value)}
-                            className="input-field pl-11"
+                            className="input-field pl-10"
                             placeholder="Enter your full name"
                             disabled={loading}
                             autoFocus
                             required={isNewUser}
                           />
                         </div>
-                        <p className="text-xs text-gold-600 dark:text-gold-400 mt-1.5 flex items-center gap-1 font-medium">
-                          <Sparkles className="w-3.5 h-3.5" /> New account detected — please enter your name
+                        <p className="text-[11px] text-bronze-600 dark:text-gold-400 mt-1.5 flex items-center gap-1 font-semibold">
+                          <Sparkles className="w-3.5 h-3.5" /> New account detected — please enter your full name
                         </p>
                       </motion.div>
                     )}
                   </AnimatePresence>
 
-                  {/* Cold start / loading notification banner */}
+                  {/* Cold start / loading banner */}
                   <AnimatePresence>
                     {loading && (
                       <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
-                        className="p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700/50 rounded-2xl space-y-1.5"
+                        className="p-3.5 bg-bronze-50 dark:bg-charcoal-800 border border-bronze-200 dark:border-charcoal-700 rounded-xl space-y-1"
                       >
-                        <div className="flex items-center justify-center gap-2 text-amber-700 dark:text-amber-300 text-sm font-semibold">
-                          <Loader2 className="w-4 h-4 animate-spin text-amber-600 dark:text-amber-400" />
-                          <span>Generating & Sending OTP...</span>
+                        <div className="flex items-center justify-center gap-2 text-burgundy-700 dark:text-gold-400 text-xs font-semibold">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span>Generating & Delivering OTP...</span>
                         </div>
                         {coldStartNotice && (
-                          <p className="text-xs text-center text-amber-700/90 dark:text-amber-300/80 leading-relaxed font-medium pt-1 border-t border-amber-200/60 dark:border-amber-800/40">
+                          <p className="text-[11px] text-center text-charcoal-600 dark:text-charcoal-300 leading-relaxed pt-1 border-t border-subtleborder dark:border-charcoal-700">
                             ⚡ Please wait, the server is starting up. This may take up to 30–60 seconds on the first request.
                           </p>
                         )}
@@ -188,20 +188,20 @@ export default function LoginModal() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full btn-primary py-4 text-base disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                    className="w-full btn-primary py-3.5 text-xs uppercase tracking-widest font-bold"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        <span>Processing Request...</span>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>Sending Code...</span>
                       </div>
                     ) : (
-                      <><Sparkles className="w-5 h-5" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-5 h-5" /></>
+                      <><Sparkles className="w-4 h-4" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-4 h-4" /></>
                     )}
                   </button>
 
-                  <p className="text-center text-xs text-gray-500 dark:text-gray-400">
-                    No password needed — login securely with OTP!
+                  <p className="text-center text-[11px] text-charcoal-500 dark:text-charcoal-400 font-sans">
+                    No password required — login securely via email OTP!
                   </p>
                 </form>
               ) : (
