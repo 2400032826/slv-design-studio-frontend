@@ -45,8 +45,8 @@ export default function LoginModal() {
         setIsNewUser(true)
         toast.custom(
           (t) => (
-            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-burgundy-700 text-white px-4 py-3 rounded-xl shadow-card flex items-center gap-2 border border-gold-400`}>
-              <Sparkles className="w-5 h-5 text-gold-400 flex-shrink-0" />
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-black text-white px-4 py-3 shadow-card flex items-center gap-2 border border-gold-500`}>
+              <Sparkles className="w-5 h-5 text-gold-500 flex-shrink-0" />
               <span className="text-xs font-semibold">Welcome! Please enter your full name to register.</span>
             </div>
           ),
@@ -89,28 +89,28 @@ export default function LoginModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <motion.div className="absolute inset-0 bg-charcoal-950/80 backdrop-blur-sm" onClick={handleClose} />
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={handleClose} />
           <motion.div
-            className="relative w-full max-w-md bg-cardbg dark:bg-charcoal-900 rounded-2xl overflow-hidden shadow-card border border-subtleborder dark:border-charcoal-800"
-            initial={{ scale: 0.95, opacity: 0, y: 15 }}
-            animate={{ scale: 1, opacity: 1, y: 0 }}
-            exit={{ scale: 0.95, opacity: 0, y: 15 }}
+            className="relative w-full max-w-md bg-white dark:bg-charcoal-900 overflow-hidden shadow-card border border-[#EAEAEA] dark:border-charcoal-800"
+            initial={{ scale: 0.95, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.95, opacity: 0 }}
           >
             {/* Header */}
-            <div className="bg-burgundy-700 p-8 text-center relative text-white">
+            <div className="bg-black p-8 text-center relative text-white">
               <button
                 onClick={handleClose}
                 disabled={loading}
-                className="absolute top-4 right-4 w-8 h-8 bg-white/10 rounded-full flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-40"
+                className="absolute top-4 right-4 w-8 h-8 bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-40"
               >
                 <X className="w-4 h-4" />
               </button>
               <div className="relative">
-                <div className="w-14 h-14 bg-gold-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-subtle">
-                  <span className="text-charcoal-900 font-display font-bold text-2xl">S</span>
+                <div className="w-12 h-12 bg-gold-500 text-black flex items-center justify-center mx-auto mb-3">
+                  <span className="font-display font-bold text-xl">S</span>
                 </div>
-                <h2 className="font-display text-2xl font-bold text-white">SLV Women's Fashion Studio</h2>
-                <p className="text-warmwhite/80 text-xs uppercase tracking-widest mt-1 font-semibold">
+                <h2 className="font-display text-2xl font-bold text-white uppercase tracking-tight">SLV Women's Studio</h2>
+                <p className="text-gold-500 text-xs uppercase tracking-widest mt-1 font-semibold">
                   {step === 'email' ? (isNewUser ? 'Register Account' : 'Customer Login') : 'Verify OTP Code'}
                 </p>
               </div>
@@ -120,7 +120,7 @@ export default function LoginModal() {
               {step === 'email' ? (
                 <form onSubmit={handleSendOTP} className="space-y-5">
                   <div>
-                    <label className="block text-xs uppercase tracking-wider font-bold text-charcoal-700 dark:text-warmwhite mb-2">
+                    <label className="block text-xs uppercase tracking-wider font-bold text-[#111111] dark:text-white mb-2">
                       Email Address
                     </label>
                     <div className="relative">
@@ -140,7 +140,7 @@ export default function LoginModal() {
                   <AnimatePresence>
                     {isNewUser && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                        <label className="block text-xs uppercase tracking-wider font-bold text-charcoal-700 dark:text-warmwhite mb-2">
+                        <label className="block text-xs uppercase tracking-wider font-bold text-[#111111] dark:text-white mb-2">
                           Full Name
                         </label>
                         <div className="relative">
@@ -156,7 +156,7 @@ export default function LoginModal() {
                             required={isNewUser}
                           />
                         </div>
-                        <p className="text-[11px] text-bronze-600 dark:text-gold-400 mt-1.5 flex items-center gap-1 font-semibold">
+                        <p className="text-[11px] text-gold-500 mt-1.5 flex items-center gap-1 font-semibold">
                           <Sparkles className="w-3.5 h-3.5" /> New account detected — please enter your full name
                         </p>
                       </motion.div>
@@ -167,17 +167,17 @@ export default function LoginModal() {
                   <AnimatePresence>
                     {loading && (
                       <motion.div
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className="p-3.5 bg-bronze-50 dark:bg-charcoal-800 border border-bronze-200 dark:border-charcoal-700 rounded-xl space-y-1"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="p-3.5 bg-[#F8F8F8] dark:bg-charcoal-800 border border-[#EAEAEA] dark:border-charcoal-700 space-y-1"
                       >
-                        <div className="flex items-center justify-center gap-2 text-burgundy-700 dark:text-gold-400 text-xs font-semibold">
-                          <Loader2 className="w-4 h-4 animate-spin" />
+                        <div className="flex items-center justify-center gap-2 text-black dark:text-white text-xs font-semibold">
+                          <Loader2 className="w-4 h-4 animate-spin text-gold-500" />
                           <span>Generating & Delivering OTP...</span>
                         </div>
                         {coldStartNotice && (
-                          <p className="text-[11px] text-center text-charcoal-600 dark:text-charcoal-300 leading-relaxed pt-1 border-t border-subtleborder dark:border-charcoal-700">
+                          <p className="text-[11px] text-center text-[#666666] leading-relaxed pt-1 border-t border-[#EAEAEA] dark:border-charcoal-700">
                             ⚡ Please wait, the server is starting up. This may take up to 30–60 seconds on the first request.
                           </p>
                         )}
@@ -196,11 +196,11 @@ export default function LoginModal() {
                         <span>Sending Code...</span>
                       </div>
                     ) : (
-                      <><Sparkles className="w-4 h-4" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-4 h-4" /></>
+                      <><Sparkles className="w-4 h-4 text-gold-500" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-4 h-4" /></>
                     )}
                   </button>
 
-                  <p className="text-center text-[11px] text-charcoal-500 dark:text-charcoal-400 font-sans">
+                  <p className="text-center text-[11px] text-[#666666] font-sans">
                     No password required — login securely via email OTP!
                   </p>
                 </form>

@@ -29,18 +29,18 @@ export default function Gallery() {
   const items = data?.length > 0 ? data : fallbackGallery
 
   return (
-    <div className="min-h-screen bg-warmwhite dark:bg-charcoal-950">
+    <div className="min-h-screen bg-white dark:bg-black">
       {/* Header Banner */}
-      <div className="bg-burgundy-700 py-16 text-center text-white">
+      <div className="bg-black py-16 text-center text-white">
         <div className="section-container">
-          <span className="text-gold-300 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">
-            Atelier Showcase
+          <span className="text-gold-500 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">
+            Atelier Portfolio
           </span>
-          <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="section-title text-white">
-            Our Portfolio & <span className="text-gold-300">Gallery</span>
-          </motion.h1>
-          <div className="h-px bg-white/20 max-w-xs mx-auto my-4" />
-          <p className="text-warmwhite/80 text-sm max-w-xl mx-auto font-light font-sans">
+          <h1 className="section-title text-white">
+            Our Portfolio & <span className="text-gold-500">Gallery</span>
+          </h1>
+          <div className="h-px bg-charcoal-800 max-w-xs mx-auto my-4" />
+          <p className="text-white/70 text-sm max-w-xl mx-auto font-light font-sans">
             Handcrafted embroidery, tailored bridal blouses, and custom digital fabric prints created at SLV Women's Studio.
           </p>
         </div>
@@ -53,10 +53,10 @@ export default function Gallery() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2.5 rounded-full font-semibold text-xs uppercase tracking-wider transition-all duration-200 ${
+              className={`px-5 py-2 font-semibold text-xs uppercase tracking-wider transition-all duration-200 ${
                 activeCategory === cat
-                  ? 'bg-burgundy-700 text-white shadow-subtle'
-                  : 'bg-cardbg dark:bg-charcoal-900 text-charcoal-700 dark:text-warmwhite border border-subtleborder dark:border-charcoal-800 hover:border-burgundy-700/50'
+                  ? 'bg-black text-white border border-black'
+                  : 'bg-white text-black border border-[#EAEAEA] hover:border-black'
               }`}
             >
               {cat}
@@ -68,21 +68,20 @@ export default function Gallery() {
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array(8).fill(null).map((_, i) => (
-              <div key={i} className="skeleton aspect-[3/4] rounded-2xl" />
+              <div key={i} className="skeleton aspect-[3/4]" />
             ))}
           </div>
         ) : (
-          <motion.div layout className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
             {items.map((item, i) => {
               const imgUrl = getImageUrl(item.url || item)
               return (
                 <motion.div
                   key={item._id || item.id || i}
-                  layout
-                  initial={{ opacity: 0, scale: 0.95 }}
-                  animate={{ opacity: 1, scale: 1 }}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
                   transition={{ delay: i * 0.03 }}
-                  className="relative rounded-2xl overflow-hidden cursor-pointer group break-inside-avoid shadow-subtle bg-cardbg dark:bg-charcoal-900 border border-subtleborder dark:border-charcoal-800"
+                  className="relative overflow-hidden cursor-pointer group break-inside-avoid bg-white dark:bg-charcoal-900 border border-[#EAEAEA] dark:border-charcoal-800"
                   onClick={() => imgUrl && setSelected({ ...item, resolvedUrl: imgUrl })}
                 >
                   <img
@@ -94,7 +93,7 @@ export default function Gallery() {
                       e.target.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80';
                     }}
                   />
-                  <div className="absolute inset-0 bg-charcoal-950/70 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-5">
+                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-5">
                     <span className="badge-gold text-[9px] font-bold tracking-widest uppercase mb-1 self-start">
                       {item.category || 'Atelier Creation'}
                     </span>
@@ -102,13 +101,13 @@ export default function Gallery() {
                       {item.title || 'Handcrafted Design'}
                     </h3>
                   </div>
-                  <div className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center text-white">
+                  <div className="absolute top-3 right-3 w-8 h-8 bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
                     <ZoomIn className="w-4 h-4" />
                   </div>
                 </motion.div>
               )
             })}
-          </motion.div>
+          </div>
         )}
       </div>
 
@@ -119,7 +118,7 @@ export default function Gallery() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-charcoal-950/90 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelected(null)}
           >
             <button
@@ -128,12 +127,9 @@ export default function Gallery() {
             >
               <X className="w-5 h-5" />
             </button>
-            <motion.div
-              initial={{ scale: 0.9 }}
-              animate={{ scale: 1 }}
-              exit={{ scale: 0.9 }}
+            <div
               onClick={(e) => e.stopPropagation()}
-              className="max-w-3xl w-full max-h-[85vh] rounded-2xl overflow-hidden shadow-card bg-charcoal-900 border border-charcoal-800"
+              className="max-w-3xl w-full max-h-[85vh] overflow-hidden bg-black border border-charcoal-800"
             >
               <img
                 src={selected.resolvedUrl || getImageUrl(selected.url)}
@@ -141,12 +137,12 @@ export default function Gallery() {
                 className="w-full h-full max-h-[78vh] object-contain mx-auto"
               />
               {selected.title && (
-                <div className="p-4 bg-burgundy-700 text-center">
+                <div className="p-4 bg-black text-center border-t border-charcoal-800">
                   <p className="font-display font-semibold text-white text-sm">{selected.title}</p>
-                  <span className="text-gold-300 text-xs uppercase tracking-widest">{selected.category}</span>
+                  <span className="text-gold-500 text-xs uppercase tracking-widest">{selected.category}</span>
                 </div>
               )}
-            </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>

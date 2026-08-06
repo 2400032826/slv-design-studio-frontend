@@ -14,19 +14,19 @@ export default function FeaturedProducts() {
   const skeleton = Array(4).fill(null)
 
   return (
-    <section className="py-20 bg-warmwhite dark:bg-charcoal-950">
+    <section className="py-20 bg-white dark:bg-black">
       <div className="section-container">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
           <div>
-            <span className="section-subtitle">Curated Showcase</span>
+            <span className="section-subtitle">Curated Collection</span>
             <h2 className="section-title">
-              Featured <span className="text-burgundy-700 dark:text-gold-400">Collections</span>
+              Featured <span className="text-gold-500">Couture</span>
             </h2>
           </div>
           <Link
             to="/products"
-            className="hidden md:inline-flex items-center gap-2 text-burgundy-700 dark:text-gold-400 font-semibold text-xs uppercase tracking-widest hover:gap-3 transition-all"
+            className="hidden md:inline-flex items-center gap-2 text-black dark:text-white font-semibold text-xs uppercase tracking-widest hover:text-gold-500 transition-colors"
           >
             View Entire Catalog <ArrowRight className="w-4 h-4" />
           </Link>
@@ -36,8 +36,8 @@ export default function FeaturedProducts() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading
             ? skeleton.map((_, i) => (
-                <div key={i} className="rounded-2xl overflow-hidden bg-cardbg dark:bg-charcoal-900 border border-subtleborder dark:border-charcoal-800 p-4">
-                  <div className="skeleton h-72 rounded-xl mb-4" />
+                <div key={i} className="bg-white dark:bg-charcoal-900 border border-[#EAEAEA] dark:border-charcoal-800 p-4">
+                  <div className="skeleton h-72 rounded-none mb-4" />
                   <div className="space-y-2">
                     <div className="skeleton h-4 w-3/4" />
                     <div className="skeleton h-4 w-1/2" />
@@ -47,10 +47,10 @@ export default function FeaturedProducts() {
             : (data || []).map((product, i) => (
                 <motion.div
                   key={product._id}
-                  initial={{ opacity: 0, y: 15 }}
-                  whileInView={{ opacity: 1, y: 0 }}
+                  initial={{ opacity: 0 }}
+                  whileInView={{ opacity: 1 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.08 }}
+                  transition={{ delay: i * 0.05 }}
                 >
                   <ProductCard product={product} />
                 </motion.div>

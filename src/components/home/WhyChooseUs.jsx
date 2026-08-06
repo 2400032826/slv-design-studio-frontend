@@ -36,16 +36,16 @@ const pillars = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-20 bg-burgundy-700 text-white">
+    <section className="py-20 bg-black text-white">
       <div className="section-container">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <span className="text-gold-300 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">The Boutique Standard</span>
+          <span className="text-gold-500 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">The Boutique Standard</span>
           <h2 className="section-title text-white">
-            Why Choose <span className="text-gold-300">SLV Women's</span>
+            Why Choose <span className="text-gold-500">SLV Women's</span>
           </h2>
-          <div className="h-px bg-white/20 max-w-xs mx-auto my-4" />
-          <p className="text-warmwhite/80 text-sm font-sans font-light leading-relaxed">
+          <div className="h-px bg-charcoal-800 max-w-xs mx-auto my-4" />
+          <p className="text-white/70 text-sm font-sans font-light leading-relaxed">
             We transform fine fabrics into luxury wearable art with uncompromising quality and personalized attention.
           </p>
         </div>
@@ -57,19 +57,19 @@ export default function WhyChooseUs() {
             return (
               <motion.div
                 key={pillar.title}
-                className="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-gold-400/40 transition-all duration-300"
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                className="bg-charcoal-900 p-8 border border-charcoal-800 hover:border-gold-500 transition-all duration-300"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.06 }}
+                transition={{ delay: i * 0.05 }}
               >
-                <div className="w-12 h-12 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-300 mb-6">
+                <div className="w-12 h-12 bg-black border border-charcoal-800 flex items-center justify-center text-gold-500 mb-6">
                   <Icon className="w-6 h-6" />
                 </div>
                 <h3 className="font-display text-xl font-bold text-white mb-2">
                   {pillar.title}
                 </h3>
-                <p className="text-warmwhite/70 text-xs font-sans font-light leading-relaxed">
+                <p className="text-white/60 text-xs font-sans font-light leading-relaxed">
                   {pillar.desc}
                 </p>
               </motion.div>
