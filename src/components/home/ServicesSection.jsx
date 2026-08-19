@@ -49,16 +49,16 @@ const services = [
 
 export default function ServicesSection() {
   return (
-    <section className="py-20 bg-[#F5F7FA] dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
+    <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E8EAF0] dark:border-slate-800">
       <div className="section-container">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <span className="section-subtitle">Craftsmanship & Atelier</span>
-          <h2 className="section-title text-[#1F2937] dark:text-white">
+          <h2 className="section-title text-[#252A34] dark:text-white">
             Bespoke <span className="text-gradient-pink">Services</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-4 rounded-full" />
-          <p className="text-[#64748B] dark:text-slate-300 text-sm font-sans leading-relaxed">
+          <p className="text-[#64707D] dark:text-slate-300 text-sm font-sans leading-relaxed">
             From royal bridal embroidery to digital textile printing — combining heritage craftsmanship with modern fashion tailoring.
           </p>
         </div>
@@ -70,7 +70,7 @@ export default function ServicesSection() {
             return (
               <motion.div
                 key={service.name}
-                className="service-card flex flex-col justify-between bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-slate-800 rounded-2xl p-7 hover:border-pink-400 hover:shadow-card-hover transition-all duration-300 group"
+                className="service-card flex flex-col justify-between bg-white dark:bg-[#1F2937] border border-[#E8EAF0] dark:border-slate-800 rounded-2xl p-7 hover:border-pink-400 hover:shadow-card-hover transition-all duration-300 group"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
@@ -78,19 +78,19 @@ export default function ServicesSection() {
               >
                 <div>
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 bg-[#FFF5F9] dark:bg-slate-800 text-pink-500 rounded-xl flex items-center justify-center border border-pink-100 dark:border-slate-700 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
+                    <div className="w-12 h-12 bg-[#FFF1F6] dark:bg-slate-800 text-pink-500 rounded-xl flex items-center justify-center border border-pink-100 dark:border-slate-700 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
                       <Icon className="w-6 h-6" />
                     </div>
                     <span className="badge-soft text-[10px]">{service.tag}</span>
                   </div>
 
-                  <h3 className="font-display font-bold text-lg text-[#1F2937] dark:text-white mb-3 group-hover:text-pink-600 transition-colors">
+                  <h3 className="font-display font-bold text-lg text-[#252A34] dark:text-white mb-3 group-hover:text-pink-600 transition-colors">
                     {service.name}
                   </h3>
 
                   <ul className="space-y-2 mb-6">
                     {service.items.map((item) => (
-                      <li key={item} className="text-[#64748B] dark:text-slate-300 text-xs flex items-center gap-2">
+                      <li key={item} className="text-[#64707D] dark:text-slate-300 text-xs flex items-center gap-2">
                         <span className="w-1.5 h-1.5 bg-pink-500 rounded-full flex-shrink-0" />
                         <span>{item}</span>
                       </li>
@@ -100,9 +100,9 @@ export default function ServicesSection() {
 
                 <Link
                   to={service.link}
-                  className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-pink-600 dark:text-pink-400 hover:text-pink-700 group-hover:translate-x-1 transition-all pt-4 border-t border-[#E5E7EB] dark:border-slate-800"
+                  className="inline-flex items-center gap-1 text-xs font-bold text-pink-600 dark:text-pink-400 group-hover:text-pink-700 dark:group-hover:text-pink-300 transition-colors uppercase tracking-wider"
                 >
-                  Explore Service <ArrowRight className="w-3.5 h-3.5" />
+                  Explore Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             )

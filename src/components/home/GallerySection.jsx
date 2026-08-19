@@ -24,12 +24,12 @@ export default function GallerySection() {
   const items = data || []
 
   return (
-    <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
+    <section className="py-20 bg-[#F8F9FB] dark:bg-[#111827] border-b border-[#E8EAF0] dark:border-slate-800">
       <div className="section-container">
         <motion.div className="flex flex-col sm:flex-row sm:items-end justify-between mb-10 gap-4" initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           <div>
             <span className="section-subtitle">Visual Lookbook</span>
-            <h2 className="section-title text-[#1F2937] dark:text-white">Our Atelier <span className="text-gradient-pink">Work</span></h2>
+            <h2 className="section-title text-[#252A34] dark:text-white">Our Atelier <span className="text-gradient-pink">Work</span></h2>
           </div>
           <Link to="/gallery" className="flex items-center gap-1.5 text-pink-600 dark:text-pink-400 font-bold text-xs uppercase tracking-wider hover:text-pink-700 transition-colors">
             View All Work <ArrowRight className="w-4 h-4" />
@@ -42,7 +42,7 @@ export default function GallerySection() {
             return (
               <motion.div
                 key={item._id || item.id}
-                className={`relative rounded-2xl overflow-hidden aspect-square group cursor-pointer border border-[#E5E7EB] dark:border-slate-800 shadow-card ${!imgUrl ? `bg-gradient-to-br ${item.gradient}` : ''}`}
+                className={`relative rounded-2xl overflow-hidden aspect-square group cursor-pointer border border-[#E8EAF0] dark:border-slate-800 shadow-card ${!imgUrl ? `bg-gradient-to-br ${item.gradient}` : ''}`}
                 initial={{ opacity: 0, scale: 0.96 }}
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}

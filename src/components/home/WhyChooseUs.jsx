@@ -36,16 +36,16 @@ const pillars = [
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
+    <section className="py-20 bg-[#F8F9FB] dark:bg-[#111827] border-b border-[#E8EAF0] dark:border-slate-800">
       <div className="section-container">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
           <span className="section-subtitle">The Boutique Standard</span>
-          <h2 className="section-title text-[#1F2937] dark:text-white">
+          <h2 className="section-title text-[#252A34] dark:text-white">
             Why Choose <span className="text-gradient-pink">SLV Women's</span>
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-4 rounded-full" />
-          <p className="text-[#64748B] dark:text-slate-300 text-sm font-sans leading-relaxed">
+          <p className="text-[#64707D] dark:text-slate-300 text-sm font-sans leading-relaxed">
             We transform fine fabrics into luxury wearable art with uncompromising quality, custom fittings, and dedicated attention.
           </p>
         </div>
@@ -57,19 +57,19 @@ export default function WhyChooseUs() {
             return (
               <motion.div
                 key={pillar.title}
-                className="bg-[#F5F7FA] dark:bg-[#1F2937] p-8 rounded-2xl border border-[#E5E7EB] dark:border-slate-800 shadow-subtle hover:bg-white dark:hover:bg-slate-800 hover:shadow-card hover:border-pink-300 transition-all duration-300 group"
+                className="bg-white dark:bg-[#1F2937] p-8 rounded-2xl border border-[#E8EAF0] dark:border-slate-800 shadow-card hover:shadow-card-hover hover:border-pink-300 transition-all duration-300 group"
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
               >
-                <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 rounded-xl flex items-center justify-center text-pink-500 mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
+                <div className="w-12 h-12 bg-[#FFF1F6] dark:bg-slate-800 border border-pink-100 dark:border-slate-700 rounded-xl flex items-center justify-center text-pink-500 mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
                   <Icon className="w-6 h-6" />
                 </div>
-                <h3 className="font-display text-lg font-bold text-[#1F2937] dark:text-white mb-2 group-hover:text-pink-600 transition-colors">
+                <h3 className="font-display text-lg font-bold text-[#252A34] dark:text-white mb-2 group-hover:text-pink-600 transition-colors">
                   {pillar.title}
                 </h3>
-                <p className="text-[#64748B] dark:text-slate-300 text-xs font-sans leading-relaxed">
+                <p className="text-[#64707D] dark:text-slate-300 text-xs font-sans leading-relaxed">
                   {pillar.desc}
                 </p>
               </motion.div>
