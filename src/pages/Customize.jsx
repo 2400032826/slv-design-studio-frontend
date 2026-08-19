@@ -6,12 +6,13 @@ import { addToCart } from '../store/slices/cartSlice'
 import {
   Upload, Check, ChevronRight, ChevronLeft, Package,
   Sparkles, Scissors, ShoppingCart, Info, Shirt, Gem, Gift,
-  CheckCircle2, Ruler, HelpCircle, Palette, Tag
+  CheckCircle2, Ruler, HelpCircle, Palette, Tag, Edit3,
+  HelpCircle as QuestionIcon, Plus, Eye, ChevronDown, ChevronUp
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 // ============================================================================
-// DYNAMIC SERVICE CONFIGURATION SYSTEM
+// DYNAMIC SERVICE CONFIGURATION SYSTEM WITH HUMAN-FRIENDLY LABELS
 // ============================================================================
 
 const SERVICE_CONFIG = {
@@ -22,42 +23,45 @@ const SERVICE_CONFIG = {
     emoji: '👗',
     basePrice: 500,
     badge: 'Bridal & Designer Fits',
-    description: 'Designer bridal blouses tailored to your exact fit with padded lining, deep neck patterns, and handcrafted embroidery.',
+    shortDesc: 'Designer bridal blouses tailored to your exact measurements with padded lining and handcrafted embroidery.',
     steps: [
       {
         id: 'style',
-        title: 'Blouse Style',
-        subtitle: 'Select your preferred silhouette and occasion type',
+        title: 'What style of blouse would you like?',
+        subtitle: 'Select the occasion or silhouette type',
         type: 'select',
         key: 'blouseStyle',
+        popularCount: 4,
         options: [
-          { label: 'Bridal Blouse', desc: 'Heavy padding, deep cut, bridal lining', addPrice: 200, icon: '👑' },
-          { label: 'Designer Cut Blouse', desc: 'Modern designer back & princess cut', addPrice: 150, icon: '✨' },
-          { label: 'Traditional South Indian', desc: 'Classic Kanjivaram sleeve & neck alignment', addPrice: 100, icon: '🥻' },
-          { label: 'Party Wear Blouse', desc: 'Net / sheer back, stylish straps', addPrice: 150, icon: '🌟' },
+          { label: 'Bridal Blouse', desc: 'Heavy padding, deep cut, luxury bridal lining', addPrice: 200, icon: '👑', popular: true },
+          { label: 'Designer Cut Blouse', desc: 'Modern designer back & princess cut', addPrice: 150, icon: '✨', popular: true },
+          { label: 'Traditional South Indian', desc: 'Classic Kanjivaram sleeve & neck alignment', addPrice: 100, icon: '🥻', popular: true },
+          { label: 'Party Wear Blouse', desc: 'Net / sheer back, stylish straps', addPrice: 150, icon: '🌟', popular: true },
           { label: 'Simple Daily Blouse', desc: 'Comfortable daily wear stitching', addPrice: 0, icon: '🧵' },
           { label: 'Custom Reference Design', desc: 'Tailored exactly from your uploaded photo', addPrice: 100, icon: '✂️' },
         ],
       },
       {
         id: 'fabric',
-        title: 'Fabric Type',
-        subtitle: 'Choose the fabric of your blouse or material provided',
+        title: 'Which fabric are you using?',
+        subtitle: 'Choose your blouse material or fabric provided by you',
         type: 'chips',
         key: 'fabricType',
+        popularCount: 5,
         options: ['Pure Silk / Kanjivaram', 'Raw Silk', 'Velvet', 'Cotton', 'Georgette', 'Chiffon', 'Net / Tissue', 'Satin', 'Brocade', 'Customer Provided Fabric'],
       },
       {
         id: 'neck',
-        title: 'Neck Design',
-        subtitle: 'Select front and collar necklines',
+        title: 'Choose your front neckline',
+        subtitle: 'Tap your preferred neck shape',
         type: 'visual_grid',
         key: 'neckDesign',
+        popularCount: 4,
         options: [
-          { label: 'Round Neck', icon: '⭕', desc: 'Timeless & classic' },
-          { label: 'V Neck', icon: '🔻', desc: 'Sleek elongating look' },
-          { label: 'Boat Neck', icon: '🛶', desc: 'High shoulder elegance' },
-          { label: 'Sweetheart Neck', icon: '💖', desc: 'Bridal favorite' },
+          { label: 'Round Neck', icon: '⭕', desc: 'Timeless & classic', popular: true },
+          { label: 'Sweetheart Neck', icon: '💖', desc: 'Bridal favorite curve', popular: true },
+          { label: 'V Neck', icon: '🔻', desc: 'Sleek elongating cut', popular: true },
+          { label: 'Boat Neck', icon: '🛶', desc: 'High shoulder elegance', popular: true },
           { label: 'Square Neck', icon: '🔲', desc: 'Structured & clean' },
           { label: 'High Neck / Collar', icon: '👔', desc: 'Royal high neck' },
           { label: 'U Neck', icon: '🧲', desc: 'Deep front curve' },
@@ -66,63 +70,66 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'sleeve',
-        title: 'Sleeve Cut & Length',
-        subtitle: 'Select sleeve styling and embroidery room',
+        title: 'Choose your sleeve style & length',
+        subtitle: 'Select sleeve styling and embroidery space',
         type: 'visual_grid',
         key: 'sleeveDesign',
+        popularCount: 4,
         options: [
-          { label: 'Elbow Sleeve (Maggam)', icon: '📐', desc: 'Ideal for bridal embroidery' },
-          { label: 'Short Sleeve', icon: '✂️', desc: 'Standard 4-6 inches' },
-          { label: 'Sleeveless / Straps', icon: '🎽', desc: 'Modern chic silhouette' },
+          { label: 'Elbow Sleeve (Maggam)', icon: '📐', desc: 'Best for bridal embroidery', popular: true },
+          { label: 'Short Sleeve (Standard)', icon: '✂️', desc: '4 – 6 inches comfort', popular: true },
+          { label: 'Puff Sleeve', icon: '🎈', desc: 'Traditional South Indian puff', popular: true },
+          { label: 'Sleeveless / Straps', icon: '🎽', desc: 'Modern chic silhouette', popular: true },
           { label: '3/4 Sleeve', icon: '📏', desc: 'Graceful mid-forearm' },
           { label: 'Full Sleeve', icon: '🧤', desc: 'Royal full coverage' },
-          { label: 'Puff Sleeve', icon: '🎈', desc: 'Traditional South Indian puff' },
           { label: 'Bell / Flared Sleeve', icon: '🔔', desc: 'Contemporary flare' },
-          { label: 'Custom Sleeve', icon: '✨', desc: 'Custom cut' },
+          { label: 'Custom Sleeve', icon: '✨', desc: 'Custom cut from photo' },
         ],
       },
       {
         id: 'back',
-        title: 'Back Pattern & Opening',
+        title: 'Choose your back pattern & opening',
         subtitle: 'Select back silhouette, depth, and opening style',
         type: 'visual_grid',
         key: 'backDesign',
+        popularCount: 4,
         options: [
-          { label: 'Open Back with Dori Tassels', icon: '🎀', desc: 'Deep back with designer latkans' },
-          { label: 'Keyhole Pattern', icon: '🔑', desc: 'Circular/teardrop keyhole' },
-          { label: 'Closed / High Back', icon: '🔒', desc: 'Modest & sophisticated' },
-          { label: 'Deep U Back', icon: '🌙', desc: 'Low cut traditional back' },
+          { label: 'Open Back with Dori Tassels', icon: '🎀', desc: 'Deep back with designer latkans', popular: true },
+          { label: 'Keyhole Pattern', icon: '🔑', desc: 'Circular/teardrop keyhole', popular: true },
+          { label: 'Deep U Back', icon: '🌙', desc: 'Low cut traditional back', popular: true },
+          { label: 'Closed / High Back', icon: '🔒', desc: 'Modest & sophisticated', popular: true },
           { label: 'Button Back Opening', icon: '🔘', desc: 'Fabric potli buttons' },
           { label: 'Sheer / Net Back', icon: '🪟', desc: 'Translucent net cutout' },
           { label: 'V Shape Back', icon: '🔻', desc: 'Deep V line' },
-          { label: 'Custom Pattern', icon: '🎨', desc: 'Custom design' },
+          { label: 'Custom Pattern', icon: '🎨', desc: 'Custom design from sketch' },
         ],
       },
       {
         id: 'embroidery',
-        title: 'Embroidery & Embellishment Options',
-        subtitle: 'Add handcrafted bridal needlework or machine precision',
+        title: 'Would you like to add embroidery work?',
+        subtitle: 'Handcrafted bridal Maggam or computerized machine embroidery',
         type: 'select',
         key: 'embroideryOption',
+        helpText: 'Maggam work is handcrafted with gold zari & stones; Computer embroidery is done via high-speed multi-thread machines.',
         options: [
-          { label: 'No Embroidery (Plain Stitching)', desc: 'Clean tailoring without embroidery work', addPrice: 0, icon: '🪡' },
-          { label: 'Handcrafted Bridal Maggam Work', desc: 'Gold Zari, beads & stone needlework on neck & sleeves', addPrice: 800, icon: '👑' },
-          { label: 'Heavy Zardosi & Cutdana Work', desc: 'Luxury heavy bridal Maggam with 3D stone accents', addPrice: 1400, icon: '💎' },
-          { label: 'Computerized Machine Embroidery', desc: 'High-precision multi-thread floral & geometric work', addPrice: 400, icon: '🧵' },
-          { label: 'Custom Embroidery Work', desc: 'Exact design quoted upon reference assessment', addPrice: 500, icon: '✨' },
+          { label: 'Handcrafted Bridal Maggam Work', desc: 'Authentic gold Zari, cutdana, beads & stones on neck & sleeves', addPrice: 800, icon: '👑', popular: true },
+          { label: 'Heavy Zardosi & Cutdana Work', desc: 'Grand 3D bridal needlework with heavy stone embellishments', addPrice: 1400, icon: '💎', popular: true },
+          { label: 'Computerized Machine Embroidery', desc: 'High-precision multi-thread floral & geometric patterns', addPrice: 400, icon: '🧵', popular: true },
+          { label: 'No Embroidery (Plain Tailoring)', desc: 'Clean, elegant stitching without embroidery work', addPrice: 0, icon: '🪡' },
+          { label: 'Custom Combination Work', desc: 'Custom artwork quoted upon design inspection', addPrice: 500, icon: '✨' },
         ],
       },
     ],
     needsMeasurements: true,
     measurementFields: [
-      { key: 'bust', label: 'Bust / Chest (cm)', placeholder: '88' },
-      { key: 'underbust', label: 'Underbust / Waist (cm)', placeholder: '74' },
-      { key: 'blouseLength', label: 'Blouse Length (cm)', placeholder: '36' },
-      { key: 'frontNeckDepth', label: 'Front Neck Depth (cm)', placeholder: '16' },
-      { key: 'backNeckDepth', label: 'Back Neck Depth (cm)', placeholder: '22' },
-      { key: 'shoulder', label: 'Shoulder Width (cm)', placeholder: '37' },
-      { key: 'armhole', label: 'Armhole Circumference (cm)', placeholder: '38' },
-      { key: 'sleeveLength', label: 'Sleeve Length (cm)', placeholder: '26' },
+      { key: 'bust', label: 'Bust / Chest (cm)', placeholder: '88', tip: 'Around fullest part of chest' },
+      { key: 'underbust', label: 'Underbust / Waist (cm)', placeholder: '74', tip: 'Directly below bust line' },
+      { key: 'blouseLength', label: 'Blouse Length (cm)', placeholder: '36', tip: 'From shoulder to waist hem' },
+      { key: 'frontNeckDepth', label: 'Front Neck Depth (cm)', placeholder: '16', tip: 'Shoulder down to front dip' },
+      { key: 'backNeckDepth', label: 'Back Neck Depth (cm)', placeholder: '22', tip: 'Shoulder down to back dip' },
+      { key: 'shoulder', label: 'Shoulder Width (cm)', placeholder: '37', tip: 'Shoulder bone to shoulder bone' },
+      { key: 'armhole', label: 'Armhole Circumference (cm)', placeholder: '38', tip: 'Around the armpit loop' },
+      { key: 'sleeveLength', label: 'Sleeve Length (cm)', placeholder: '26', tip: 'Shoulder down to sleeve hem' },
     ],
   },
 
@@ -133,19 +140,20 @@ const SERVICE_CONFIG = {
     emoji: '👔',
     basePrice: 250,
     badge: 'Embroidery & Branding',
-    description: 'Customize your existing shirt, t-shirt, kurta, or uniform with computer embroidery, corporate logos, names, and heat-transfer artwork.',
+    shortDesc: 'Customize your existing shirt, t-shirt, kurta, or uniform with computer embroidery, company logos, names, and heat-transfer designs.',
     steps: [
       {
         id: 'garment',
-        title: 'Garment to Customize',
-        subtitle: 'Select the garment you are providing or customizing',
+        title: 'Which garment are you customizing?',
+        subtitle: 'Select the garment you are providing or ordering',
         type: 'visual_grid',
         key: 'garmentType',
+        popularCount: 4,
         options: [
-          { label: 'Men’s Shirt', icon: '👔', desc: 'Formal or casual shirts' },
-          { label: 'T-Shirt / Polo', icon: '👕', desc: 'Cotton, polyester, polo collars' },
-          { label: 'Kurta', icon: '🥻', desc: 'Ethnic festive / wedding kurta' },
-          { label: 'Hoodie / Sweatshirt', icon: '🧥', desc: 'Winter wear & fleece' },
+          { label: 'Men’s Shirt', icon: '👔', desc: 'Formal or casual shirts', popular: true },
+          { label: 'T-Shirt / Polo', icon: '👕', desc: 'Cotton, polyester, polo collars', popular: true },
+          { label: 'Kurta', icon: '🥻', desc: 'Ethnic festive / wedding kurta', popular: true },
+          { label: 'Hoodie / Sweatshirt', icon: '🧥', desc: 'Winter wear & fleece', popular: true },
           { label: 'Jacket / Blazer', icon: '🧥', desc: 'Suiting & club jackets' },
           { label: 'Uniform / Workwear', icon: '👷', desc: 'Corporate / school uniforms' },
           { label: 'Pants / Trousers', icon: '👖', desc: 'Pocket / leg logo branding' },
@@ -154,46 +162,50 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'addition',
-        title: 'What Do You Want to Add?',
-        subtitle: 'Select the primary customization element',
+        title: 'What would you like to add to the garment?',
+        subtitle: 'Choose your main customization element',
         type: 'chips',
         key: 'customizationElement',
+        popularCount: 4,
         options: ['Brand / Company Logo', 'Personalized Name / Monogram', 'Custom Typography / Text', 'Photo / Graphic Image', 'Custom Vector Artwork', 'Embroidery Border / Pattern', 'Multi-Position Branding'],
       },
       {
         id: 'technique',
-        title: 'Customization Technique',
-        subtitle: 'Choose between needlework embroidery or high-definition heat print',
+        title: 'Choose the customization technique',
+        subtitle: 'Needlework thread embroidery or high-definition heat print',
         type: 'select',
         key: 'technique',
+        helpText: 'Embroidery uses real threads for long-lasting elegance; DTF printing uses full-color digital ink heat-pressed on fabric.',
+        hasAdvisor: true,
         options: [
-          { label: 'Computerized Embroidery', desc: 'Durable, premium thread embroidery that lasts forever', addPrice: 150, icon: '🧵' },
-          { label: 'HD DTF / Heat Transfer', desc: 'Vibrant full-color photo print with sharp gradients', addPrice: 100, icon: '🖨️' },
+          { label: 'Computerized Embroidery', desc: 'Durable, premium thread embroidery that lasts forever', addPrice: 150, icon: '🧵', popular: true },
+          { label: 'HD DTF / Heat Transfer', desc: 'Vibrant full-color photo print with sharp gradients', addPrice: 100, icon: '🖨️', popular: true },
           { label: 'Direct Heat Press Vinyl', desc: 'Clean single-color metallic or solid logo application', addPrice: 80, icon: '⚡' },
-          { label: 'Let SLV Master Artisan Recommend', desc: 'We will inspect your design and suggest the best method', addPrice: 100, icon: '✨' },
+          { label: 'Let SLV Master Artisan Recommend', desc: 'We will inspect your design and choose the best technique', addPrice: 100, icon: '✨', popular: true },
         ],
       },
       {
         id: 'placement',
-        title: 'Design Placement on Garment',
-        subtitle: 'Select where the design should be applied',
+        title: 'Where should we place the design?',
+        subtitle: 'Tap the location on the garment',
         type: 'visual_grid',
         key: 'placement',
+        popularCount: 4,
         options: [
-          { label: 'Front Left Chest', icon: '📍', desc: 'Standard 3-4 inch pocket area' },
-          { label: 'Front Center', icon: '🎯', desc: 'Mid-chest statement graphic' },
+          { label: 'Front Left Chest', icon: '📍', desc: 'Standard 3-4 inch pocket area', popular: true },
+          { label: 'Front Center', icon: '🎯', desc: 'Mid-chest statement graphic', popular: true },
+          { label: 'Full Back', icon: '🛡️', desc: 'Large back branding / team name', popular: true },
+          { label: 'Left / Right Sleeve', icon: '💪', desc: 'Bicep logo / badge', popular: true },
           { label: 'Full Front', icon: '🔲', desc: 'Large A4/A3 front placement' },
           { label: 'Upper Back / Nape', icon: '🔝', desc: 'Subtle neck logo' },
-          { label: 'Full Back', icon: '🛡️', desc: 'Large back branding / team name' },
-          { label: 'Left / Right Sleeve', icon: '💪', desc: 'Bicep logo / badge' },
           { label: 'Collar / Cuff', icon: '👔', desc: 'Monogram & initials' },
           { label: 'Multiple Locations', icon: '⭐', desc: 'Chest + Back combo' },
         ],
       },
       {
         id: 'size',
-        title: 'Approximate Design Size',
-        subtitle: 'Select the scale of the artwork',
+        title: 'How large should the design be?',
+        subtitle: 'Select the approximate scale of the artwork',
         type: 'select',
         key: 'designSize',
         options: [
@@ -205,10 +217,11 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'color',
-        title: 'Base Garment Color',
-        subtitle: 'Helps our artisans configure thread and ink contrasts',
+        title: 'Base garment color',
+        subtitle: 'Helps us ensure high-contrast thread or ink visibility',
         type: 'chips',
         key: 'garmentColor',
+        popularCount: 5,
         options: ['White', 'Black', 'Navy Blue', 'Royal Blue', 'Maroon / Crimson', 'Olive / Bottle Green', 'Grey / Charcoal', 'Beige / Cream', 'Custom Color'],
       },
     ],
@@ -222,43 +235,46 @@ const SERVICE_CONFIG = {
     emoji: '🧵',
     basePrice: 200,
     badge: 'Multi-Thread Precision',
-    description: 'High-precision computer embroidery for sarees, blouses, kurtis, dupattas, corporate apparel, and custom logo patches.',
+    shortDesc: 'High-precision computer embroidery for sarees, blouses, kurtis, dupattas, corporate apparel, and custom logo patches.',
     steps: [
       {
         id: 'item',
-        title: 'What Are You Customizing?',
-        subtitle: 'Select the fabric or apparel item to be embroidered',
+        title: 'What item are you embroidering?',
+        subtitle: 'Select the fabric or apparel item',
         type: 'chips',
         key: 'targetItem',
+        popularCount: 4,
         options: ['Bridal Blouse Piece', 'Saree / Saree Border', 'Silk Dupatta', 'Kurti / Salwar', 'Men’s Shirt / Kurta', 'T-Shirt / Polo', 'School / Corporate Uniform', 'Caps / Bags / Accessories'],
       },
       {
         id: 'type',
-        title: 'Embroidery Style',
+        title: 'What type of embroidery pattern do you need?',
         subtitle: 'Select the nature of the embroidery work',
         type: 'visual_grid',
         key: 'embroideryType',
+        popularCount: 4,
         options: [
-          { label: 'Brand / Organization Logo', icon: '🏢', desc: 'Precision vector logo' },
-          { label: 'Personal Name / Monogram', icon: '✍️', desc: 'Cursive or block typography' },
-          { label: 'Maggam-Style Zari Pattern', icon: '🪡', desc: 'Traditional South Indian motif' },
-          { label: 'Floral & Vine Border', icon: '🌸', desc: 'Continuous running border' },
-          { label: 'Peacock / Traditional Motif', icon: '🦚', desc: 'Buttis & temple motifs' },
+          { label: 'Brand / Company Logo', icon: '🏢', desc: 'Precision vector logo', popular: true },
+          { label: 'Personal Name / Monogram', icon: '✍️', desc: 'Cursive or block typography', popular: true },
+          { label: 'Maggam-Style Zari Pattern', icon: '🪡', desc: 'Traditional South Indian motif', popular: true },
+          { label: 'Floral & Vine Border', icon: '🌸', desc: 'Continuous running border', popular: true },
+          { label: 'Peacock / Temple Motif', icon: '🦚', desc: 'Buttis & temple motifs' },
           { label: 'Custom Artwork Vector', icon: '🎨', desc: 'Stitched from your image' },
         ],
       },
       {
         id: 'threads',
-        title: 'Thread & Zari Palette',
-        subtitle: 'Select accent thread tones',
+        title: 'Select thread & zari colors',
+        subtitle: 'Choose accent thread tones',
         type: 'chips',
         key: 'threadPalette',
+        popularCount: 4,
         options: ['Gold Zari (Metallic)', 'Silver / White Zari', 'Antique Copper Zari', 'Multi-Color Silk Threads', 'Monochrome Single Thread', 'Fluorescent / Vibrant Shades', 'Tonal Self-Color'],
       },
       {
         id: 'size',
-        title: 'Embroidery Scale & Density',
-        subtitle: 'Select size and stitch count category',
+        title: 'Embroidery size & stitch density',
+        subtitle: 'Select scale and coverage',
         type: 'select',
         key: 'embroideryScale',
         options: [
@@ -279,38 +295,41 @@ const SERVICE_CONFIG = {
     emoji: '🖨️',
     basePrice: 150,
     badge: 'Full Color HD Transfers',
-    description: 'High-definition direct-to-film digital printing with vivid colors, fine photographic details, and stretch-resistant wash durability.',
+    shortDesc: 'High-definition direct-to-film digital printing with vivid colors, fine photographic details, and stretch-resistant wash durability.',
     steps: [
       {
         id: 'product',
-        title: 'Product Type for Printing',
-        subtitle: 'Select the apparel or substrate for DTF transfer',
+        title: 'Select product type for printing',
+        subtitle: 'Choose the garment or fabric for DTF heat press',
         type: 'chips',
         key: 'dtfProduct',
+        popularCount: 4,
         options: ['Cotton T-Shirt', 'Polyester / Dry-Fit Jersey', 'Hoodie / Sweatshirt', 'Cotton Tote Bag', 'Silk / Satin Fabric', 'Cap / Hat', 'Apron / Uniform', 'Other Substrate'],
       },
       {
         id: 'placement',
-        title: 'Print Placement',
-        subtitle: 'Choose where the graphic will be heat-pressed',
+        title: 'Where should we print the design?',
+        subtitle: 'Select print placement on garment',
         type: 'visual_grid',
         key: 'printPlacement',
+        popularCount: 4,
         options: [
-          { label: 'Left Chest (Pocket Size)', icon: '📍', desc: '3.5 x 3.5 inches' },
-          { label: 'Front Center (Standard A4)', icon: '🎯', desc: '8.5 x 11 inches' },
-          { label: 'Full Front Poster (A3)', icon: '🔲', desc: '11 x 16 inches' },
+          { label: 'Left Chest (Pocket Size)', icon: '📍', desc: '3.5 x 3.5 inches', popular: true },
+          { label: 'Front Center (Standard A4)', icon: '🎯', desc: '8.5 x 11 inches', popular: true },
+          { label: 'Full Front Poster (A3)', icon: '🔲', desc: '11 x 16 inches', popular: true },
+          { label: 'Full Back (A3 Size)', icon: '🛡️', desc: '11 x 16 inches large print', popular: true },
           { label: 'Upper Back Nape', icon: '🔝', desc: '3 x 3 inches logo' },
-          { label: 'Full Back (A3 Size)', icon: '🛡️', desc: '11 x 16 inches large print' },
           { label: 'Sleeve Print', icon: '💪', desc: 'Long or badge format' },
           { label: 'Front & Back Combo', icon: '⭐', desc: 'Small chest + large back', addPrice: 100 },
         ],
       },
       {
         id: 'garmentColor',
-        title: 'Garment Background Color',
+        title: 'Garment background color',
         subtitle: 'Helps us apply white ink underbase where required',
         type: 'chips',
         key: 'garmentColor',
+        popularCount: 4,
         options: ['White / Off-White', 'Black / Charcoal', 'Dark Navy / Royal Blue', 'Red / Maroon', 'Pastel / Light Shades', 'Heather Grey', 'Custom Color'],
       },
     ],
@@ -324,19 +343,20 @@ const SERVICE_CONFIG = {
     emoji: '🎨',
     basePrice: 300,
     badge: 'Custom Textile Runs',
-    description: 'Custom textile digital printing for silk sarees, dupattas, running fabric yardage, and bespoke designer patterns.',
+    shortDesc: 'Custom textile digital printing for silk sarees, dupattas, running fabric yardage, and bespoke designer patterns.',
     steps: [
       {
         id: 'fabric',
-        title: 'Fabric Base',
+        title: 'Select your fabric base',
         subtitle: 'Choose the textile base for digital printing',
         type: 'chips',
         key: 'fabricBase',
+        popularCount: 5,
         options: ['Pure Silk / Tabby', 'Georgette', 'Chiffon', 'Organza', 'Cotton Silk', 'Satin', 'Rayon / Viscose', 'Canvas / Duck Cotton', 'Customer Supplied Fabric'],
       },
       {
         id: 'quantity',
-        title: 'Fabric Quantity / Length',
+        title: 'How much fabric length is required?',
         subtitle: 'Select length needed for printing',
         type: 'select',
         key: 'fabricLength',
@@ -349,7 +369,7 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'style',
-        title: 'Printing Style & Layout',
+        title: 'Printing style & pattern layout',
         subtitle: 'Select pattern orientation',
         type: 'visual_grid',
         key: 'printStyle',
@@ -371,55 +391,59 @@ const SERVICE_CONFIG = {
     emoji: '👘',
     basePrice: 400,
     badge: 'Custom Fits & Cuts',
-    description: 'Custom tailored kurtis, Anarkalis, and ethnic dresses crafted to your silhouette with custom necklines, sleeves, and delicate embroidery.',
+    shortDesc: 'Custom tailored kurtis, Anarkalis, and ethnic dresses crafted to your silhouette with custom necklines, sleeves, and delicate embroidery.',
     steps: [
       {
         id: 'silhouette',
-        title: 'Garment Silhouette',
-        subtitle: 'Select kurti or dress style',
+        title: 'Choose your dress silhouette',
+        subtitle: 'Select kurti or dress cut',
         type: 'visual_grid',
         key: 'kurtiStyle',
+        popularCount: 4,
         options: [
-          { label: 'Straight Cut Kurti', icon: '📏', desc: 'Side slits, office & daily wear' },
-          { label: 'A-Line Kurti', icon: '📐', desc: 'Flared bottom comfort' },
-          { label: 'Anarkali Dress', icon: '👗', desc: 'Pleated royal flare' },
+          { label: 'Straight Cut Kurti', icon: '📏', desc: 'Side slits, daily & office wear', popular: true },
+          { label: 'Anarkali Dress', icon: '👗', desc: 'Pleated royal flare', popular: true },
+          { label: 'A-Line Kurti', icon: '📐', desc: 'Flared bottom comfort', popular: true },
+          { label: 'Chudidar / Salwar Suit', icon: '🧵', desc: 'Top + Pant 2-piece set', addPrice: 150, popular: true },
           { label: 'Angrakha Wrap Style', icon: '🥻', desc: 'Traditional crossover tie' },
           { label: 'Floor-Length Gown', icon: '🌟', desc: 'Festive occasion wear' },
-          { label: 'Chudidar / Salwar Suit', icon: '🧵', desc: 'Top + Pant 2-piece set', addPrice: 150 },
         ],
       },
       {
         id: 'fabric',
-        title: 'Fabric Type',
-        subtitle: 'Choose dress fabric',
+        title: 'Choose fabric type',
+        subtitle: 'Select garment material',
         type: 'chips',
         key: 'fabricType',
+        popularCount: 4,
         options: ['Cotton', 'Silk Blend', 'Georgette', 'Chanderi', 'Rayon', 'Linen', 'Velvet', 'Customer Provided Material'],
       },
       {
         id: 'neck',
-        title: 'Neckline Cut',
+        title: 'Select neckline cut',
         subtitle: 'Choose neckline pattern',
         type: 'chips',
         key: 'neckCut',
+        popularCount: 4,
         options: ['Round Neck with Slit', 'V Neck', 'Keyhole Neck', 'Mandarin Collar', 'Boat Neck', 'Sweetheart', 'Angrakha V-Cut'],
       },
       {
         id: 'sleeve',
-        title: 'Sleeve Length',
+        title: 'Select sleeve length',
         subtitle: 'Choose sleeve cut',
         type: 'chips',
         key: 'sleeveCut',
-        options: ['Sleeveless', 'Cap Sleeve', '3/4 Sleeve (Standard)', 'Full Length Sleeve', 'Bell Flared Sleeve'],
+        popularCount: 3,
+        options: ['3/4 Sleeve (Standard)', 'Short Sleeve', 'Sleeveless', 'Full Length Sleeve', 'Bell Flared Sleeve'],
       },
       {
         id: 'embellishment',
-        title: 'Embroidery & Print Add-on',
-        subtitle: 'Optional decorative detailing',
+        title: 'Optional embroidery or print add-ons',
+        subtitle: 'Add decorative highlights',
         type: 'select',
         key: 'kurtiEmbellishment',
         options: [
-          { label: 'Plain Stitching (No Add-ons)', desc: 'Clean tailor finish', addPrice: 0, icon: '✂️' },
+          { label: 'Plain Stitching (No Add-ons)', desc: 'Clean master tailor finish', addPrice: 0, icon: '✂️' },
           { label: 'Yoke / Neckline Computer Embroidery', desc: 'Delicate threadwork around neckline', addPrice: 250, icon: '🌸' },
           { label: 'Sleeve Border & Hem Embroidery', desc: 'Coordinated threadwork on borders', addPrice: 300, icon: '🧵' },
           { label: 'Custom Digital Motif Print', desc: 'Printed accents on chest/hem', addPrice: 200, icon: '🖨️' },
@@ -428,12 +452,12 @@ const SERVICE_CONFIG = {
     ],
     needsMeasurements: true,
     measurementFields: [
-      { key: 'bust', label: 'Bust / Chest (cm)', placeholder: '92' },
-      { key: 'waist', label: 'Waist (cm)', placeholder: '78' },
-      { key: 'hips', label: 'Hips (cm)', placeholder: '98' },
-      { key: 'shoulder', label: 'Shoulder (cm)', placeholder: '38' },
-      { key: 'armLength', label: 'Arm Length (cm)', placeholder: '42' },
-      { key: 'kurtiLength', label: 'Total Kurti Length (cm)', placeholder: '105' },
+      { key: 'bust', label: 'Bust / Chest (cm)', placeholder: '92', tip: 'Fullest chest circumference' },
+      { key: 'waist', label: 'Waist (cm)', placeholder: '78', tip: 'Natural waistline' },
+      { key: 'hips', label: 'Hips (cm)', placeholder: '98', tip: 'Fullest hip circumference' },
+      { key: 'shoulder', label: 'Shoulder Width (cm)', placeholder: '38', tip: 'Across back shoulders' },
+      { key: 'armLength', label: 'Arm Length (cm)', placeholder: '42', tip: 'Shoulder to desired sleeve hem' },
+      { key: 'kurtiLength', label: 'Total Kurti Length (cm)', placeholder: '105', tip: 'Shoulder down to bottom hem' },
     ],
   },
 
@@ -444,12 +468,12 @@ const SERVICE_CONFIG = {
     emoji: '👡',
     basePrice: 900,
     badge: 'Royal Wedding Couture',
-    description: 'Heavy bridal lehengas, reception gowns, and festive half-sarees with can-can layering, Maggam embroidery, and luxury zari detailing.',
+    shortDesc: 'Heavy bridal lehengas, reception gowns, and festive half-sarees with can-can layering, Maggam embroidery, and luxury zari detailing.',
     steps: [
       {
         id: 'type',
-        title: 'Bridal Attire Type',
-        subtitle: 'Select your bridal outfit category',
+        title: 'Select bridal attire type',
+        subtitle: 'Choose your wedding outfit category',
         type: 'visual_grid',
         key: 'bridalType',
         options: [
@@ -461,8 +485,8 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'intensity',
-        title: 'Embroidery Work Intensity',
-        subtitle: 'Select the density of handcrafted Maggam needlework',
+        title: 'Choose Maggam embroidery work intensity',
+        subtitle: 'Select the density of handcrafted needlework',
         type: 'select',
         key: 'workIntensity',
         options: [
@@ -474,28 +498,30 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'fabric',
-        title: 'Primary Fabric',
-        subtitle: 'Choose luxury fabric base',
+        title: 'Choose primary fabric',
+        subtitle: 'Select luxury fabric base',
         type: 'chips',
         key: 'fabricType',
+        popularCount: 4,
         options: ['Heavy Bridal Velvet', 'Raw Silk / Kanjivaram Silk', 'Net with Double Satin Lining', 'Pure Georgette', 'Organza Silk', 'Brocade / Jacquard'],
       },
       {
         id: 'color',
-        title: 'Bridal Color Palette',
-        subtitle: 'Select primary color theme',
+        title: 'Select bridal color palette',
+        subtitle: 'Choose primary color theme',
         type: 'chips',
         key: 'colorTheme',
+        popularCount: 4,
         options: ['Crimson Red', 'Royal Maroon', 'Bridal Rose Pink', 'Emerald Green', 'Mustard / Haldi Gold', 'Pastel Peach / Mint', 'Royal Purple', 'Custom Shade'],
       },
     ],
     needsMeasurements: true,
     measurementFields: [
-      { key: 'lehengaWaist', label: 'Lehenga Waist (cm)', placeholder: '76' },
-      { key: 'lehengaLength', label: 'Lehenga Skirt Length (cm)', placeholder: '102' },
-      { key: 'blouseBust', label: 'Blouse Bust (cm)', placeholder: '88' },
-      { key: 'blouseLength', label: 'Blouse Length (cm)', placeholder: '36' },
-      { key: 'hipCircumference', label: 'Hip Circumference (cm)', placeholder: '96' },
+      { key: 'lehengaWaist', label: 'Lehenga Waist (cm)', placeholder: '76', tip: 'Where lehenga skirt sits' },
+      { key: 'lehengaLength', label: 'Lehenga Skirt Length (cm)', placeholder: '102', tip: 'Waist down to floor' },
+      { key: 'blouseBust', label: 'Blouse Bust (cm)', placeholder: '88', tip: 'Bust circumference' },
+      { key: 'blouseLength', label: 'Blouse Length (cm)', placeholder: '36', tip: 'Shoulder to blouse hem' },
+      { key: 'hipCircumference', label: 'Hip Circumference (cm)', placeholder: '96', tip: 'Around fullest hip' },
     ],
   },
 
@@ -506,19 +532,20 @@ const SERVICE_CONFIG = {
     emoji: '🥻',
     basePrice: 600,
     badge: 'Border, Pallu & Tassels',
-    description: 'Custom handcrafted Maggam border needlework, grand pallu zari highlights, designer saree kuchu tassels, and matching embroidered blouse pieces.',
+    shortDesc: 'Custom handcrafted Maggam border needlework, grand pallu zari highlights, designer saree kuchu tassels, and matching embroidered blouse pieces.',
     steps: [
       {
         id: 'sareeType',
-        title: 'Saree Base Type',
-        subtitle: 'Select the fabric or type of saree',
+        title: 'Select saree base type',
+        subtitle: 'Choose fabric or saree style',
         type: 'chips',
         key: 'sareeType',
+        popularCount: 4,
         options: ['Kanjivaram Silk Saree', 'Banarasi Silk Saree', 'Organza / Tissue Saree', 'Georgette / Chiffon Saree', 'Cotton Silk Saree', 'Plain Dyed Saree for Custom Work'],
       },
       {
         id: 'borderWork',
-        title: 'Border Customization',
+        title: 'Border customization',
         subtitle: 'Choose border enhancement',
         type: 'select',
         key: 'borderWork',
@@ -532,7 +559,7 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'palluWork',
-        title: 'Pallu Work Customization',
+        title: 'Pallu work customization',
         subtitle: 'Enhance the grand drape area',
         type: 'select',
         key: 'palluWork',
@@ -545,7 +572,7 @@ const SERVICE_CONFIG = {
       },
       {
         id: 'blouseCombo',
-        title: 'Matching Blouse Piece Work',
+        title: 'Matching blouse piece work',
         subtitle: 'Add coordinated blouse embroidery',
         type: 'select',
         key: 'blouseCombo',
@@ -565,7 +592,7 @@ const serviceList = Object.values(SERVICE_CONFIG)
 
 export default function Customize() {
   const [selectedServiceKey, setSelectedServiceKey] = useState('blouse')
-  const [stepIndex, setStepIndex] = useState(0) // 0: Service Options, 1: Measurements (if any), 2: Files, 3: Review
+  const [activeStepId, setActiveStepId] = useState('service') // 'service', 'options', 'measurements', 'uploads', 'review'
   const [formData, setFormData] = useState({})
   const [measurements, setMeasurements] = useState({})
   const [uploadedFiles, setUploadedFiles] = useState({})
@@ -574,22 +601,21 @@ export default function Customize() {
   const [deliveryDate, setDeliveryDate] = useState('')
   const [expressDelivery, setExpressDelivery] = useState(false)
   const [giftWrap, setGiftWrap] = useState(false)
+  const [expandedGroups, setExpandedGroups] = useState({}) // track "View More" toggles per question
+  const [showAdvisor, setShowAdvisor] = useState(false) // "Help Me Choose" assistant modal
+  const [advisorArtworkType, setAdvisorArtworkType] = useState('')
 
   const dispatch = useDispatch()
   const { isAuthenticated } = useSelector((s) => s.auth)
 
   const activeService = SERVICE_CONFIG[selectedServiceKey] || SERVICE_CONFIG.blouse
 
-  // Calculate dynamic price
+  // Dynamic price calculation
   const addOnsTotal = (() => {
     let sum = 0
     activeService.steps.forEach((st) => {
       const selectedVal = formData[st.key]
-      if (st.type === 'select' && selectedVal) {
-        const opt = st.options.find((o) => o.label === selectedVal)
-        if (opt?.addPrice) sum += opt.addPrice
-      }
-      if (st.type === 'visual_grid' && selectedVal) {
+      if ((st.type === 'select' || st.type === 'visual_grid') && selectedVal) {
         const opt = st.options.find((o) => o.label === selectedVal)
         if (opt?.addPrice) sum += opt.addPrice
       }
@@ -606,6 +632,10 @@ export default function Customize() {
     setFormData((prev) => ({ ...prev, [key]: val }))
   }
 
+  const toggleGroupExpand = (groupKey) => {
+    setExpandedGroups((prev) => ({ ...prev, [groupKey]: !prev[groupKey] }))
+  }
+
   const handleFileChange = (slot, file) => {
     setUploadedFiles((prev) => ({ ...prev, [slot]: file }))
   }
@@ -615,7 +645,7 @@ export default function Customize() {
     setFormData({})
     setMeasurements({})
     setUploadedFiles({})
-    setStepIndex(0)
+    setActiveStepId('options')
   }
 
   const handleAddToCart = () => {
@@ -648,548 +678,704 @@ export default function Customize() {
     toast.success(`${activeService.label} added to your shopping bag! 🛍️`)
   }
 
+  // Advisor recommendation generator
+  const applyAdvisorRecommendation = () => {
+    if (advisorArtworkType === 'logo') {
+      updateField('technique', 'Computerized Embroidery')
+      toast.success('Recommended Computerized Embroidery applied for your logo! ✨')
+    } else if (advisorArtworkType === 'photo') {
+      updateField('technique', 'HD DTF / Heat Transfer')
+      toast.success('Recommended HD DTF Printing applied for full-color artwork! ✨')
+    } else {
+      updateField('technique', 'Let SLV Master Artisan Recommend')
+      toast.success('Our Master Artisan will review your design! ✨')
+    }
+    setShowAdvisor(false)
+  }
+
   const minDate = new Date()
   minDate.setDate(minDate.getDate() + 5)
 
-  // Total form pages: 0 = Dynamic Questions, 1 = Measurements (if applicable) or Files, 2 = Review
-  const hasMeasurements = activeService.needsMeasurements
-  const totalFlowSteps = hasMeasurements ? 4 : 3 // 0: Options, 1: Measurements (optional), 2: Files, 3: Review
+  // Guided Steps Config
+  const flowSteps = [
+    { id: 'service', label: '1. Service', icon: Package },
+    { id: 'options', label: '2. Customize', icon: Palette },
+    ...(activeService.needsMeasurements ? [{ id: 'measurements', label: '3. Fit & Sizes', icon: Ruler }] : []),
+    { id: 'uploads', label: activeService.needsMeasurements ? '4. Upload' : '3. Upload', icon: Upload },
+    { id: 'review', label: activeService.needsMeasurements ? '5. Review' : '4. Review', icon: ShoppingCart },
+  ]
+
+  const currentStepIndex = flowSteps.findIndex((s) => s.id === activeStepId)
 
   return (
-    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111827]">
+    <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111827] pb-24 md:pb-12">
+      
       {/* Header Banner */}
-      <div className="bg-white dark:bg-[#1F2937] border-b border-[#E8EAF0] dark:border-slate-800 py-12 shadow-subtle">
-        <div className="section-container text-center max-w-3xl mx-auto">
-          <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 bg-[#FFF1F6] dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 text-[#C52E74] dark:text-pink-300 text-xs font-bold uppercase tracking-widest rounded-full mb-3 shadow-subtle">
+      <div className="bg-white dark:bg-[#1F2937] border-b border-[#E8EAF0] dark:border-slate-800 py-10 shadow-subtle">
+        <div className="section-container text-center max-w-2xl mx-auto">
+          <span className="inline-flex items-center gap-1.5 px-3.5 py-1 bg-[#FFF1F6] dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 text-[#C52E74] dark:text-pink-300 text-xs font-bold uppercase tracking-widest rounded-full mb-3 shadow-subtle">
             <Sparkles className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
             <span>Interactive Bespoke Studio</span>
           </span>
-          <h1 className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-[#252A34] dark:text-white mb-3">
-            Customization <span className="text-gradient-pink">Studio</span>
+          <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-[#252A34] dark:text-white mb-2">
+            Customize <span className="text-gradient-pink">Your Style</span>
           </h1>
-          <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-3 rounded-full" />
           <p className="text-[#64707D] dark:text-slate-300 text-xs sm:text-sm leading-relaxed">
-            Select your service below. The studio will dynamically adapt questions specifically for your garment, embroidery, or branding needs.
+            A simple 4-step studio to customize your bridal blouses, embroidery, apparel printing, and bespoke fittings.
           </p>
         </div>
       </div>
 
-      <div className="section-container py-10">
+      <div className="section-container py-8">
+        
         {/* ========================================================================= */}
-        {/* SERVICE SELECTOR CARDS ROW                                                */}
+        {/* PROGRESS STEPPER (Always know where you are & how many steps remain)      */}
         {/* ========================================================================= */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-wider text-pink-600 dark:text-pink-400">Step 1</p>
-              <h2 className="font-display text-xl font-bold text-[#252A34] dark:text-white">Choose Your Service</h2>
-            </div>
-            <span className="text-xs text-[#64707D] dark:text-slate-400 font-medium hidden sm:inline">
-              Showing 8 Specialized Atelier Services
-            </span>
-          </div>
+        <div className="mb-8">
+          <div className="flex items-center justify-between overflow-x-auto pb-2 gap-2 max-w-4xl mx-auto">
+            {flowSteps.map((s, idx) => {
+              const Icon = s.icon
+              const isCurrent = activeStepId === s.id
+              const isPast = idx < currentStepIndex
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
-            {serviceList.map((svc) => {
-              const isSelected = selectedServiceKey === svc.id
               return (
-                <button
-                  key={svc.id}
-                  onClick={() => handleSelectService(svc.id)}
-                  className={`p-3 rounded-2xl border text-center transition-all flex flex-col items-center justify-between ${
-                    isSelected
-                      ? 'border-pink-500 bg-white dark:bg-[#1F2937] ring-2 ring-pink-500/20 shadow-card'
-                      : 'border-[#E8EAF0] dark:border-slate-800 bg-white/70 dark:bg-slate-800/60 hover:border-pink-300 hover:bg-white'
-                  }`}
-                >
-                  <div className="text-2xl mb-1.5">{svc.emoji}</div>
-                  <p className="text-[11px] font-bold text-[#252A34] dark:text-white leading-tight line-clamp-2">
-                    {svc.label.split(' ')[0]} {svc.label.split(' ')[1] || ''}
-                  </p>
-                  <span className="text-[10px] text-pink-600 dark:text-pink-400 font-bold mt-1.5 price-tag">
-                    From ₹{svc.basePrice}
-                  </span>
-                </button>
+                <div key={s.id} className="flex items-center flex-1 min-w-[120px]">
+                  <button
+                    onClick={() => {
+                      if (isPast) setActiveStepId(s.id)
+                    }}
+                    disabled={!isPast && !isCurrent}
+                    className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all w-full justify-center ${
+                      isCurrent
+                        ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft ring-2 ring-pink-400/20'
+                        : isPast
+                        ? 'bg-white dark:bg-slate-800 text-pink-600 border border-pink-200 hover:bg-[#FFF1F6] cursor-pointer'
+                        : 'bg-white/60 dark:bg-slate-800/40 text-[#94A3B8] border border-[#E8EAF0] cursor-not-allowed'
+                    }`}
+                  >
+                    {isPast ? <Check className="w-3.5 h-3.5 text-pink-600" /> : <Icon className="w-3.5 h-3.5" />}
+                    <span className="whitespace-nowrap">{s.label}</span>
+                  </button>
+                  {idx < flowSteps.length - 1 && (
+                    <div className={`w-3 h-0.5 mx-1 flex-shrink-0 ${idx < currentStepIndex ? 'bg-pink-400' : 'bg-[#E8EAF0] dark:bg-slate-700'}`} />
+                  )}
+                </div>
               )
             })}
           </div>
         </div>
 
         {/* ========================================================================= */}
-        {/* MAIN STUDIO AREA: 2-COLUMN LAYOUT (FORM + DYNAMIC ESTIMATOR)             */}
+        {/* MAIN STUDIO 2-COLUMN LAYOUT                                              */}
         {/* ========================================================================= */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
           
-          {/* LEFT 8 COLS: DYNAMIC SERVICE FORM */}
+          {/* LEFT 8 COLS: GUIDED STEP CONTENT */}
           <div className="lg:col-span-8 space-y-6">
-            
-            {/* Active Service Banner */}
-            <div className="bg-white dark:bg-[#1F2937] p-5 rounded-2xl border border-[#E8EAF0] dark:border-slate-800 shadow-subtle flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-3.5">
-                <div className="w-12 h-12 rounded-xl bg-[#FFF1F6] dark:bg-pink-950/40 text-2xl flex items-center justify-center border border-pink-200 dark:border-pink-900/50 flex-shrink-0">
-                  {activeService.emoji}
-                </div>
-                <div>
-                  <div className="flex items-center gap-2">
-                    <span className="badge-soft text-[10px] font-bold uppercase">{activeService.category}</span>
-                    <span className="text-[10px] text-pink-600 dark:text-pink-400 font-bold">• {activeService.badge}</span>
-                  </div>
-                  <h2 className="font-display text-lg font-bold text-[#252A34] dark:text-white">
-                    {activeService.label}
-                  </h2>
-                </div>
-              </div>
 
-              {/* Step Navigation Tabs */}
-              <div className="flex items-center gap-1.5 self-end sm:self-auto">
-                {Array.from({ length: totalFlowSteps }).map((_, idx) => {
-                  let stepLabel = '1. Options'
-                  if (hasMeasurements) {
-                    if (idx === 1) stepLabel = '2. Fit / Sizes'
-                    if (idx === 2) stepLabel = '3. Files'
-                    if (idx === 3) stepLabel = '4. Review'
-                  } else {
-                    if (idx === 1) stepLabel = '2. Files'
-                    if (idx === 2) stepLabel = '3. Review'
-                  }
+            {/* =================================================================== */}
+            {/* STEP 1: SERVICE SELECTION                                           */}
+            {/* =================================================================== */}
+            {activeStepId === 'service' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
+              >
+                <div>
+                  <span className="badge-soft text-[10px] font-bold uppercase mb-2">Step 1 of 4</span>
+                  <h2 className="font-display text-2xl font-bold text-[#252A34] dark:text-white">
+                    What would you like to create or customize?
+                  </h2>
+                  <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
+                    Select a service below to open its dedicated customization questions.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {serviceList.map((svc) => {
+                    const isSelected = selectedServiceKey === svc.id
+                    return (
+                      <button
+                        key={svc.id}
+                        onClick={() => handleSelectService(svc.id)}
+                        className={`p-5 rounded-2xl border text-left transition-all flex items-start gap-4 group ${
+                          isSelected
+                            ? 'border-pink-500 bg-[#FFF1F6]/50 dark:bg-pink-950/20 ring-2 ring-pink-500/20 shadow-card'
+                            : 'border-[#E8EAF0] dark:border-slate-800 bg-white dark:bg-slate-800 hover:border-pink-300 hover:shadow-subtle'
+                        }`}
+                      >
+                        <div className="w-12 h-12 rounded-2xl bg-[#FFF1F6] dark:bg-pink-950/40 text-2xl flex items-center justify-center flex-shrink-0 group-hover:scale-105 transition-transform">
+                          {svc.emoji}
+                        </div>
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-display font-bold text-sm text-[#252A34] dark:text-white group-hover:text-pink-600 transition-colors">
+                              {svc.label}
+                            </h3>
+                            <span className="text-xs font-bold text-pink-600 price-tag">From ₹{svc.basePrice}</span>
+                          </div>
+                          <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1 line-clamp-2">
+                            {svc.shortDesc}
+                          </p>
+                          <span className="inline-flex items-center gap-1 text-[11px] font-bold text-pink-600 dark:text-pink-400 mt-2">
+                            Select & Customize →
+                          </span>
+                        </div>
+                      </button>
+                    )
+                  })}
+                </div>
+              </motion.div>
+            )}
+
+            {/* =================================================================== */}
+            {/* STEP 2: DESIGN & STYLING QUESTIONS (Grouped & Guided)              */}
+            {/* =================================================================== */}
+            {activeStepId === 'options' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-8"
+              >
+                {/* Active Service Banner & Change Button */}
+                <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-[#F7F8FA] dark:bg-slate-800 rounded-2xl border border-[#E8EAF0]">
+                  <div className="flex items-center gap-3">
+                    <span className="text-2xl">{activeService.emoji}</span>
+                    <div>
+                      <p className="text-xs font-bold text-[#252A34] dark:text-white">{activeService.label}</p>
+                      <p className="text-[11px] text-[#64707D] dark:text-slate-400">{activeService.badge}</p>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setActiveStepId('service')}
+                    className="text-xs text-pink-600 dark:text-pink-400 font-bold hover:underline"
+                  >
+                    Change Service
+                  </button>
+                </div>
+
+                <div>
+                  <span className="badge-soft text-[10px] font-bold uppercase mb-2">Step 2 of 4</span>
+                  <h2 className="font-display text-2xl font-bold text-[#252A34] dark:text-white">
+                    Customize Your Design Choices
+                  </h2>
+                  <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
+                    Tap your preferred options. Popular choices are shown first for simplicity.
+                  </p>
+                </div>
+
+                {/* Question Blocks */}
+                {activeService.steps.map((st, stepNum) => {
+                  const selectedVal = formData[st.key]
+                  const isExpanded = expandedGroups[st.key] || false
+                  const hasMore = st.popularCount && st.options.length > st.popularCount
+                  const visibleOptions = hasMore && !isExpanded
+                    ? st.options.slice(0, st.popularCount)
+                    : st.options
 
                   return (
-                    <button
-                      key={idx}
-                      onClick={() => setStepIndex(idx)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                        stepIndex === idx
-                          ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft font-bold'
-                          : 'bg-[#F7F8FA] dark:bg-slate-800 text-[#64707D] dark:text-slate-300 hover:text-pink-600'
-                      }`}
-                    >
-                      {stepLabel}
-                    </button>
+                    <div key={st.id} className="pt-6 border-t border-[#E8EAF0] dark:border-slate-800 first:border-0 first:pt-0">
+                      
+                      {/* Title & Selected Indicator */}
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1 mb-2">
+                        <label className="text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white flex items-center gap-2">
+                          <span className="w-5 h-5 rounded-full bg-[#FFF1F6] dark:bg-pink-950/40 text-pink-600 text-[10px] flex items-center justify-center font-bold">
+                            {stepNum + 1}
+                          </span>
+                          {st.title}
+                        </label>
+                        {selectedVal && (
+                          <span className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold flex items-center gap-1">
+                            <Check className="w-3 h-3" /> Selected: {selectedVal}
+                          </span>
+                        )}
+                      </div>
+
+                      <p className="text-xs text-[#64707D] dark:text-slate-400 mb-3">{st.subtitle}</p>
+
+                      {/* Tooltip / "What's this?" if present */}
+                      {st.helpText && (
+                        <div className="mb-4 p-3 bg-pink-50/60 dark:bg-pink-950/20 border border-pink-100 dark:border-pink-900/40 rounded-xl text-[11px] text-[#64707D] dark:text-slate-300 flex items-start gap-2">
+                          <Info className="w-4 h-4 text-pink-500 flex-shrink-0 mt-0.5" />
+                          <span>{st.helpText}</span>
+                        </div>
+                      )}
+
+                      {/* "Not sure? Help Me Choose" recommendation trigger */}
+                      {st.hasAdvisor && (
+                        <div className="mb-4">
+                          <button
+                            type="button"
+                            onClick={() => setShowAdvisor(true)}
+                            className="inline-flex items-center gap-1.5 text-xs font-bold text-pink-600 hover:text-pink-700 bg-[#FFF1F6] px-3 py-1.5 rounded-lg border border-pink-200"
+                          >
+                            <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+                            Not sure which technique to pick? Click here for a quick recommendation
+                          </button>
+                        </div>
+                      )}
+
+                      {/* TYPE 1: SELECT CARDS */}
+                      {st.type === 'select' && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {visibleOptions.map((opt) => {
+                            const isOptSelected = selectedVal === opt.label
+                            return (
+                              <button
+                                key={opt.label}
+                                type="button"
+                                onClick={() => updateField(st.key, opt.label)}
+                                className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3.5 ${
+                                  isOptSelected
+                                    ? 'border-pink-500 bg-[#FFF1F6]/50 dark:bg-pink-950/20 shadow-soft ring-1 ring-pink-500'
+                                    : 'border-[#E8EAF0] dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-300'
+                                }`}
+                              >
+                                <span className="text-xl flex-shrink-0">{opt.icon}</span>
+                                <div className="flex-1">
+                                  <div className="flex items-center justify-between">
+                                    <p className="text-xs font-bold text-[#252A34] dark:text-white">{opt.label}</p>
+                                    {opt.addPrice > 0 && (
+                                      <span className="text-[11px] text-pink-600 font-bold price-tag">+₹{opt.addPrice}</span>
+                                    )}
+                                  </div>
+                                  <p className="text-[11px] text-[#64707D] dark:text-slate-400 mt-0.5">{opt.desc}</p>
+                                </div>
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
+
+                      {/* TYPE 2: VISUAL GRID CARDS (Necklines, Placements, Silhouettes) */}
+                      {st.type === 'visual_grid' && (
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                          {visibleOptions.map((opt) => {
+                            const isOptSelected = selectedVal === opt.label
+                            return (
+                              <button
+                                key={opt.label}
+                                type="button"
+                                onClick={() => updateField(st.key, opt.label)}
+                                className={`p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center ${
+                                  isOptSelected
+                                    ? 'border-pink-500 bg-[#FFF1F6]/60 dark:bg-pink-950/30 shadow-soft ring-1 ring-pink-500'
+                                    : 'border-[#E8EAF0] dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-300'
+                                }`}
+                              >
+                                <span className="text-2xl mb-1.5">{opt.icon}</span>
+                                <p className="text-xs font-bold text-[#252A34] dark:text-white leading-snug">{opt.label}</p>
+                                {opt.desc && (
+                                  <p className="text-[10px] text-[#64707D] dark:text-slate-400 mt-0.5 line-clamp-1">{opt.desc}</p>
+                                )}
+                                {opt.addPrice > 0 && (
+                                  <span className="text-[10px] text-pink-600 font-bold mt-1 price-tag">+₹{opt.addPrice}</span>
+                                )}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
+
+                      {/* TYPE 3: VISUAL PILL CHIPS */}
+                      {st.type === 'chips' && (
+                        <div className="flex flex-wrap gap-2">
+                          {visibleOptions.map((opt) => {
+                            const isOptSelected = selectedVal === opt
+                            return (
+                              <button
+                                key={opt}
+                                type="button"
+                                onClick={() => updateField(st.key, opt)}
+                                className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
+                                  isOptSelected
+                                    ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white border-transparent shadow-soft font-bold'
+                                    : 'border-[#E8EAF0] dark:border-slate-700 bg-[#F7F8FA] dark:bg-slate-800 text-[#252A34] dark:text-slate-200 hover:border-pink-300'
+                                }`}
+                              >
+                                {opt}
+                              </button>
+                            )
+                          })}
+                        </div>
+                      )}
+
+                      {/* "View More Options" Progressive Disclosure Toggle */}
+                      {hasMore && (
+                        <div className="mt-3">
+                          <button
+                            type="button"
+                            onClick={() => toggleGroupExpand(st.key)}
+                            className="inline-flex items-center gap-1 text-xs font-bold text-pink-600 hover:text-pink-700"
+                          >
+                            {isExpanded ? (
+                              <>Show Fewer Options <ChevronUp className="w-3.5 h-3.5" /></>
+                            ) : (
+                              <>+ View All {st.options.length} Options <ChevronDown className="w-3.5 h-3.5" /></>
+                            )}
+                          </button>
+                        </div>
+                      )}
+
+                    </div>
                   )
                 })}
-              </div>
-            </div>
 
-            {/* DYNAMIC FORM CONTAINER */}
-            <AnimatePresence mode="wait">
-              
-              {/* STAGE 0: SERVICE-SPECIFIC TAILORED QUESTIONS */}
-              {stepIndex === 0 && (
-                <motion.div
-                  key="options-stage"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-8"
-                >
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-[#252A34] dark:text-white">
-                      Customization Options for {activeService.label}
-                    </h3>
-                    <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
-                      {activeService.description}
-                    </p>
-                  </div>
+                {/* Forward / Back Navigation */}
+                <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId('service')}
+                    className="btn-secondary text-xs px-6 py-3 font-bold"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Change Service
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId(activeService.needsMeasurements ? 'measurements' : 'uploads')}
+                    className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
+                  >
+                    {activeService.needsMeasurements ? 'Next: Measurements & Fit' : 'Next: Upload Artwork'}
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
 
-                  {/* Render only steps specific to this service */}
-                  {activeService.steps.map((st, stepNum) => {
-                    const selectedVal = formData[st.key]
+            {/* =================================================================== */}
+            {/* STEP 3: MEASUREMENTS & SIZING (If applicable)                       */}
+            {/* =================================================================== */}
+            {activeStepId === 'measurements' && activeService.needsMeasurements && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
+              >
+                <div>
+                  <span className="badge-soft text-[10px] font-bold uppercase mb-2">Step 3 of 4</span>
+                  <h2 className="font-display text-2xl font-bold text-[#252A34] dark:text-white">
+                    Measurements & Sizing
+                  </h2>
+                  <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
+                    Enter your measurements in centimeters (cm). If you are sending a sample fitting garment to our studio, you can leave these blank.
+                  </p>
+                </div>
 
+                <div className="p-4 bg-[#FFF1F6] dark:bg-pink-950/20 border border-pink-200 dark:border-pink-900/40 rounded-2xl flex items-center gap-3 text-xs text-[#C52E74] dark:text-pink-300">
+                  <Sparkles className="w-5 h-5 flex-shrink-0" />
+                  <span><strong>Tip for Brides:</strong> You can also send an existing well-fitting blouse to our studio. We will replicate its exact fit!</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {activeService.measurementFields?.map((mf) => (
+                    <div key={mf.key} className="bg-[#F7F8FA] dark:bg-slate-800/60 p-3.5 rounded-2xl border border-[#E8EAF0] dark:border-slate-700">
+                      <div className="flex items-center justify-between mb-1">
+                        <label className="text-xs font-bold text-[#252A34] dark:text-white">
+                          {mf.label}
+                        </label>
+                        {mf.tip && (
+                          <span className="text-[10px] text-[#64707D] font-normal">{mf.tip}</span>
+                        )}
+                      </div>
+                      <div className="relative">
+                        <input
+                          type="number"
+                          placeholder={mf.placeholder}
+                          value={measurements[mf.key] || ''}
+                          onChange={(e) => setMeasurements({ ...measurements, [mf.key]: e.target.value })}
+                          className="input-field pr-10 text-sm font-semibold bg-white"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] font-bold">
+                          cm
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId('options')}
+                    className="btn-secondary text-xs px-6 py-3 font-bold"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Back to Design Options
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId('uploads')}
+                    className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
+                  >
+                    Next: Upload Reference Photos <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* =================================================================== */}
+            {/* STEP 4: UPLOAD ARTWORK & INSPIRATION PHOTOS                         */}
+            {/* =================================================================== */}
+            {activeStepId === 'uploads' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
+              >
+                <div>
+                  <span className="badge-soft text-[10px] font-bold uppercase mb-2">
+                    {activeService.needsMeasurements ? 'Step 4 of 5' : 'Step 3 of 4'}
+                  </span>
+                  <h2 className="font-display text-2xl font-bold text-[#252A34] dark:text-white">
+                    Upload Your Design or Inspiration Photo
+                  </h2>
+                  <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
+                    Attach any design sketch, embroidery photo, company logo, or saree color photo.
+                  </p>
+                </div>
+
+                <div className="space-y-4">
+                  {[
+                    { key: 'mainDesign', label: 'Primary Design / Logo / Inspiration Photo', accept: 'image/*,.pdf,.ai,.cdr', desc: 'Photo, sketch, or digital vector (JPG, PNG, PDF, AI)' },
+                    { key: 'referenceSaree', label: 'Fabric / Saree Color Photo (Optional)', accept: 'image/*', desc: 'Photo of the saree or fabric you want us to match' },
+                    { key: 'sampleBlouse', label: 'Sample Fit Reference (Optional)', accept: 'image/*', desc: 'A photo of your favorite fitting garment' },
+                  ].map((slot) => {
+                    const file = uploadedFiles[slot.key]
                     return (
-                      <div key={st.id} className="pt-6 border-t border-[#E8EAF0] dark:border-slate-800 first:border-0 first:pt-0">
-                        <div className="flex items-center justify-between mb-2">
-                          <label className="text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white flex items-center gap-2">
-                            <span className="w-5 h-5 rounded-full bg-[#FFF1F6] dark:bg-pink-950/40 text-pink-600 text-[10px] flex items-center justify-center font-bold">
-                              {stepNum + 1}
-                            </span>
-                            {st.title}
-                          </label>
-                          {selectedVal && (
-                            <span className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold flex items-center gap-1">
-                              <Check className="w-3 h-3" /> {selectedVal}
-                            </span>
-                          )}
-                        </div>
-                        <p className="text-xs text-[#64707D] dark:text-slate-400 mb-4">{st.subtitle}</p>
-
-                        {/* TYPE 1: SELECT CARDS */}
-                        {st.type === 'select' && (
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                            {st.options.map((opt) => {
-                              const isOptSelected = selectedVal === opt.label
-                              return (
-                                <button
-                                  key={opt.label}
-                                  type="button"
-                                  onClick={() => updateField(st.key, opt.label)}
-                                  className={`p-4 rounded-2xl border text-left transition-all flex items-start gap-3.5 ${
-                                    isOptSelected
-                                      ? 'border-pink-500 bg-[#FFF1F6]/50 dark:bg-pink-950/20 shadow-soft ring-1 ring-pink-500'
-                                      : 'border-[#E8EAF0] dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-300'
-                                  }`}
-                                >
-                                  <span className="text-xl flex-shrink-0">{opt.icon}</span>
-                                  <div className="flex-1">
-                                    <div className="flex items-center justify-between">
-                                      <p className="text-xs font-bold text-[#252A34] dark:text-white">{opt.label}</p>
-                                      {opt.addPrice > 0 && (
-                                        <span className="text-[11px] text-pink-600 font-bold price-tag">+₹{opt.addPrice}</span>
-                                      )}
-                                    </div>
-                                    <p className="text-[11px] text-[#64707D] dark:text-slate-400 mt-0.5">{opt.desc}</p>
-                                  </div>
-                                </button>
-                              )
-                            })}
+                      <div
+                        key={slot.key}
+                        className="border-2 border-dashed border-[#E8EAF0] dark:border-slate-700 rounded-2xl p-4 hover:border-pink-400 transition-colors bg-[#F7F8FA] dark:bg-slate-800"
+                      >
+                        <label className="flex items-center gap-4 cursor-pointer">
+                          <div
+                            className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                              file ? 'bg-emerald-100 text-emerald-600' : 'bg-white dark:bg-slate-700 text-pink-500 border border-[#E8EAF0]'
+                            }`}
+                          >
+                            {file ? <Check className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
                           </div>
-                        )}
-
-                        {/* TYPE 2: VISUAL GRID CARDS (Necklines, Placements, Silhouettes) */}
-                        {st.type === 'visual_grid' && (
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                            {st.options.map((opt) => {
-                              const isOptSelected = selectedVal === opt.label
-                              return (
-                                <button
-                                  key={opt.label}
-                                  type="button"
-                                  onClick={() => updateField(st.key, opt.label)}
-                                  className={`p-3.5 rounded-2xl border text-center transition-all flex flex-col items-center justify-center ${
-                                    isOptSelected
-                                      ? 'border-pink-500 bg-[#FFF1F6]/60 dark:bg-pink-950/30 shadow-soft ring-1 ring-pink-500'
-                                      : 'border-[#E8EAF0] dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-pink-300'
-                                  }`}
-                                >
-                                  <span className="text-2xl mb-1.5">{opt.icon}</span>
-                                  <p className="text-xs font-bold text-[#252A34] dark:text-white leading-snug">{opt.label}</p>
-                                  {opt.desc && (
-                                    <p className="text-[10px] text-[#64707D] dark:text-slate-400 mt-0.5 line-clamp-1">{opt.desc}</p>
-                                  )}
-                                  {opt.addPrice > 0 && (
-                                    <span className="text-[10px] text-pink-600 font-bold mt-1 price-tag">+₹{opt.addPrice}</span>
-                                  )}
-                                </button>
-                              )
-                            })}
+                          <div className="flex-1">
+                            <p className="font-bold text-[#252A34] dark:text-white text-xs sm:text-sm">
+                              {slot.label}
+                            </p>
+                            <p className="text-[11px] text-[#64707D] dark:text-slate-400 mt-0.5">
+                              {slot.desc}
+                            </p>
+                            {file && (
+                              <p className="text-xs text-emerald-600 font-bold mt-1">
+                                ✓ Attached: {file.name} ({(file.size / 1024).toFixed(0)} KB)
+                              </p>
+                            )}
                           </div>
-                        )}
-
-                        {/* TYPE 3: VISUAL PILL CHIPS */}
-                        {st.type === 'chips' && (
-                          <div className="flex flex-wrap gap-2">
-                            {st.options.map((opt) => {
-                              const isOptSelected = selectedVal === opt
-                              return (
-                                <button
-                                  key={opt}
-                                  type="button"
-                                  onClick={() => updateField(st.key, opt)}
-                                  className={`px-3.5 py-2 rounded-xl text-xs font-medium border transition-all ${
-                                    isOptSelected
-                                      ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white border-transparent shadow-soft font-bold'
-                                      : 'border-[#E8EAF0] dark:border-slate-700 bg-[#F7F8FA] dark:bg-slate-800 text-[#252A34] dark:text-slate-200 hover:border-pink-300'
-                                  }`}
-                                >
-                                  {opt}
-                                </button>
-                              )
-                            })}
-                          </div>
-                        )}
+                          <input
+                            type="file"
+                            accept={slot.accept}
+                            className="hidden"
+                            onChange={(e) => handleFileChange(slot.key, e.target.files[0])}
+                          />
+                        </label>
                       </div>
                     )
                   })}
+                </div>
 
-                  {/* Forward button to next stage */}
-                  <div className="pt-6 border-t border-[#E8EAF0] flex justify-end">
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(1)}
-                      className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
-                    >
-                      {hasMeasurements ? 'Proceed to Sizing & Fit' : 'Proceed to Artwork Upload'}
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
+                {/* Special Instructions in simple customer language */}
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-2">
+                    Anything else our master tailor should know? (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={specialInstructions}
+                    onChange={(e) => setSpecialInstructions(e.target.value)}
+                    placeholder="Tell us about desired neckline depth, sleeve looseness, piping color preferences, or specific event dates..."
+                    className="input-field resize-none text-xs"
+                  />
+                </div>
 
-              {/* STAGE 1 (If applicable): MEASUREMENTS & SIZING */}
-              {stepIndex === 1 && hasMeasurements && (
-                <motion.div
-                  key="measurements-stage"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
-                >
-                  <div className="flex items-center justify-between">
+                <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId(activeService.needsMeasurements ? 'measurements' : 'options')}
+                    className="btn-secondary text-xs px-6 py-3 font-bold"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Previous Step
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId('review')}
+                    className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
+                  >
+                    Review Order Summary <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
+            {/* =================================================================== */}
+            {/* STEP 5: REVIEW SUMMARY & EDIT BEFORE SUBMITTING                     */}
+            {/* =================================================================== */}
+            {activeStepId === 'review' && (
+              <motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
+              >
+                <div>
+                  <span className="badge-soft text-[10px] font-bold uppercase mb-2">Final Step</span>
+                  <h2 className="font-display text-2xl font-bold text-[#252A34] dark:text-white">
+                    Review Your Custom Order Summary
+                  </h2>
+                  <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
+                    You can tap <strong>Edit</strong> on any section below to change your choices easily.
+                  </p>
+                </div>
+
+                {/* Summary Table with Instant [Edit] Links */}
+                <div className="bg-[#F7F8FA] dark:bg-slate-800/80 rounded-2xl p-5 border border-[#E8EAF0] dark:border-slate-700 space-y-3 text-xs">
+                  
+                  {/* Service Row */}
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E8EAF0] dark:border-slate-700">
                     <div>
-                      <h3 className="font-display text-xl font-bold text-[#252A34] dark:text-white">
-                        Body Measurements & Silhouette Fit
-                      </h3>
-                      <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
-                        Enter your measurements in centimeters (cm). If you are sending a sample garment, you can leave these blank.
-                      </p>
+                      <p className="font-bold text-[#252A34] dark:text-white text-sm">{activeService.label}</p>
+                      <p className="text-[11px] text-[#64707D]">{activeService.badge}</p>
                     </div>
-                    <div className="w-10 h-10 rounded-xl bg-[#FFF1F6] text-pink-600 flex items-center justify-center font-bold">
-                      <Ruler className="w-5 h-5" />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-                    {activeService.measurementFields?.map((mf) => (
-                      <div key={mf.key} className="bg-[#F7F8FA] dark:bg-slate-800/60 p-3.5 rounded-2xl border border-[#E8EAF0] dark:border-slate-700">
-                        <label className="block text-xs font-bold text-[#252A34] dark:text-white mb-1.5">
-                          {mf.label}
-                        </label>
-                        <div className="relative">
-                          <input
-                            type="number"
-                            placeholder={mf.placeholder}
-                            value={measurements[mf.key] || ''}
-                            onChange={(e) => setMeasurements({ ...measurements, [mf.key]: e.target.value })}
-                            className="input-field pr-10 text-sm font-semibold bg-white"
-                          />
-                          <span className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-[#94A3B8] font-bold">
-                            cm
-                          </span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
                     <button
-                      type="button"
-                      onClick={() => setStepIndex(0)}
-                      className="btn-secondary text-xs px-6 py-3 font-bold"
+                      onClick={() => setActiveStepId('service')}
+                      className="inline-flex items-center gap-1 text-pink-600 font-bold hover:underline text-xs"
                     >
-                      <ChevronLeft className="w-4 h-4" /> Back to Options
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(2)}
-                      className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
-                    >
-                      Proceed to Uploads <ChevronRight className="w-4 h-4" />
+                      <Edit3 className="w-3.5 h-3.5" /> Edit
                     </button>
                   </div>
-                </motion.div>
-              )}
 
-              {/* STAGE 2: UPLOAD ARTWORK & REFERENCE DESIGNS */}
-              {((stepIndex === 1 && !hasMeasurements) || (stepIndex === 2 && hasMeasurements)) && (
-                <motion.div
-                  key="uploads-stage"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
-                >
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-[#252A34] dark:text-white">
-                      Upload Artwork, Inspiration & Reference Photos
-                    </h3>
-                    <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
-                      Attach your design sketch, company logo, blouse photo, or saree color reference.
-                    </p>
-                  </div>
-
-                  <div className="space-y-4">
-                    {[
-                      { key: 'mainDesign', label: 'Primary Design / Logo / Artwork', accept: 'image/*,.pdf,.ai,.cdr', desc: 'Vector logo, sketch, or photo design (PDF, PNG, JPG, AI)' },
-                      { key: 'referenceSaree', label: 'Fabric / Saree Color Reference Photo', accept: 'image/*', desc: 'Photo of the saree or fabric you want us to match' },
-                      { key: 'sampleBlouse', label: 'Sample Fit Reference (Optional)', accept: 'image/*', desc: 'A photo of your best-fitting garment' },
-                    ].map((slot) => {
-                      const file = uploadedFiles[slot.key]
-                      return (
-                        <div
-                          key={slot.key}
-                          className="border-2 border-dashed border-[#E8EAF0] dark:border-slate-700 rounded-2xl p-4 hover:border-pink-400 transition-colors bg-[#F7F8FA] dark:bg-slate-800"
-                        >
-                          <label className="flex items-center gap-4 cursor-pointer">
-                            <div
-                              className={`w-12 h-12 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                                file ? 'bg-emerald-100 text-emerald-600' : 'bg-white dark:bg-slate-700 text-pink-500 border border-[#E8EAF0]'
-                              }`}
-                            >
-                              {file ? <Check className="w-6 h-6" /> : <Upload className="w-6 h-6" />}
-                            </div>
-                            <div className="flex-1">
-                              <p className="font-bold text-[#252A34] dark:text-white text-xs sm:text-sm">
-                                {slot.label}
-                              </p>
-                              <p className="text-[11px] text-[#64707D] dark:text-slate-400 mt-0.5">
-                                {slot.desc}
-                              </p>
-                              {file && (
-                                <p className="text-xs text-emerald-600 font-bold mt-1">
-                                  ✓ Selected: {file.name}
-                                </p>
-                              )}
-                            </div>
-                            <input
-                              type="file"
-                              accept={slot.accept}
-                              className="hidden"
-                              onChange={(e) => handleFileChange(slot.key, e.target.files[0])}
-                            />
-                          </label>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  {/* Special Instructions */}
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-2">
-                      Special Tailoring & Stitching Instructions
-                    </label>
-                    <textarea
-                      rows={3}
-                      value={specialInstructions}
-                      onChange={(e) => setSpecialInstructions(e.target.value)}
-                      placeholder="Describe any special neckline depth, armhole looseness, thread sheen, piping preferences, or event deadlines..."
-                      className="input-field resize-none text-xs"
-                    />
-                  </div>
-
-                  <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(hasMeasurements ? 1 : 0)}
-                      className="btn-secondary text-xs px-6 py-3 font-bold"
-                    >
-                      <ChevronLeft className="w-4 h-4" /> Previous Step
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(hasMeasurements ? 3 : 2)}
-                      className="btn-primary text-xs px-7 py-3 font-bold shadow-card flex items-center gap-2"
-                    >
-                      Review Order Summary <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-
-              {/* STAGE 3: FINAL REVIEW & CONFIRMATION */}
-              {((stepIndex === 2 && !hasMeasurements) || (stepIndex === 3 && hasMeasurements)) && (
-                <motion.div
-                  key="review-stage"
-                  initial={{ opacity: 0, y: 15 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  className="bg-white dark:bg-[#1F2937] p-6 sm:p-8 rounded-3xl border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6"
-                >
-                  <div>
-                    <h3 className="font-display text-xl font-bold text-[#252A34] dark:text-white">
-                      Review & Finalize Bespoke Order
-                    </h3>
-                    <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1">
-                      Verify your selected parameters before adding to cart. Our master artisan will review all details before starting.
-                    </p>
-                  </div>
-
-                  {/* Summary Table */}
-                  <div className="bg-[#F7F8FA] dark:bg-slate-800/80 rounded-2xl p-5 border border-[#E8EAF0] dark:border-slate-700 space-y-3 text-xs">
-                    <div className="flex justify-between pb-2 border-b border-[#E8EAF0] dark:border-slate-700">
-                      <span className="font-semibold text-[#64707D]">Selected Atelier Service</span>
-                      <span className="font-bold text-[#252A34] dark:text-white">{activeService.label}</span>
-                    </div>
-
-                    {Object.entries(formData).map(([k, v]) => (
-                      <div key={k} className="flex justify-between py-1 border-b border-[#E8EAF0]/60 dark:border-slate-700/60 last:border-0">
-                        <span className="capitalize text-[#64707D]">{k.replace(/([A-Z])/g, ' $1')}</span>
+                  {/* Selected Options */}
+                  {Object.entries(formData).map(([k, v]) => (
+                    <div key={k} className="flex items-center justify-between py-1.5 border-b border-[#E8EAF0]/60 dark:border-slate-700/60">
+                      <span className="capitalize text-[#64707D]">{k.replace(/([A-Z])/g, ' $1')}</span>
+                      <div className="flex items-center gap-3">
                         <span className="font-bold text-[#252A34] dark:text-white">{v}</span>
+                        <button
+                          onClick={() => setActiveStepId('options')}
+                          className="text-pink-600 hover:text-pink-700"
+                          title="Edit this option"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
                       </div>
-                    ))}
+                    </div>
+                  ))}
 
-                    {Object.keys(uploadedFiles).filter((k) => uploadedFiles[k]).length > 0 && (
-                      <div className="flex justify-between pt-1">
-                        <span className="text-[#64707D]">Uploaded Reference Files</span>
+                  {/* Measurements Summary */}
+                  {activeService.needsMeasurements && Object.keys(measurements).length > 0 && (
+                    <div className="flex items-center justify-between py-1.5 border-b border-[#E8EAF0]/60 dark:border-slate-700/60">
+                      <span className="text-[#64707D]">Body Measurements</span>
+                      <div className="flex items-center gap-3">
+                        <span className="font-bold text-[#252A34] dark:text-white">
+                          {Object.keys(measurements).filter((k) => measurements[k]).length} fields recorded
+                        </span>
+                        <button
+                          onClick={() => setActiveStepId('measurements')}
+                          className="text-pink-600 hover:text-pink-700"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Uploaded Files Summary */}
+                  {Object.keys(uploadedFiles).filter((k) => uploadedFiles[k]).length > 0 && (
+                    <div className="flex items-center justify-between pt-1">
+                      <span className="text-[#64707D]">Reference Files</span>
+                      <div className="flex items-center gap-3">
                         <span className="font-bold text-pink-600">
                           {Object.keys(uploadedFiles).filter((k) => uploadedFiles[k]).length} file(s) attached
                         </span>
+                        <button
+                          onClick={() => setActiveStepId('uploads')}
+                          className="text-pink-600 hover:text-pink-700"
+                        >
+                          <Edit3 className="w-3 h-3" />
+                        </button>
                       </div>
-                    )}
-                  </div>
-
-                  {/* Quantity and Date Selection */}
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-1.5">
-                        Quantity
-                      </label>
-                      <input
-                        type="number"
-                        min={1}
-                        max={100}
-                        value={quantity}
-                        onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
-                        className="input-field font-bold text-sm"
-                      />
                     </div>
-                    <div>
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-1.5">
-                        Required Delivery Date
-                      </label>
-                      <input
-                        type="date"
-                        min={minDate.toISOString().split('T')[0]}
-                        value={deliveryDate}
-                        onChange={(e) => setDeliveryDate(e.target.value)}
-                        className="input-field text-xs font-medium"
-                      />
-                    </div>
-                  </div>
+                  )}
+                </div>
 
-                  {/* Express & Gift check */}
-                  <div className="flex flex-wrap gap-6 pt-2">
-                    <label className="flex items-center gap-2.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={expressDelivery}
-                        onChange={(e) => setExpressDelivery(e.target.checked)}
-                        className="accent-pink-600 w-4 h-4 rounded"
-                      />
-                      <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
-                        ⚡ Express Atelier Stitching (+₹200)
-                      </span>
+                {/* Quantity and Required By Date */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-1.5">
+                      Quantity (Pieces)
                     </label>
-                    <label className="flex items-center gap-2.5 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={giftWrap}
-                        onChange={(e) => setGiftWrap(e.target.checked)}
-                        className="accent-pink-600 w-4 h-4 rounded"
-                      />
-                      <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
-                        🎁 Trousseau Gift Packaging (+₹50)
-                      </span>
-                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={100}
+                      value={quantity}
+                      onChange={(e) => setQuantity(Math.max(1, Number(e.target.value)))}
+                      className="input-field font-bold text-sm"
+                    />
                   </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#252A34] dark:text-white mb-1.5">
+                      Required By Event Date
+                    </label>
+                    <input
+                      type="date"
+                      min={minDate.toISOString().split('T')[0]}
+                      value={deliveryDate}
+                      onChange={(e) => setDeliveryDate(e.target.value)}
+                      className="input-field text-xs font-medium"
+                    />
+                  </div>
+                </div>
 
-                  <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
-                    <button
-                      type="button"
-                      onClick={() => setStepIndex(hasMeasurements ? 2 : 1)}
-                      className="btn-secondary text-xs px-6 py-3 font-bold"
-                    >
-                      <ChevronLeft className="w-4 h-4" /> Back to Uploads
-                    </button>
-                    <button
-                      type="button"
-                      onClick={handleAddToCart}
-                      className="btn-primary text-xs px-8 py-3.5 font-bold shadow-card flex items-center gap-2"
-                    >
-                      <ShoppingCart className="w-4 h-4" /> Add Custom Item to Bag
-                    </button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                {/* Express and Gift Add-ons */}
+                <div className="flex flex-wrap gap-6 pt-2">
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={expressDelivery}
+                      onChange={(e) => setExpressDelivery(e.target.checked)}
+                      className="accent-pink-600 w-4 h-4 rounded"
+                    />
+                    <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
+                      ⚡ Express Atelier Stitching (+₹200)
+                    </span>
+                  </label>
+                  <label className="flex items-center gap-2.5 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={giftWrap}
+                      onChange={(e) => setGiftWrap(e.target.checked)}
+                      className="accent-pink-600 w-4 h-4 rounded"
+                    />
+                    <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
+                      🎁 Trousseau Gift Packaging (+₹50)
+                    </span>
+                  </label>
+                </div>
+
+                <div className="flex justify-between pt-6 border-t border-[#E8EAF0]">
+                  <button
+                    type="button"
+                    onClick={() => setActiveStepId('uploads')}
+                    className="btn-secondary text-xs px-6 py-3 font-bold"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> Back to Uploads
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleAddToCart}
+                    className="btn-primary text-xs px-8 py-3.5 font-bold shadow-card flex items-center gap-2"
+                  >
+                    <ShoppingCart className="w-4 h-4" /> Add Custom Order to Shopping Bag
+                  </button>
+                </div>
+              </motion.div>
+            )}
+
           </div>
 
           {/* RIGHT 4 COLS: DYNAMIC PRICE ESTIMATOR & LIVE SUMMARY */}
@@ -1201,18 +1387,18 @@ export default function Customize() {
                 <div className="flex items-center gap-2">
                   <Scissors className="w-4 h-4 text-pink-500" />
                   <h3 className="font-display text-base font-bold text-[#252A34] dark:text-white">
-                    Price Estimate
+                    Estimated Total
                   </h3>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-[#FFF1F6] text-[#C52E74] px-2.5 py-1 rounded-full">
-                  Dynamic Quote
+                  Live Quote
                 </span>
               </div>
 
               {/* Breakdown */}
               <div className="space-y-3 text-xs text-[#64707D] dark:text-slate-300">
                 <div className="flex justify-between">
-                  <span>Service Base ({activeService.label})</span>
+                  <span>Base ({activeService.label})</span>
                   <span className="font-bold text-[#252A34] dark:text-white price-tag">
                     ₹{activeService.basePrice}
                   </span>
@@ -1220,7 +1406,7 @@ export default function Customize() {
 
                 {addOnsTotal > 0 && (
                   <div className="flex justify-between">
-                    <span>Selected Customization Add-ons</span>
+                    <span>Selected Add-ons</span>
                     <span className="font-bold text-pink-600 price-tag">
                       +₹{addOnsTotal}
                     </span>
@@ -1243,7 +1429,7 @@ export default function Customize() {
 
                 {giftWrap && (
                   <div className="flex justify-between">
-                    <span>Gift Packaging</span>
+                    <span>Gift Wrap</span>
                     <span className="font-semibold text-pink-600">+₹50</span>
                   </div>
                 )}
@@ -1252,14 +1438,14 @@ export default function Customize() {
                 <div className="pt-4 border-t border-[#E8EAF0] dark:border-slate-700">
                   <div className="flex justify-between items-baseline mb-1">
                     <span className="font-display font-bold text-sm text-[#252A34] dark:text-white">
-                      Estimated Total
+                      Total Estimate
                     </span>
                     <span className="font-bold text-2xl text-pink-600 dark:text-pink-400 price-tag">
                       ₹{estimatedTotal.toLocaleString('en-IN')}
                     </span>
                   </div>
                   <p className="text-[11px] text-[#94A3B8] leading-tight">
-                    *Final price is confirmed after inspecting your uploaded reference artwork and fabric requirements.
+                    *Final price confirmed upon master artisan design review.
                   </p>
                 </div>
               </div>
@@ -1273,7 +1459,7 @@ export default function Customize() {
                 <ShoppingCart className="w-4 h-4" /> Add to Shopping Bag
               </button>
 
-              {/* Guarantee trust points */}
+              {/* Trust badges */}
               <div className="pt-4 border-t border-[#E8EAF0] dark:border-slate-700 space-y-2 text-[11px] text-[#64707D]">
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
@@ -1285,7 +1471,7 @@ export default function Customize() {
                 </div>
                 <div className="flex items-center gap-2">
                   <CheckCircle2 className="w-3.5 h-3.5 text-purple-500 flex-shrink-0" />
-                  <span>Direct WhatsApp updates during tailoring</span>
+                  <span>WhatsApp consultation on custom designs</span>
                 </div>
               </div>
             </div>
@@ -1293,6 +1479,93 @@ export default function Customize() {
 
         </div>
       </div>
+
+      {/* ========================================================================= */}
+      {/* "HELP ME CHOOSE" SMART ADVISOR MODAL                                      */}
+      {/* ========================================================================= */}
+      <AnimatePresence>
+        {showAdvisor && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 max-w-lg w-full border border-[#E8EAF0] shadow-2xl space-y-6"
+            >
+              <div className="flex items-center justify-between pb-3 border-b border-[#E8EAF0]">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="w-5 h-5 text-pink-500" />
+                  <h3 className="font-display font-bold text-lg text-[#252A34] dark:text-white">
+                    SLV Smart Recommendation
+                  </h3>
+                </div>
+                <button
+                  onClick={() => setShowAdvisor(false)}
+                  className="text-xs text-[#94A3B8] hover:text-black font-bold"
+                >
+                  ✕ Close
+                </button>
+              </div>
+
+              <div>
+                <p className="text-xs font-bold uppercase text-[#252A34] dark:text-white mb-2">
+                  What kind of artwork or design do you want on your garment?
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                  {[
+                    { id: 'logo', label: 'Company / Brand Logo', emoji: '🏢' },
+                    { id: 'photo', label: 'Full-Color Photo / Graphic', emoji: '📸' },
+                    { id: 'text', label: 'Name / Monogram / Text', emoji: '✍️' },
+                  ].map((item) => (
+                    <button
+                      key={item.id}
+                      onClick={() => setAdvisorArtworkType(item.id)}
+                      className={`p-3 rounded-xl border text-center text-xs transition-all ${
+                        advisorArtworkType === item.id
+                          ? 'border-pink-500 bg-[#FFF1F6] font-bold text-pink-700 ring-1 ring-pink-500'
+                          : 'border-[#E8EAF0] hover:border-pink-300 text-[#252A34]'
+                      }`}
+                    >
+                      <span className="text-xl block mb-1">{item.emoji}</span>
+                      {item.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {advisorArtworkType && (
+                <div className="p-4 bg-[#F7F8FA] dark:bg-slate-800 rounded-2xl border border-pink-200">
+                  <p className="text-xs font-bold text-pink-600 mb-1">Our Recommendation:</p>
+                  <p className="text-xs text-[#252A34] dark:text-slate-200">
+                    {advisorArtworkType === 'logo' && '✨ We recommend **Computerized Embroidery** for a luxury, long-lasting thread finish that never fades.'}
+                    {advisorArtworkType === 'photo' && '✨ We recommend **HD DTF Printing** for vibrant, high-definition photo reproduction and sharp gradients.'}
+                    {advisorArtworkType === 'text' && '✨ We recommend **Computerized Embroidery** for crisp lettering and personalized monograms.'}
+                  </p>
+                </div>
+              )}
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-[#E8EAF0]">
+                <button
+                  type="button"
+                  onClick={() => setShowAdvisor(false)}
+                  className="btn-secondary text-xs px-5 py-2.5 font-bold"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  disabled={!advisorArtworkType}
+                  onClick={applyAdvisorRecommendation}
+                  className="btn-primary text-xs px-6 py-2.5 font-bold disabled:opacity-40"
+                >
+                  Apply Recommendation
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
     </div>
   )
 }
