@@ -85,7 +85,7 @@ export default function HeroSection() {
               transition={{ duration: 0.4, delay: 0.1 }}
               className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[52px] font-bold text-[#1F2937] dark:text-white leading-[1.18] tracking-tight mb-5"
             >
-              Your Fashion. Your Design. Made Your Way.
+              Fashion, Customisation & More — All in One Place.
             </motion.h1>
 
             {/* Natural Human Description */}
@@ -95,7 +95,7 @@ export default function HeroSection() {
               transition={{ duration: 0.4, delay: 0.2 }}
               className="text-[#64748B] dark:text-slate-300 text-sm sm:text-base max-w-xl mb-6 font-sans leading-relaxed"
             >
-              From bridal blouses and traditional Maggam work to custom embroidery, garment printing and personalised designs — we bring your ideas to life.
+              From bridal blouses, sarees and Maggam work to custom embroidery, personalised garments, jewellery and gifts — find everything for your special style in one place.
             </motion.p>
 
             {/* Service Line */}
@@ -103,15 +103,19 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-semibold text-[#64748B] dark:text-slate-300 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-lg"
+              className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-semibold text-[#64748B] dark:text-slate-300 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-xl"
             >
+              <span>Sarees</span>
+              <span className="text-pink-400">•</span>
               <span>Bridal & Fashion Wear</span>
               <span className="text-pink-400">•</span>
-              <span>Embroidery & Maggam Work</span>
+              <span>Embroidery</span>
               <span className="text-pink-400">•</span>
               <span>Custom Printing</span>
               <span className="text-pink-400">•</span>
-              <span>Personalised Designs</span>
+              <span>1 Gram Gold Jewellery</span>
+              <span className="text-pink-400">•</span>
+              <span>Personalised Gifts</span>
             </motion.div>
 
             {/* CTA Buttons */}
@@ -125,7 +129,7 @@ export default function HeroSection() {
                 to="/products"
                 className="btn-primary text-xs tracking-wider px-7 py-3.5 font-bold shadow-card group"
               >
-                Explore Our Work
+                Explore Our Products & Services
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
