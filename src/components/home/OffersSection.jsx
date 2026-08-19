@@ -20,6 +20,7 @@ export default function OffersSection() {
     { code: 'STUDIOFREE', type: 'fixed', value: 50, description: 'Complimentary shipping & doorstep delivery across all tailoring orders.', minOrderAmount: 499 },
   ]
 
+  const coupons = data || []
   const activeCoupons = coupons.length > 0 ? coupons : fallbackCoupons
 
   const handleCopy = (code) => {
