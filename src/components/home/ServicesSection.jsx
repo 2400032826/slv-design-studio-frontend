@@ -6,43 +6,73 @@ const services = [
   {
     icon: Sparkles,
     name: 'Computerized Embroidery',
-    tag: 'Bridal Atelier',
-    items: ['Bridal Maggam Work', 'Zardosi & Cutdana Embroidery', 'Corporate & School Logos', 'Custom Saree Borders'],
+    tag: 'Bridal Maggam',
+    desc: 'Handcrafted Zardosi, stone work, and high-precision computerized embroidery for bridal wear.',
+    chips: ['Maggam & Zardosi', 'Saree Borders'],
+    iconBg: 'bg-[#FFF1F6] dark:bg-pink-950/30',
+    iconColor: 'text-[#E83E8C]',
+    borderColor: 'border-pink-200 dark:border-pink-900/40',
+    chipBg: 'bg-[#FFF1F6] text-[#C52E74] dark:bg-pink-950/40 dark:text-pink-300',
     link: '/services',
   },
   {
     icon: Printer,
-    name: 'Digital Fabric Printing',
-    tag: 'Textile Printing',
-    items: ['High-Definition DTF Printing', 'Screen Printing', 'Silk Dupatta Printing', 'Custom T-Shirts'],
+    name: 'Digital Fabric & DTF Printing',
+    tag: 'Textile Atelier',
+    desc: 'Vibrant direct-to-film printing, silk dupatta custom prints, and customized event merchandise.',
+    chips: ['HD DTF Printing', 'Silk Dupattas'],
+    iconBg: 'bg-[#F5F3FF] dark:bg-purple-950/30',
+    iconColor: 'text-[#7C3AED]',
+    borderColor: 'border-purple-200 dark:border-purple-900/40',
+    chipBg: 'bg-[#F5F3FF] text-[#6D28D9] dark:bg-purple-950/40 dark:text-purple-300',
     link: '/services',
   },
   {
     icon: Scissors,
     name: 'Blouse Stitching & Tailoring',
-    tag: 'Bespoke Fits',
-    items: ['Deep Neck Designer Blouses', 'Tassel Tie-Back Fits', 'Maggam Work Alignment', 'Padded Bridal Blouses'],
-    link: '/services',
+    tag: 'Bespoke Fit',
+    desc: 'Designer bridal blouse tailoring with padded lining, deep neck patterns, and tassel back-ties.',
+    chips: ['Padded Bridal Fit', 'Designer Cuts'],
+    iconBg: 'bg-[#FFF7ED] dark:bg-orange-950/30',
+    iconColor: 'text-[#F97316]',
+    borderColor: 'border-orange-200 dark:border-orange-900/40',
+    chipBg: 'bg-[#FFF7ED] text-[#C2410C] dark:bg-orange-950/40 dark:text-orange-300',
+    link: '/customize',
   },
   {
     icon: Shirt,
     name: 'Custom Kurtis & Dresses',
     tag: 'Women\'s Fashion',
-    items: ['Designer Kurtis & Anarkalis', 'Lehenga Choli Tailoring', 'Saree Fall & Pico', 'Custom Alterations'],
+    desc: 'Bespoke Anarkalis, lehenga cholis, designer ethnic kurtis, and expert garment alterations.',
+    chips: ['Designer Kurtis', 'Lehenga Tailoring'],
+    iconBg: 'bg-[#FFE4E6] dark:bg-rose-950/30',
+    iconColor: 'text-[#E11D48]',
+    borderColor: 'border-rose-200 dark:border-rose-900/40',
+    chipBg: 'bg-[#FFE4E6] text-[#BE123C] dark:bg-rose-950/40 dark:text-rose-300',
     link: '/services',
   },
   {
     icon: Gem,
     name: '1-Gram Gold Jewellery',
-    tag: 'Accessories',
-    items: ['Bridal Necklace Sets', 'Antique Temple Jewellery', 'Earrings & Jhumkas', 'Kangan & Bangles'],
-    link: '/services',
+    tag: 'Bridal Accessories',
+    desc: 'Antique temple necklace sets, bridal chokers, jhumkas, and premium gold-plated bangles.',
+    chips: ['Temple Jewellery', 'Bridal Sets'],
+    iconBg: 'bg-[#FEF3C7] dark:bg-amber-950/30',
+    iconColor: 'text-[#D97706]',
+    borderColor: 'border-amber-200 dark:border-amber-900/40',
+    chipBg: 'bg-[#FEF3C7] text-[#B45309] dark:bg-amber-950/40 dark:text-amber-300',
+    link: '/products',
   },
   {
     icon: Gift,
     name: 'Customized Gifts & Packaging',
-    tag: 'Gifts & Corporate',
-    items: ['Customized Photo Gifts', 'Bulk Uniforms', 'Corporate Merchandise', 'Custom Gift Boxes'],
+    tag: 'Festive & Trousseau',
+    desc: 'Custom photo gifts, personalized bridal trousseau packaging, and festive bulk gift boxes.',
+    chips: ['Photo Gifts', 'Trousseau Boxes'],
+    iconBg: 'bg-[#FDF2F8] dark:bg-fuchsia-950/30',
+    iconColor: 'text-[#8B5CF6]',
+    borderColor: 'border-fuchsia-200 dark:border-fuchsia-900/40',
+    chipBg: 'bg-[#FDF2F8] text-[#7E22CE] dark:bg-fuchsia-950/40 dark:text-fuchsia-300',
     link: '/services',
   },
 ]
@@ -59,7 +89,7 @@ export default function ServicesSection() {
           </h2>
           <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-4 rounded-full" />
           <p className="text-[#64707D] dark:text-slate-300 text-sm font-sans leading-relaxed">
-            From royal bridal embroidery to digital textile printing — combining heritage craftsmanship with modern fashion tailoring.
+            Heritage craftsmanship meets modern fashion precision — tailored to your exact style and celebrations.
           </p>
         </div>
 
@@ -77,32 +107,47 @@ export default function ServicesSection() {
                 transition={{ delay: i * 0.05 }}
               >
                 <div>
+                  {/* Top Icon & Tag */}
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 bg-[#FFF1F6] dark:bg-slate-800 text-pink-500 rounded-xl flex items-center justify-center border border-pink-100 dark:border-slate-700 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
-                      <Icon className="w-6 h-6" />
+                    <div
+                      className={`w-14 h-14 ${service.iconBg} ${service.iconColor} rounded-2xl flex items-center justify-center border ${service.borderColor} group-hover:scale-105 transition-transform shadow-subtle`}
+                    >
+                      <Icon className="w-7 h-7" />
                     </div>
-                    <span className="badge-soft text-[10px]">{service.tag}</span>
+                    <span className="badge-soft text-[10px] font-bold tracking-wider uppercase">
+                      {service.tag}
+                    </span>
                   </div>
 
-                  <h3 className="font-display font-bold text-lg text-[#252A34] dark:text-white mb-3 group-hover:text-pink-600 transition-colors">
+                  {/* Service Title */}
+                  <h3 className="font-display font-bold text-lg text-[#252A34] dark:text-white mb-2 group-hover:text-pink-600 transition-colors">
                     {service.name}
                   </h3>
 
-                  <ul className="space-y-2 mb-6">
-                    {service.items.map((item) => (
-                      <li key={item} className="text-[#64707D] dark:text-slate-300 text-xs flex items-center gap-2">
-                        <span className="w-1.5 h-1.5 bg-pink-500 rounded-full flex-shrink-0" />
-                        <span>{item}</span>
-                      </li>
+                  {/* Short 1-Line Description */}
+                  <p className="text-[#64707D] dark:text-slate-300 text-xs font-sans leading-relaxed mb-5">
+                    {service.desc}
+                  </p>
+
+                  {/* Visual Feature Chips (Max 2, No Long Bullet Lists!) */}
+                  <div className="flex flex-wrap gap-2 mb-6">
+                    {service.chips.map((chip) => (
+                      <span
+                        key={chip}
+                        className={`text-[11px] font-semibold px-3 py-1 rounded-full ${service.chipBg}`}
+                      >
+                        {chip}
+                      </span>
                     ))}
-                  </ul>
+                  </div>
                 </div>
 
+                {/* CTA Action */}
                 <Link
                   to={service.link}
-                  className="inline-flex items-center gap-1 text-xs font-bold text-pink-600 dark:text-pink-400 group-hover:text-pink-700 dark:group-hover:text-pink-300 transition-colors uppercase tracking-wider"
+                  className="inline-flex items-center gap-1.5 text-xs font-bold text-pink-600 dark:text-pink-400 group-hover:text-pink-700 dark:group-hover:text-pink-300 transition-colors uppercase tracking-wider pt-3 border-t border-[#E8EAF0] dark:border-slate-800"
                 >
-                  Explore Details <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                  Explore Service <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </Link>
               </motion.div>
             )

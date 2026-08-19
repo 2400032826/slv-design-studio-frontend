@@ -195,14 +195,14 @@ export default function HeroSection() {
             </div>
 
             {/* Main Visual Image Card */}
-            <div className="relative rounded-3xl overflow-hidden bg-white dark:bg-[#1F2937] border border-[#E8EAF0] dark:border-slate-800 shadow-card p-2.5 group">
+            <div className="relative rounded-3xl overflow-hidden bg-white dark:bg-[#1F2937] border border-[#E8EAF0] dark:border-slate-800 shadow-card p-3 group">
               <div className="relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#F7F8FA] dark:bg-slate-900">
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={currentItem.id}
                     src={currentItem.image}
                     alt={currentItem.title}
-                    initial={{ opacity: 0, scale: 1.05 }}
+                    initial={{ opacity: 0, scale: 1.03 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.4 }}
@@ -214,51 +214,34 @@ export default function HeroSection() {
                   />
                 </AnimatePresence>
 
-                {/* Subtle Gradient Shade on Bottom */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#1F2937]/80 via-transparent to-transparent flex flex-col justify-end p-5 text-white">
-                  <span className="badge bg-white/20 backdrop-blur-md text-white text-[10px] uppercase font-bold self-start mb-1.5 border border-white/30">
-                    {currentItem.tag}
+                {/* Floating Pill Top Left: Bridal Special */}
+                <div className="absolute top-3.5 left-3.5 z-10">
+                  <span className="badge bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-md text-[#C52E74] dark:text-pink-300 border border-pink-200 dark:border-pink-900/50 text-[11px] font-bold shadow-soft px-3 py-1">
+                    👑 Bridal Special
                   </span>
-                  <h3 className="font-display font-bold text-lg leading-tight mb-1">
-                    {currentItem.title}
-                  </h3>
-                  <p className="text-xs text-slate-200 line-clamp-2">
-                    {currentItem.description}
-                  </p>
+                </div>
+
+                {/* Floating Pill Top Right: 100% Handcrafted */}
+                <div className="absolute top-3.5 right-3.5 z-10">
+                  <span className="badge bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-md text-[#252A34] dark:text-white border border-[#E8EAF0] dark:border-slate-700 text-[11px] font-bold shadow-soft px-3 py-1">
+                    ✨ 100% Handcrafted
+                  </span>
+                </div>
+
+                {/* Floating Pill Bottom Left: Premium Zardosi */}
+                <div className="absolute bottom-3.5 left-3.5 z-10">
+                  <span className="badge bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-md text-[#252A34] dark:text-white border border-[#E8EAF0] dark:border-slate-700 text-[11px] font-bold shadow-soft px-3 py-1">
+                    🧵 Premium Zardosi & Maggam
+                  </span>
+                </div>
+
+                {/* Floating Pill Bottom Right: Perfect Fit */}
+                <div className="absolute bottom-3.5 right-3.5 z-10">
+                  <span className="badge bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-md text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-900/50 text-[11px] font-bold shadow-soft px-3 py-1">
+                    👗 Perfect Fit Guarantee
+                  </span>
                 </div>
               </div>
-
-              {/* Floating Badge 1: Top Right */}
-              <motion.div
-                className="absolute top-6 right-6 bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-md border border-[#E8EAF0] dark:border-slate-700 rounded-xl px-3.5 py-2 shadow-card flex items-center gap-2"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-              >
-                <div className="w-7 h-7 rounded-lg bg-[#FFF1F6] text-pink-600 flex items-center justify-center font-bold text-xs">
-                  ✨
-                </div>
-                <div>
-                  <p className="text-[10px] text-[#64707D] uppercase font-bold tracking-wider">Atelier Craft</p>
-                  <p className="text-xs font-bold text-[#252A34] dark:text-white">{currentItem.badge}</p>
-                </div>
-              </motion.div>
-
-              {/* Floating Badge 2: Bottom Left */}
-              <motion.div
-                className="absolute -bottom-3 -left-3 bg-white dark:bg-[#1F2937] border border-[#E8EAF0] dark:border-slate-700 rounded-2xl p-3.5 shadow-card-hover flex items-center gap-3 hidden sm:flex"
-                initial={{ opacity: 0, y: 15 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.5 }}
-              >
-                <div className="w-10 h-10 rounded-xl bg-gradient-to-tr from-pink-500 to-fuchsia-600 flex items-center justify-center text-white shadow-soft font-display font-bold text-sm">
-                  10+
-                </div>
-                <div>
-                  <p className="text-xs font-bold text-[#252A34] dark:text-white">Years of Master Tailoring</p>
-                  <p className="text-[11px] text-pink-600 dark:text-pink-400 font-semibold">Over 1,000+ Fits Delivered</p>
-                </div>
-              </motion.div>
             </div>
           </div>
 
