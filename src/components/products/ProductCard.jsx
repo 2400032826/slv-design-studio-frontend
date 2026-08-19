@@ -48,65 +48,71 @@ export default function ProductCard({ product }) {
   }
 
   return (
-    <Link to={`/products/${product.slug || product._id}`}>
+    <Link to={`/products/${product.slug || product._id}`} className="block h-full group">
       <div
         className="product-card h-full flex flex-col justify-between"
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
         {/* Product Image Frame */}
-        <div className="relative overflow-hidden aspect-[3/4] bg-[#F8F8F8] dark:bg-charcoal-800">
+        <div className="relative overflow-hidden aspect-[3/4] bg-[#F5F7FA] dark:bg-[#111827]">
           {activeImg ? (
             <img
               src={activeImg}
               alt={product.name}
               className="w-full h-full object-cover object-center transition-transform duration-500 ease-out"
-              style={{ transform: hovered ? 'scale(1.04)' : 'scale(1)' }}
+              style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
               onError={(e) => {
                 e.target.onerror = null;
                 e.target.src = 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600&q=80';
               }}
             />
           ) : (
-            <div className="w-full h-full bg-black flex items-center justify-center">
-              <span className="text-gold-500 font-display text-3xl opacity-40">✨</span>
+            <div className="w-full h-full bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center">
+              <span className="text-3xl opacity-40">✨</span>
             </div>
           )}
 
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex flex-col gap-1 z-10">
+          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
             {product.isNewArrival && (
-              <span className="badge-gold">New</span>
+              <span className="badge bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft text-[10px]">
+                New
+              </span>
             )}
             {product.isBestseller && (
-              <span className="badge bg-black text-white">Bestseller</span>
+              <span className="badge bg-[#1F2937] text-white shadow-soft text-[10px]">
+                Bestseller
+              </span>
             )}
             {discount > 0 && (
-              <span className="badge bg-black text-white">{discount}% OFF</span>
+              <span className="badge bg-rose-500 text-white shadow-soft text-[10px]">
+                {discount}% OFF
+              </span>
             )}
           </div>
 
-          {/* Quick Action Buttons */}
+          {/* Floating Action Buttons */}
           <div
-            className={`absolute top-3 right-3 flex flex-col gap-2 z-10 transition-opacity duration-200 ${
-              hovered ? 'opacity-100' : 'opacity-0'
+            className={`absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10 transition-all duration-200 ${
+              hovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
             }`}
           >
             <button
               onClick={handleWishlist}
-              className={`w-9 h-9 bg-white dark:bg-black border border-[#EAEAEA] flex items-center justify-center hover:border-black transition-colors ${
-                inWishlist ? 'text-black' : 'text-charcoal-500'
+              className={`w-8 h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors ${
+                inWishlist ? 'text-pink-500' : 'text-[#64748B]'
               }`}
               title="Add to Wishlist"
             >
-              <Heart className={`w-4 h-4 ${inWishlist ? 'fill-black text-black' : ''}`} />
+              <Heart className={`w-4 h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
             </button>
             <button
               onClick={handleShare}
-              className="w-9 h-9 bg-white dark:bg-black border border-[#EAEAEA] flex items-center justify-center hover:border-black transition-colors text-charcoal-500"
+              className="w-8 h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors text-[#64748B]"
               title="Share"
             >
-              <Share2 className="w-4 h-4" />
+              <Share2 className="w-3.5 h-3.5" />
             </button>
           </div>
 
@@ -118,7 +124,7 @@ export default function ProductCard({ product }) {
           >
             <button
               onClick={handleAddToCart}
-              className="w-full btn-primary text-[10px] uppercase tracking-widest font-bold py-3"
+              className="w-full btn-primary text-[10px] py-2.5 shadow-card font-bold"
             >
               <ShoppingBag className="w-3.5 h-3.5" /> Add to Bag
             </button>
@@ -126,12 +132,12 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Details Container */}
-        <div className="p-4 flex-1 flex flex-col justify-between">
+        <div className="p-4 flex-1 flex flex-col justify-between bg-white dark:bg-[#1F2937]">
           <div>
-            <p className="text-[10px] text-gold-500 uppercase tracking-widest font-bold mb-1">
-              {product.category?.name || 'Boutique Collection'}
+            <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-bold mb-1">
+              {product.category?.name || 'Designer Collection'}
             </p>
-            <h3 className="font-display font-semibold text-[#111111] dark:text-white text-sm leading-snug mb-2 line-clamp-2 group-hover:text-gold-500 transition-colors">
+            <h3 className="font-display font-semibold text-[#1F2937] dark:text-white text-sm leading-snug mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
               {product.name}
             </h3>
           </div>
@@ -139,30 +145,30 @@ export default function ProductCard({ product }) {
           <div>
             {/* Rating Stars */}
             {product.numReviews > 0 && (
-              <div className="flex items-center gap-1 mb-2">
+              <div className="flex items-center gap-1.5 mb-1.5">
                 <div className="flex">
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
                       className={`w-3 h-3 ${
                         i < Math.round(product.rating)
-                          ? 'fill-gold-500 text-gold-500'
-                          : 'text-[#EAEAEA] dark:text-charcoal-700'
+                          ? 'fill-amber-400 text-amber-400'
+                          : 'text-[#E5E7EB] dark:text-slate-700'
                       }`}
                     />
                   ))}
                 </div>
-                <span className="text-[10px] text-[#666666]">({product.numReviews})</span>
+                <span className="text-[10px] text-[#64748B] font-medium">({product.numReviews})</span>
               </div>
             )}
 
             {/* Pricing */}
             <div className="flex items-baseline gap-2 mt-1">
-              <span className="font-bold text-base text-[#111111] dark:text-white price-tag">
+              <span className="font-bold text-base text-[#1F2937] dark:text-white price-tag">
                 ₹{price.toLocaleString('en-IN')}
               </span>
               {product.mrp && product.mrp > price && (
-                <span className="text-xs text-[#666666] line-through price-tag">
+                <span className="text-xs text-[#64748B] line-through price-tag">
                   ₹{product.mrp.toLocaleString('en-IN')}
                 </span>
               )}

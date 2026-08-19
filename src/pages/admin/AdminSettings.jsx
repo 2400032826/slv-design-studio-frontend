@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Settings, Save, Phone, Mail, Globe, Clock } from 'lucide-react'
+import { Settings, Save, Phone, Mail, Globe, Clock, Sparkles } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 
@@ -7,7 +7,7 @@ export default function AdminSettings() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [settings, setSettings] = useState({
     businessName: "SLV Women's Fashion Studio",
-    tagline: 'Customize Your Style with Premium Embroidery & Printing',
+    tagline: 'Crafting Bespoke Embroidery & Haute Tailoring for Discerning Women',
     phone: '+91 9731912413',
     email: 'slvdesignstudio@gmail.com',
     address: 'Bengaluru, Karnataka, India',
@@ -20,41 +20,41 @@ export default function AdminSettings() {
 
   const handleSave = () => {
     localStorage.setItem('slv_settings', JSON.stringify(settings))
-    toast.success('Settings saved!')
+    toast.success('Studio configuration saved!')
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-60' : 'ml-16'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-6 py-4">
-          <h1 className="font-display text-xl font-bold text-gray-900 dark:text-white">Settings</h1>
+      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
+          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Studio System Settings</h1>
         </div>
 
-        <div className="p-6 max-w-2xl space-y-6">
+        <div className="p-8 max-w-2xl space-y-6">
           {/* Business Info */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-            <h2 className="font-semibold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
-              <Settings className="w-5 h-5 text-gold-500" /> Business Information
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
+            <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">
+              <Settings className="w-4 h-4 text-pink-500" /> Business & Contact Profile
             </h2>
             <div className="space-y-4">
               {[
-                { key: 'businessName', label: 'Business Name' },
-                { key: 'tagline', label: 'Tagline' },
-                { key: 'phone', label: 'Phone', icon: Phone },
-                { key: 'email', label: 'Email', icon: Mail },
-                { key: 'whatsapp', label: 'WhatsApp Number (digits only)' },
-                { key: 'address', label: 'Address' },
+                { key: 'businessName', label: 'Boutique Business Name' },
+                { key: 'tagline', label: 'Studio Tagline' },
+                { key: 'phone', label: 'Primary Contact Phone', icon: Phone },
+                { key: 'email', label: 'Studio Email', icon: Mail },
+                { key: 'whatsapp', label: 'WhatsApp Number (with country code)' },
+                { key: 'address', label: 'Atelier Address' },
                 { key: 'gstNumber', label: 'GST Number (optional)' },
-                { key: 'workingHours', label: 'Working Hours', icon: Clock },
+                { key: 'workingHours', label: 'Operational Working Hours', icon: Clock },
               ].map(({ key, label }) => (
                 <div key={key}>
-                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">{label}</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">{label}</label>
                   <input
                     type="text"
                     value={settings[key]}
                     onChange={(e) => setSettings({ ...settings, [key]: e.target.value })}
-                    className="input-field"
+                    className="input-field text-xs"
                   />
                 </div>
               ))}
@@ -62,24 +62,24 @@ export default function AdminSettings() {
           </div>
 
           {/* Delivery Settings */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700">
-            <h2 className="font-semibold text-gray-900 dark:text-white mb-5">Delivery Settings</h2>
-            <div className="grid grid-cols-2 gap-4">
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
+            <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5">Shipping & Threshold Rules</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Free Delivery Threshold (₹)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Free Delivery Threshold (₹)</label>
                 <input type="number" value={settings.freeDeliveryThreshold}
-                  onChange={(e) => setSettings({ ...settings, freeDeliveryThreshold: Number(e.target.value) })} className="input-field" />
+                  onChange={(e) => setSettings({ ...settings, freeDeliveryThreshold: Number(e.target.value) })} className="input-field text-xs" />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Standard Delivery Charge (₹)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Standard Delivery Charge (₹)</label>
                 <input type="number" value={settings.deliveryCharge}
-                  onChange={(e) => setSettings({ ...settings, deliveryCharge: Number(e.target.value) })} className="input-field" />
+                  onChange={(e) => setSettings({ ...settings, deliveryCharge: Number(e.target.value) })} className="input-field text-xs" />
               </div>
             </div>
           </div>
 
-          <button onClick={handleSave} className="btn-primary w-full">
-            <Save className="w-4 h-4" /> Save Settings
+          <button onClick={handleSave} className="btn-primary w-full py-3.5 text-xs font-bold shadow-pink-glow">
+            <Save className="w-4 h-4" /> Save Studio Settings
           </button>
         </div>
       </div>

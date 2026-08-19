@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ShoppingCart, Heart, Share2, Star, ChevronLeft, ChevronRight,
-  ZoomIn, Truck, Shield, RefreshCw, Award, Plus, Minus, Check
+  ZoomIn, Truck, Shield, RefreshCw, Award, Plus, Minus, Check, Sparkles
 } from 'lucide-react'
 import api from '../api/axios'
 import { addToCart } from '../store/slices/cartSlice'
@@ -42,15 +42,15 @@ export default function ProductDetail() {
   })
 
   if (isLoading) return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
       <div className="section-container py-10">
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
           <div className="skeleton aspect-square rounded-2xl" />
           <div className="space-y-4">
-            <div className="skeleton h-8 w-3/4" />
-            <div className="skeleton h-6 w-1/2" />
-            <div className="skeleton h-24 w-full" />
-            <div className="skeleton h-12 w-full" />
+            <div className="skeleton h-8 w-3/4 rounded-xl" />
+            <div className="skeleton h-6 w-1/2 rounded-xl" />
+            <div className="skeleton h-24 w-full rounded-xl" />
+            <div className="skeleton h-12 w-full rounded-xl" />
           </div>
         </div>
       </div>
@@ -58,11 +58,11 @@ export default function ProductDetail() {
   )
 
   if (!data) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-5xl mb-4">😕</p>
-        <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Product not found</h2>
-        <button onClick={() => navigate('/products')} className="btn-primary mt-4">Browse Products</button>
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827]">
+      <div className="text-center p-8 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] max-w-sm">
+        <p className="text-4xl mb-3">👗</p>
+        <h2 className="text-xl font-display font-bold text-[#1F2937] dark:text-white">Design not found</h2>
+        <button onClick={() => navigate('/products')} className="btn-primary mt-4 text-xs py-2.5">Browse Catalog</button>
       </div>
     </div>
   )
@@ -77,7 +77,7 @@ export default function ProductDetail() {
     if (data.sizes?.length > 0 && !selectedSize) return toast.error('Please select a size')
     dispatch(addToCart({ product: data, quantity, size: selectedSize, color: selectedColor }))
     dispatch(openCart())
-    toast.success('Added to cart!')
+    toast.success('Added to shopping bag!')
   }
 
   const handleBuyNow = () => {
@@ -103,15 +103,15 @@ export default function ProductDetail() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
       <div className="section-container py-6">
         {/* Breadcrumb */}
-        <nav className="flex items-center gap-2 text-sm text-gray-500 mb-6">
-          <button onClick={() => navigate('/')} className="hover:text-gold-500 transition-colors">Home</button>
+        <nav className="flex items-center gap-2 text-xs text-[#64748B] dark:text-charcoal-400 mb-6 font-medium">
+          <button onClick={() => navigate('/')} className="hover:text-pink-600 transition-colors">Home</button>
           <span>/</span>
-          <button onClick={() => navigate('/products')} className="hover:text-gold-500 transition-colors">Products</button>
+          <button onClick={() => navigate('/products')} className="hover:text-pink-600 transition-colors">Catalog</button>
           <span>/</span>
-          <span className="text-gray-900 dark:text-white truncate">{data.name}</span>
+          <span className="text-[#1F2937] dark:text-white font-semibold truncate">{data.name}</span>
         </nav>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-16">
@@ -119,7 +119,7 @@ export default function ProductDetail() {
           <div>
             {/* Main image */}
             <div
-              className="relative aspect-square rounded-2xl overflow-hidden bg-gray-100 dark:bg-gray-800 mb-4 cursor-zoom-in group"
+              className="relative aspect-square rounded-3xl overflow-hidden bg-[#F5F7FA] dark:bg-[#1F2937] mb-4 cursor-zoom-in group border border-[#E5E7EB] dark:border-charcoal-800 shadow-card"
               onClick={() => setLightboxOpen(true)}
             >
               {mainImgUrl ? (
@@ -136,7 +136,7 @@ export default function ProductDetail() {
                   }}
                 />
               ) : (
-                <div className="w-full h-full bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center">
+                <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center">
                   <span className="text-6xl">👗</span>
                 </div>
               )}
@@ -144,7 +144,7 @@ export default function ProductDetail() {
                 <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               {discount > 0 && (
-                <div className="absolute top-4 left-4 bg-pink-500 text-white text-sm font-bold px-3 py-1 rounded-full">
+                <div className="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-soft">
                   {discount}% OFF
                 </div>
               )}
@@ -152,11 +152,11 @@ export default function ProductDetail() {
               {data.images?.length > 1 && (
                 <>
                   <button onClick={(e) => { e.stopPropagation(); setSelectedImage((p) => (p - 1 + data.images.length) % data.images.length) }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors">
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB]">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button onClick={(e) => { e.stopPropagation(); setSelectedImage((p) => (p + 1) % data.images.length) }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/80 rounded-full flex items-center justify-center shadow hover:bg-white transition-colors">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB]">
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </>
@@ -165,7 +165,7 @@ export default function ProductDetail() {
 
             {/* Thumbnails */}
             {data.images?.length > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-2">
+              <div className="flex gap-2.5 overflow-x-auto pb-2">
                 {data.images.map((img, i) => {
                   const thumbUrl = getImageUrl(img)
                   return (
@@ -173,7 +173,7 @@ export default function ProductDetail() {
                       key={i}
                       onClick={() => setSelectedImage(i)}
                       className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                        i === selectedImage ? 'border-gold-500' : 'border-gray-200 dark:border-gray-700 opacity-60 hover:opacity-100'
+                        i === selectedImage ? 'border-pink-500 shadow-soft' : 'border-[#E5E7EB] dark:border-charcoal-700 opacity-60 hover:opacity-100'
                       }`}
                     >
                       <img src={thumbUrl} alt="" className="w-full h-full object-cover" />
@@ -187,45 +187,45 @@ export default function ProductDetail() {
           {/* Product Info */}
           <div className="space-y-5">
             <div>
-              <p className="text-sm text-gold-500 font-semibold uppercase tracking-wider">{data.category?.name}</p>
-              <h1 className="font-display text-3xl font-bold text-gray-900 dark:text-white mt-1">{data.name}</h1>
+              <p className="text-xs text-pink-600 dark:text-pink-400 font-bold uppercase tracking-wider">{data.category?.name || 'Designer Blouse'}</p>
+              <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#1F2937] dark:text-white mt-1 leading-snug">{data.name}</h1>
               {data.numReviews > 0 && (
                 <div className="flex items-center gap-2 mt-2">
                   <div className="flex">
                     {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-4 h-4 ${i < Math.round(data.rating) ? 'fill-gold-500 text-gold-500' : 'text-gray-300'}`} />
+                      <Star key={i} className={`w-4 h-4 ${i < Math.round(data.rating) ? 'fill-amber-400 text-amber-400' : 'text-[#E5E7EB]'}`} />
                     ))}
                   </div>
-                  <span className="text-sm text-gray-500">({data.numReviews} reviews)</span>
+                  <span className="text-xs text-[#64748B] font-medium">({data.numReviews} boutique reviews)</span>
                 </div>
               )}
             </div>
 
             {/* Price */}
             <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-gray-900 dark:text-white">₹{price.toLocaleString('en-IN')}</span>
+              <span className="text-3xl font-bold text-[#1F2937] dark:text-white price-tag">₹{price.toLocaleString('en-IN')}</span>
               {data.mrp && data.mrp > price && (
-                <span className="text-lg text-gray-400 line-through">₹{data.mrp.toLocaleString('en-IN')}</span>
+                <span className="text-base text-[#64748B] line-through price-tag">₹{data.mrp.toLocaleString('en-IN')}</span>
               )}
               {discount > 0 && (
-                <span className="bg-green-100 text-green-700 text-sm font-bold px-2 py-0.5 rounded-full">{discount}% OFF</span>
+                <span className="bg-rose-50 dark:bg-rose-950/30 text-rose-600 text-xs font-bold px-2.5 py-1 rounded-full border border-rose-200">{discount}% OFF</span>
               )}
             </div>
 
             {/* Sizes */}
             {data.sizes?.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Size: <span className="font-normal text-gray-500">{selectedSize || 'Select'}</span>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-2">
+                  Size: <span className="font-semibold text-pink-600">{selectedSize || 'Select Option'}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {data.sizes.map((size) => (
                     <button key={size}
                       onClick={() => setSelectedSize(size)}
-                      className={`px-4 py-2 rounded-xl border-2 text-sm font-medium transition-all ${
+                      className={`px-4 py-2 rounded-xl border-2 text-xs font-bold transition-all ${
                         selectedSize === size
-                          ? 'border-gold-500 bg-gold-50 dark:bg-gold-900/20 text-gold-700 dark:text-gold-400'
-                          : 'border-gray-200 dark:border-gray-700 text-gray-600 dark:text-gray-400 hover:border-gold-300'
+                          ? 'border-pink-500 bg-[#F5F7FA] dark:bg-pink-950/20 text-pink-700 dark:text-pink-300 shadow-soft'
+                          : 'border-[#E5E7EB] dark:border-charcoal-700 text-[#64748B] dark:text-charcoal-400 hover:border-pink-300'
                       }`}
                     >
                       {size}
@@ -238,18 +238,20 @@ export default function ProductDetail() {
             {/* Colors */}
             {data.colors?.length > 0 && (
               <div>
-                <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">
-                  Color: <span className="font-normal text-gray-500">{selectedColor || 'Select'}</span>
+                <p className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-2">
+                  Color Shade: <span className="font-semibold text-pink-600">{selectedColor || 'Select Option'}</span>
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {data.colors.map((color) => (
                     <button key={color}
                       onClick={() => setSelectedColor(color)}
-                      className={`px-3 py-1.5 rounded-full border-2 text-sm transition-all flex items-center gap-1.5 ${
-                        selectedColor === color ? 'border-gold-500 bg-gold-50 dark:bg-gold-900/20' : 'border-gray-200 dark:border-gray-700'
+                      className={`px-3.5 py-1.5 rounded-full border-2 text-xs font-medium transition-all flex items-center gap-1.5 ${
+                        selectedColor === color
+                          ? 'border-pink-500 bg-[#F5F7FA] dark:bg-pink-950/20 text-pink-700 dark:text-pink-300 shadow-soft'
+                          : 'border-[#E5E7EB] dark:border-charcoal-700 text-[#64748B]'
                       }`}
                     >
-                      {selectedColor === color && <Check className="w-3 h-3 text-gold-600" />}
+                      {selectedColor === color && <Check className="w-3 h-3 text-pink-600" />}
                       {color}
                     </button>
                   ))}
@@ -259,56 +261,61 @@ export default function ProductDetail() {
 
             {/* Quantity */}
             <div>
-              <p className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2">Quantity</p>
+              <p className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-2">Quantity</p>
               <div className="flex items-center gap-3">
-                <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                  className="w-10 h-10 rounded-xl border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <Minus className="w-4 h-4" />
-                </button>
-                <span className="w-12 text-center font-bold text-gray-900 dark:text-white text-lg">{quantity}</span>
-                <button onClick={() => setQuantity((q) => Math.min(data.stock || 99, q + 1))}
-                  className="w-10 h-10 rounded-xl border border-gray-300 dark:border-gray-600 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                  <Plus className="w-4 h-4" />
-                </button>
+                <div className="flex items-center bg-[#F5F7FA] dark:bg-charcoal-800 rounded-xl p-1 border border-[#E5E7EB]">
+                  <button onClick={() => setQuantity((q) => Math.max(1, q - 1))}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white text-[#64748B] transition-colors">
+                    <Minus className="w-3.5 h-3.5" />
+                  </button>
+                  <span className="w-10 text-center font-bold text-[#1F2937] dark:text-white text-sm">{quantity}</span>
+                  <button onClick={() => setQuantity((q) => Math.min(data.stock || 99, q + 1))}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center hover:bg-white text-[#64748B] transition-colors">
+                    <Plus className="w-3.5 h-3.5" />
+                  </button>
+                </div>
                 {data.stock !== undefined && (
-                  <span className={`text-sm ${data.stock > 0 ? 'text-green-500' : 'text-red-500'}`}>
-                    {data.stock > 0 ? `${data.stock} in stock` : 'Out of stock'}
+                  <span className={`text-xs font-semibold ${data.stock > 0 ? 'text-emerald-600' : 'text-rose-600'}`}>
+                    {data.stock > 0 ? `✓ ${data.stock} in stock` : 'Out of stock'}
                   </span>
                 )}
               </div>
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3">
-              <button onClick={handleAddToCart} disabled={data.stock === 0} className="btn-primary flex-1 py-4">
-                <ShoppingCart className="w-5 h-5" /> Add to Cart
+            <div className="flex flex-col sm:flex-row gap-3 pt-2">
+              <button onClick={handleAddToCart} disabled={data.stock === 0} className="btn-primary flex-1 py-3.5 text-xs font-bold shadow-pink-glow">
+                <ShoppingCart className="w-4 h-4" /> Add to Shopping Bag
               </button>
-              <button onClick={handleBuyNow} disabled={data.stock === 0} className="btn-gold flex-1 py-4">
-                Buy Now
+              <button onClick={handleBuyNow} disabled={data.stock === 0} className="btn-secondary flex-1 py-3.5 text-xs font-bold shadow-soft">
+                Book Fit & Order
               </button>
               <button onClick={handleWishlist}
-                className={`w-12 h-12 rounded-xl border-2 flex items-center justify-center transition-all ${
-                  inWishlist ? 'border-pink-500 bg-pink-50 text-pink-500' : 'border-gray-200 dark:border-gray-700 text-gray-400 hover:border-pink-400'
+                className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-all ${
+                  inWishlist ? 'border-pink-500 bg-[#FFF5F9] text-pink-600' : 'border-[#E5E7EB] dark:border-charcoal-700 text-[#64748B] hover:border-pink-300'
                 }`}
+                title="Wishlist"
               >
-                <Heart className={`w-5 h-5 ${inWishlist ? 'fill-pink-500' : ''}`} />
+                <Heart className={`w-4 h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
               </button>
               <button onClick={handleShare}
-                className="w-12 h-12 rounded-xl border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 hover:border-gray-400 transition-all">
-                <Share2 className="w-5 h-5" />
+                className="w-11 h-11 rounded-xl border border-[#E5E7EB] dark:border-charcoal-700 flex items-center justify-center text-[#64748B] hover:border-pink-300 transition-all"
+                title="Share Design"
+              >
+                <Share2 className="w-4 h-4" />
               </button>
             </div>
 
             {/* Trust badges */}
-            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+            <div className="grid grid-cols-2 gap-3 pt-4 border-t border-[#E5E7EB] dark:border-charcoal-700">
               {[
                 { icon: Truck, text: 'Free delivery on ₹500+' },
                 { icon: Shield, text: '100% Quality Guarantee' },
-                { icon: RefreshCw, text: 'Easy Returns & Alterations' },
-                { icon: Award, text: 'Premium Craftsmanship' },
+                { icon: RefreshCw, text: 'Alterations Guaranteed' },
+                { icon: Award, text: 'Haute Craftsmanship' },
               ].map(({ icon: Icon, text }) => (
-                <div key={text} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
-                  <Icon className="w-4 h-4 text-gold-500 flex-shrink-0" />
+                <div key={text} className="flex items-center gap-2 text-xs text-[#64748B] dark:text-charcoal-300">
+                  <Icon className="w-4 h-4 text-pink-600 flex-shrink-0" />
                   <span>{text}</span>
                 </div>
               ))}
@@ -317,14 +324,14 @@ export default function ProductDetail() {
         </div>
 
         {/* Tabs */}
-        <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700 mb-10">
-          <div className="flex border-b border-gray-200 dark:border-gray-700 overflow-x-auto">
+        <div className="bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-800 shadow-soft mb-12">
+          <div className="flex border-b border-[#E5E7EB] dark:border-charcoal-700 overflow-x-auto">
             {['description', 'reviews', 'shipping'].map((tab) => (
               <button key={tab} onClick={() => setActiveTab(tab)}
-                className={`px-6 py-4 text-sm font-medium capitalize whitespace-nowrap transition-colors ${
+                className={`px-6 py-3.5 text-xs font-bold uppercase tracking-wider capitalize whitespace-nowrap transition-colors ${
                   activeTab === tab
-                    ? 'text-gold-600 border-b-2 border-gold-500 -mb-px'
-                    : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    ? 'text-pink-600 border-b-2 border-pink-500 -mb-px bg-[#F5F7FA]/50'
+                    : 'text-[#64748B] hover:text-[#1F2937]'
                 }`}
               >
                 {tab} {tab === 'reviews' && data.numReviews > 0 && `(${data.numReviews})`}
@@ -334,33 +341,33 @@ export default function ProductDetail() {
           <div className="p-6">
             {activeTab === 'description' && (
               <div className="prose prose-gray dark:prose-invert max-w-none">
-                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
-                  {data.description || 'No description available.'}
+                <p className="text-[#64748B] dark:text-charcoal-300 text-sm leading-relaxed">
+                  {data.description || 'Custom tailored with handcrafted zardosi and machine embroidery.'}
                 </p>
               </div>
             )}
             {activeTab === 'reviews' && (
               <div>
                 {data.reviews?.length === 0 ? (
-                  <p className="text-gray-400 text-center py-8">No reviews yet. Be the first to review!</p>
+                  <p className="text-[#64748B] text-center text-xs py-8">No reviews yet for this design. Be the first to review!</p>
                 ) : (
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {data.reviews?.map((review) => (
-                      <div key={review._id} className="p-4 bg-gray-50 dark:bg-gray-700 rounded-xl">
+                      <div key={review._id} className="p-4 bg-[#F5F7FA] dark:bg-[#111827] rounded-xl border border-[#E5E7EB]">
                         <div className="flex items-center gap-3 mb-2">
-                          <div className="w-8 h-8 bg-gradient-royal rounded-full flex items-center justify-center text-white text-sm font-bold">
+                          <div className="w-7 h-7 bg-gradient-to-r from-pink-500 to-fuchsia-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
                             {review.user?.name?.[0] || 'U'}
                           </div>
                           <div>
-                            <p className="font-medium text-sm text-gray-900 dark:text-white">{review.user?.name}</p>
+                            <p className="font-bold text-xs text-[#1F2937] dark:text-white">{review.user?.name}</p>
                             <div className="flex">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-gold-500 text-gold-500' : 'text-gray-300'}`} />
+                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-[#E5E7EB]'}`} />
                               ))}
                             </div>
                           </div>
                         </div>
-                        <p className="text-sm text-gray-600 dark:text-gray-300">{review.comment}</p>
+                        <p className="text-xs text-[#64748B] dark:text-charcoal-300">{review.comment}</p>
                       </div>
                     ))}
                   </div>
@@ -368,12 +375,12 @@ export default function ProductDetail() {
               </div>
             )}
             {activeTab === 'shipping' && (
-              <div className="space-y-3 text-sm text-gray-600 dark:text-gray-400">
+              <div className="space-y-2 text-xs text-[#64748B] dark:text-charcoal-300">
                 <p>✓ Free delivery on orders above ₹500</p>
-                <p>✓ Standard delivery: 5-7 business days</p>
-                <p>✓ Express delivery available: 2-3 business days (+₹200)</p>
+                <p>✓ Standard boutique delivery: 5-7 business days</p>
+                <p>✓ Express custom delivery available: 2-3 business days (+₹200)</p>
                 <p>✓ Free alterations within 7 days of delivery</p>
-                <p>✓ Contact us on WhatsApp for urgent orders</p>
+                <p>✓ Direct WhatsApp updates for tracking and measurements</p>
               </div>
             )}
           </div>
@@ -382,7 +389,7 @@ export default function ProductDetail() {
         {/* Related Products */}
         {relatedProducts?.length > 0 && (
           <div>
-            <h2 className="section-title text-gray-900 dark:text-white mb-6">Related Products</h2>
+            <h2 className="section-title text-[#1F2937] dark:text-white mb-6">Similar <span className="text-gradient-pink">Designs</span></h2>
             <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
               {relatedProducts.filter((p) => p._id !== data._id).slice(0, 4).map((product) => (
                 <ProductCard key={product._id} product={product} />
@@ -399,10 +406,10 @@ export default function ProductDetail() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[200] bg-black/95 flex items-center justify-center p-4"
+            className="fixed inset-0 z-[200] bg-[#1F2937]/95 flex items-center justify-center p-4"
             onClick={() => setLightboxOpen(false)}
           >
-            <img src={mainImgUrl} alt="" className="max-w-3xl max-h-[90vh] object-contain rounded-2xl" />
+            <img src={mainImgUrl} alt="" className="max-w-3xl max-h-[90vh] object-contain rounded-2xl shadow-card-hover" />
           </motion.div>
         )}
       </AnimatePresence>

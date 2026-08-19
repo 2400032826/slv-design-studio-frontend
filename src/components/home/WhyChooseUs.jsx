@@ -5,17 +5,17 @@ const pillars = [
   {
     icon: Award,
     title: 'Haute Couture Quality',
-    desc: 'Only authentic fabrics, fine threads, and genuine Zardosi work are crafted into your garments.',
+    desc: 'Only authentic fabrics, fine threads, and genuine Zardosi embroidery are crafted into your garments.',
   },
   {
     icon: Star,
-    title: '10+ Years Master Craftsmanship',
-    desc: 'Over a decade of dedicated expertise in South Indian bridal blouses and designer wear.',
+    title: '10+ Years Craftsmanship',
+    desc: 'Over a decade of dedicated expertise in South Indian bridal blouses and designer tailored wear.',
   },
   {
     icon: Clock,
-    title: 'Punctual Order Completion',
-    desc: 'We respect your schedule and complete stitching and embroidery right on time for your events.',
+    title: 'Punctual Completion',
+    desc: 'We respect your event schedule and deliver custom stitching and embroidery right on time.',
   },
   {
     icon: Heart,
@@ -24,29 +24,29 @@ const pillars = [
   },
   {
     icon: ShieldCheck,
-    title: 'Fit Alteration Guarantee',
-    desc: 'Free alterations within 7 days of delivery to guarantee a flawless silhouette.',
+    title: 'Alteration Guarantee',
+    desc: 'Free alterations within 7 days of delivery to guarantee a flawless fit and silhouette.',
   },
   {
     icon: Truck,
     title: 'Doorstep Delivery',
-    desc: 'Insured delivery across all service locations on orders above ₹500.',
+    desc: 'Insured delivery across all service locations with free delivery on orders above ₹500.',
   },
 ]
 
 export default function WhyChooseUs() {
   return (
-    <section className="py-20 bg-black text-white">
+    <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
       <div className="section-container">
         {/* Section Header */}
         <div className="text-center mb-16 max-w-2xl mx-auto">
-          <span className="text-gold-500 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">The Boutique Standard</span>
-          <h2 className="section-title text-white">
-            Why Choose <span className="text-gold-500">SLV Women's</span>
+          <span className="section-subtitle">The Boutique Standard</span>
+          <h2 className="section-title text-[#1F2937] dark:text-white">
+            Why Choose <span className="text-gradient-pink">SLV Women's</span>
           </h2>
-          <div className="h-px bg-charcoal-800 max-w-xs mx-auto my-4" />
-          <p className="text-white/70 text-sm font-sans font-light leading-relaxed">
-            We transform fine fabrics into luxury wearable art with uncompromising quality and personalized attention.
+          <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-4 rounded-full" />
+          <p className="text-[#64748B] dark:text-slate-300 text-sm font-sans leading-relaxed">
+            We transform fine fabrics into luxury wearable art with uncompromising quality, custom fittings, and dedicated attention.
           </p>
         </div>
 
@@ -57,19 +57,19 @@ export default function WhyChooseUs() {
             return (
               <motion.div
                 key={pillar.title}
-                className="bg-charcoal-900 p-8 border border-charcoal-800 hover:border-gold-500 transition-all duration-300"
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
+                className="bg-[#F5F7FA] dark:bg-[#1F2937] p-8 rounded-2xl border border-[#E5E7EB] dark:border-slate-800 shadow-subtle hover:bg-white dark:hover:bg-slate-800 hover:shadow-card hover:border-pink-300 transition-all duration-300 group"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05 }}
               >
-                <div className="w-12 h-12 bg-black border border-charcoal-800 flex items-center justify-center text-gold-500 mb-6">
+                <div className="w-12 h-12 bg-white dark:bg-slate-800 border border-[#E5E7EB] dark:border-slate-700 rounded-xl flex items-center justify-center text-pink-500 mb-6 group-hover:scale-110 group-hover:bg-gradient-to-tr group-hover:from-pink-500 group-hover:to-fuchsia-600 group-hover:text-white transition-all shadow-subtle">
                   <Icon className="w-6 h-6" />
                 </div>
-                <h3 className="font-display text-xl font-bold text-white mb-2">
+                <h3 className="font-display text-lg font-bold text-[#1F2937] dark:text-white mb-2 group-hover:text-pink-600 transition-colors">
                   {pillar.title}
                 </h3>
-                <p className="text-white/60 text-xs font-sans font-light leading-relaxed">
+                <p className="text-[#64748B] dark:text-slate-300 text-xs font-sans leading-relaxed">
                   {pillar.desc}
                 </p>
               </motion.div>

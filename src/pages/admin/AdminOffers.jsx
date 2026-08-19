@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2, Tag, Edit2, Check, X, ToggleLeft, ToggleRight, Calendar, Percent } from 'lucide-react'
+import { Plus, Trash2, Tag, Edit2, Check, X, ToggleLeft, ToggleRight, Calendar, Percent, Sparkles } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
@@ -108,105 +108,105 @@ export default function AdminOffers() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-60' : 'ml-16'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between">
-          <h1 className="font-display text-xl font-bold text-gray-900 dark:text-white">Offers & Coupon Management</h1>
-          <span className="text-xs text-gray-400">{coupons.length} coupons configured</span>
+      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
+          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Discount Coupons & Offers</h1>
+          <span className="badge badge-soft text-xs font-bold">{coupons.length} Active Codes</span>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-8 space-y-6 max-w-7xl">
           {/* Create / Edit Coupon Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-            <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Tag className="w-5 h-5 text-gold-500" /> {editingCoupon ? 'Edit Coupon' : 'Create New Coupon'}
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
+            <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">
+              <Tag className="w-4 h-4 text-pink-500" /> {editingCoupon ? 'Edit Discount Voucher' : 'Issue New Studio Promo Code'}
             </h2>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Coupon Code *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Coupon Code *</label>
                   <input
                     type="text"
                     value={form.code}
                     onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
-                    className="input-field py-2 text-sm font-mono font-bold"
-                    placeholder="e.g. SLV20"
+                    className="input-field py-2 text-xs font-mono font-bold text-pink-600 uppercase"
+                    placeholder="e.g. SLVFEST20"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Type</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Type</label>
                   <select
                     value={form.type}
                     onChange={(e) => setForm({ ...form, type: e.target.value })}
-                    className="input-field py-2 text-sm"
+                    className="input-field py-2 text-xs"
                   >
-                    <option value="percentage">Percentage (%)</option>
-                    <option value="fixed">Fixed Amount (₹)</option>
+                    <option value="percentage">Percentage (% OFF)</option>
+                    <option value="fixed">Fixed Amount (₹ OFF)</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Discount Value *</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Discount Value *</label>
                   <input
                     type="number"
                     value={form.value}
                     onChange={(e) => setForm({ ...form, value: e.target.value })}
-                    className="input-field py-2 text-sm"
-                    placeholder={form.type === 'percentage' ? '20%' : '200'}
+                    className="input-field py-2 text-xs"
+                    placeholder={form.type === 'percentage' ? '20' : '200'}
                     min="1"
                     required
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Min Order Amount (₹)</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Min Order Amount (₹)</label>
                   <input
                     type="number"
                     value={form.minOrderAmount}
                     onChange={(e) => setForm({ ...form, minOrderAmount: e.target.value })}
-                    className="input-field py-2 text-sm"
+                    className="input-field py-2 text-xs"
                     placeholder="0"
                     min="0"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Usage Limit</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Redeem Limit</label>
                   <input
                     type="number"
                     value={form.usageLimit}
                     onChange={(e) => setForm({ ...form, usageLimit: e.target.value })}
-                    className="input-field py-2 text-sm"
+                    className="input-field py-2 text-xs"
                     placeholder="Unlimited"
                     min="1"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-1">Expiry Date</label>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Expiry Date</label>
                   <input
                     type="date"
                     value={form.expiresAt}
                     onChange={(e) => setForm({ ...form, expiresAt: e.target.value })}
-                    className="input-field py-2 text-sm"
+                    className="input-field py-2 text-xs"
                   />
                 </div>
               </div>
 
-              <div className="flex gap-2 mt-4">
+              <div className="flex gap-2 mt-5">
                 <button
                   type="submit"
                   disabled={createMutation.isLoading || updateMutation.isLoading}
-                  className="btn-primary py-2.5 px-6 text-sm"
+                  className="btn-primary py-2.5 px-6 text-xs font-bold shadow-soft"
                 >
-                  {editingCoupon ? 'Update Coupon' : 'Create Coupon'}
+                  {editingCoupon ? 'Update Promo Code' : 'Create Promo Code'}
                 </button>
 
                 {editingCoupon && (
-                  <button type="button" onClick={handleCancelEdit} className="btn-ghost py-2.5 px-4 text-sm">
+                  <button type="button" onClick={handleCancelEdit} className="btn-secondary py-2.5 px-4 text-xs font-bold">
                     Cancel
                   </button>
                 )}
@@ -215,86 +215,86 @@ export default function AdminOffers() {
           </div>
 
           {/* Coupons Table */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700 overflow-hidden shadow-sm">
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-800 overflow-hidden shadow-card">
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50 dark:bg-gray-700/50">
+                <thead className="bg-[#F5F7FA] dark:bg-charcoal-800 border-b border-[#E5E7EB]">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Code</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Discount</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Min Order</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Usage</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Expires</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Status</th>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-gray-500 uppercase">Actions</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Coupon Code</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Discount</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Min Booking</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Usage count</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Valid Till</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Status</th>
+                    <th className="text-left px-5 py-3.5 text-xs font-bold text-[#64748B] uppercase tracking-wider">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                <tbody className="divide-y divide-[#E5E7EB] dark:divide-charcoal-700">
                   {isLoading ? (
                     Array(5).fill(null).map((_, i) => (
                       <tr key={i}>
                         {Array(7).fill(null).map((_, j) => (
-                          <td key={j} className="px-4 py-3"><div className="skeleton h-4 w-full" /></td>
+                          <td key={j} className="px-5 py-4"><div className="skeleton h-4 w-full rounded-lg" /></td>
                         ))}
                       </tr>
                     ))
                   ) : coupons.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-12 text-gray-400">
-                        <Tag className="w-10 h-10 mx-auto mb-2 opacity-30" />
-                        No coupons created yet
+                      <td colSpan={7} className="text-center py-16 text-[#94A3B8]">
+                        <Tag className="w-12 h-12 mx-auto mb-2 opacity-30 text-pink-400" />
+                        <p className="text-sm font-semibold text-[#64748B]">No promo codes created yet</p>
                       </td>
                     </tr>
                   ) : (
                     coupons.map((coupon) => {
                       const isExpired = coupon.expiresAt && new Date(coupon.expiresAt) < new Date()
                       return (
-                        <tr key={coupon._id} className="hover:bg-gray-50 dark:hover:bg-gray-700/30 transition-colors">
-                          <td className="px-4 py-3">
-                            <span className="font-mono font-bold text-gold-600 dark:text-gold-400 text-sm bg-gold-50 dark:bg-gold-900/20 px-2.5 py-1 rounded-lg border border-gold-300">
+                        <tr key={coupon._id} className="hover:bg-[#F5F7FA]/60 dark:hover:bg-charcoal-800/40 transition-colors">
+                          <td className="px-5 py-4">
+                            <span className="font-mono font-bold text-pink-600 dark:text-pink-400 text-xs bg-[#FFF5F9] dark:bg-pink-950/30 px-2.5 py-1 rounded-lg border border-pink-200">
                               {coupon.code}
                             </span>
                           </td>
-                          <td className="px-4 py-3 font-bold text-green-600 dark:text-green-400 text-sm">
+                          <td className="px-5 py-4 font-bold text-emerald-600 dark:text-emerald-400 text-xs sm:text-sm">
                             {coupon.type === 'percentage' ? `${coupon.value}% OFF` : `₹${coupon.value} OFF`}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">₹{coupon.minOrderAmount || 0}</td>
-                          <td className="px-4 py-3 text-sm text-gray-600 dark:text-gray-400">
+                          <td className="px-5 py-4 text-xs font-semibold text-[#1F2937] dark:text-gray-300">₹{coupon.minOrderAmount || 0}</td>
+                          <td className="px-5 py-4 text-xs text-[#64748B]">
                             {coupon.usedCount || 0} / {coupon.usageLimit || '∞'}
                           </td>
-                          <td className="px-4 py-3 text-sm text-gray-400">
-                            {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '—'}
+                          <td className="px-5 py-4 text-xs text-[#64748B]">
+                            {coupon.expiresAt ? new Date(coupon.expiresAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : 'Never expires'}
                           </td>
-                          <td className="px-4 py-3">
+                          <td className="px-5 py-4">
                             <button
                               onClick={() => toggleMutation.mutate(coupon._id)}
-                              className={`text-xs px-2.5 py-1 rounded-full font-semibold border flex items-center gap-1 transition-colors ${
+                              className={`text-[10px] px-2.5 py-1 rounded-full font-bold uppercase border flex items-center gap-1 transition-colors ${
                                 isExpired
-                                  ? 'bg-red-100 text-red-600 border-red-200'
+                                  ? 'bg-rose-50 text-rose-600 border-rose-200'
                                   : coupon.isActive
-                                  ? 'bg-green-100 text-green-700 border-green-300'
-                                  : 'bg-gray-100 text-gray-500 border-gray-300'
+                                  ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                                  : 'bg-gray-100 text-gray-500 border-gray-200'
                               }`}
                             >
-                              {coupon.isActive ? <ToggleRight className="w-4 h-4 text-green-600" /> : <ToggleLeft className="w-4 h-4 text-gray-400" />}
+                              {coupon.isActive ? <ToggleRight className="w-3.5 h-3.5 text-emerald-600" /> : <ToggleLeft className="w-3.5 h-3.5 text-gray-400" />}
                               {isExpired ? 'Expired' : coupon.isActive ? 'Active' : 'Disabled'}
                             </button>
                           </td>
-                          <td className="px-4 py-3">
-                            <div className="flex items-center gap-2">
+                          <td className="px-5 py-4">
+                            <div className="flex items-center gap-1.5">
                               <button
                                 onClick={() => handleEditClick(coupon)}
-                                className="p-1.5 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 text-blue-500 transition-colors"
+                                className="p-2 rounded-xl bg-[#F5F7FA] hover:bg-pink-50 text-pink-600 border border-[#E5E7EB] transition-colors"
                                 title="Edit Coupon"
                               >
-                                <Edit2 className="w-4 h-4" />
+                                <Edit2 className="w-3.5 h-3.5" />
                               </button>
                               <button
                                 onClick={() => { if (window.confirm(`Delete coupon ${coupon.code}?`)) deleteMutation.mutate(coupon._id) }}
-                                className="p-1.5 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 text-red-500 transition-colors"
+                                className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors"
                                 title="Delete Coupon"
                               >
-                                <Trash2 className="w-4 h-4" />
+                                <Trash2 className="w-3.5 h-3.5" />
                               </button>
                             </div>
                           </td>

@@ -1,28 +1,28 @@
 import { useQuery } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
-import { ArrowRight, CheckCircle } from 'lucide-react'
+import { ArrowRight, CheckCircle, Sparkles } from 'lucide-react'
 import api from '../api/axios'
 
 const serviceCategories = [
   {
-    id: 'embroidery', name: 'Computer Embroidery', emoji: '🧵', color: 'from-purple-900/80 to-pink-900/80', border: 'border-pink-500/40',
+    id: 'embroidery', name: 'Computerized Embroidery', emoji: '🧵',
     services: ['Customized Name Embroidery', 'Logo Embroidery', 'School Uniform Embroidery', 'Corporate Uniform Embroidery']
   },
   {
-    id: 'printing', name: 'Custom Printing', emoji: '🖨️', color: 'from-gold-900/60 to-purple-900/80', border: 'border-gold-500/40',
+    id: 'printing', name: 'Custom Apparel Printing', emoji: '🖨️',
     services: ['DTF Printing', 'Screen Printing', 'Photo Printing', 'T-Shirt Printing', 'Custom Printing']
   },
   {
-    id: 'stitching', name: 'Blouse Stitching', emoji: '👗', color: 'from-pink-900/80 to-purple-900/60', border: 'border-purple-500/40',
+    id: 'stitching', name: 'Designer Blouse Stitching', emoji: '👗',
     services: ['Wedding Blouse Stitching', 'Designer Blouse Stitching', 'Simple Blouse Stitching', 'Bridal Blouse Stitching']
   },
   {
-    id: 'tailoring', name: "Men's & Women's Tailoring", emoji: '✂️', color: 'from-purple-900/70 to-gold-900/60', border: 'border-gold-500/30',
+    id: 'tailoring', name: "Bespoke Couture Tailoring", emoji: '✂️',
     services: ["Men's Shirt Stitching", 'Pant Stitching', 'Kurti Stitching', 'Chudidar Stitching', 'Kids Dress Stitching', 'Lehenga Stitching']
   },
   {
-    id: 'alterations', name: 'Alterations & More', emoji: '⚙️', color: 'from-pink-900/60 to-purple-900/80', border: 'border-pink-500/30',
+    id: 'alterations', name: 'Alterations & Finishings', emoji: '🪡',
     services: ['Saree Fall Pico', 'Alterations', 'Custom Logo Creation', 'Customized Gifts', '1 Gram Gold Jewellery']
   },
 ]
@@ -34,17 +34,19 @@ export default function Services() {
   })
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="bg-gradient-hero py-16">
-        <div className="section-container text-center">
-          <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-gold-400 text-sm font-semibold uppercase tracking-widest">
-            What We Offer
-          </motion.span>
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="section-title text-white mt-2">
-            Our <span className="text-gradient-gold">Services</span>
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
+      {/* Hero Header */}
+      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 py-16">
+        <div className="section-container text-center max-w-2xl mx-auto">
+          <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="inline-flex items-center gap-1.5 badge badge-soft text-xs mb-3">
+            <Sparkles className="w-3.5 h-3.5 text-pink-500" />
+            <span>Atelier & Tailoring Services</span>
+          </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="font-display text-3xl sm:text-4xl font-bold text-[#1F2937] dark:text-white">
+            Boutique Services & <span className="text-gradient-pink">Craftsmanship</span>
           </motion.h1>
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-white/60 mt-3 max-w-xl mx-auto">
-            From premium embroidery to expert tailoring — we craft your fashion dreams with artisanal precision.
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }} className="text-[#64748B] dark:text-charcoal-400 text-xs sm:text-sm mt-3 leading-relaxed">
+            From haute bridal computer embroidery to customized couture stitching — we bring precision, elegance, and perfect fit to every garment.
           </motion.p>
         </div>
       </div>
@@ -54,24 +56,26 @@ export default function Services() {
           {serviceCategories.map((category, i) => (
             <motion.div
               key={category.id}
-              className={`bg-gradient-to-br ${category.color} border ${category.border} rounded-2xl p-6 hover:scale-[1.02] transition-all duration-300`}
-              initial={{ opacity: 0, y: 30 }}
+              className="bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-charcoal-800 rounded-3xl p-6 shadow-soft hover:shadow-card transition-all duration-300 flex flex-col group"
+              initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: i * 0.1 }}
+              transition={{ delay: i * 0.08 }}
             >
-              <div className="text-4xl mb-4">{category.emoji}</div>
-              <h2 className="font-display text-xl font-bold text-white mb-4">{category.name}</h2>
-              <ul className="space-y-2 mb-6">
+              <div className="w-12 h-12 rounded-2xl bg-[#FFF5F9] dark:bg-pink-950/30 flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
+                {category.emoji}
+              </div>
+              <h2 className="font-display text-lg font-bold text-[#1F2937] dark:text-white mb-4">{category.name}</h2>
+              <ul className="space-y-2.5 mb-6 flex-1">
                 {category.services.map((s) => (
-                  <li key={s} className="flex items-center gap-2 text-white/80 text-sm">
-                    <CheckCircle className="w-4 h-4 text-gold-400 flex-shrink-0" />
-                    {s}
+                  <li key={s} className="flex items-center gap-2 text-[#64748B] dark:text-charcoal-300 text-xs">
+                    <CheckCircle className="w-4 h-4 text-pink-500 flex-shrink-0" />
+                    <span>{s}</span>
                   </li>
                 ))}
               </ul>
-              <Link to="/customize" className="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-medium px-4 py-2 rounded-full transition-colors">
-                Get a Quote <ArrowRight className="w-4 h-4" />
+              <Link to="/customize" className="btn-secondary w-full text-xs font-bold py-2.5 justify-center mt-auto">
+                Get a Quote <ArrowRight className="w-3.5 h-3.5 ml-1" />
               </Link>
             </motion.div>
           ))}
@@ -79,16 +83,17 @@ export default function Services() {
 
         {/* CTA */}
         <motion.div
-          className="mt-16 text-center bg-gradient-royal rounded-2xl p-10"
-          initial={{ opacity: 0, y: 30 }}
+          className="mt-16 text-center bg-[#F5F7FA] dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-charcoal-800 rounded-3xl p-8 sm:p-12 shadow-card"
+          initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
         >
-          <h2 className="font-display text-3xl font-bold text-white mb-3">Ready to Start Your Custom Order?</h2>
-          <p className="text-white/70 mb-6">Contact us today or use our customization tool to design your perfect piece.</p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link to="/customize" className="btn-gold">Start Customizing</Link>
-            <Link to="/contact" className="btn-outline border-white text-white hover:bg-white hover:text-purple-900">Contact Us</Link>
+          <span className="badge badge-soft text-[10px] mb-3 inline-block">Direct Booking</span>
+          <h2 className="font-display text-2xl sm:text-3xl font-bold text-[#1F2937] dark:text-white mb-2">Ready for a Bespoke Fitting?</h2>
+          <p className="text-[#64748B] dark:text-charcoal-400 text-xs sm:text-sm max-w-lg mx-auto mb-6">Connect directly with our master tailor or use our online studio to upload your ideas.</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link to="/customize" className="btn-primary text-xs py-3 px-8 font-bold">Launch Studio Customizer</Link>
+            <Link to="/contact" className="btn-secondary text-xs py-3 px-8 font-bold">Contact Our Studio</Link>
           </div>
         </motion.div>
       </div>

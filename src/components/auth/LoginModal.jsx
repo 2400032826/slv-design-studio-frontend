@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
-import { X, Mail, User, ArrowRight, Sparkles, Loader2 } from 'lucide-react'
+import { X, Mail, User, ArrowRight, Sparkles, Loader2, ShieldCheck } from 'lucide-react'
 import { hideLogin, loginSuccess } from '../../store/slices/authSlice'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
@@ -45,8 +45,8 @@ export default function LoginModal() {
         setIsNewUser(true)
         toast.custom(
           (t) => (
-            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-black text-white px-4 py-3 shadow-card flex items-center gap-2 border border-gold-500`}>
-              <Sparkles className="w-5 h-5 text-gold-500 flex-shrink-0" />
+            <div className={`${t.visible ? 'animate-enter' : 'animate-leave'} bg-white text-[#1F2937] px-4 py-3 rounded-xl shadow-card flex items-center gap-2 border border-pink-300`}>
+              <Sparkles className="w-5 h-5 text-pink-500 flex-shrink-0" />
               <span className="text-xs font-semibold">Welcome! Please enter your full name to register.</span>
             </div>
           ),
@@ -89,48 +89,49 @@ export default function LoginModal() {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={handleClose} />
+          <div className="absolute inset-0 bg-[#1F2937]/60 backdrop-blur-sm" onClick={handleClose} />
           <motion.div
-            className="relative w-full max-w-md bg-white dark:bg-charcoal-900 overflow-hidden shadow-card border border-[#EAEAEA] dark:border-charcoal-800"
-            initial={{ scale: 0.95, opacity: 0 }}
+            className="relative w-full max-w-md bg-white dark:bg-[#1F2937] rounded-3xl overflow-hidden shadow-card-hover border border-[#E5E7EB] dark:border-charcoal-800"
+            initial={{ scale: 0.94, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            exit={{ scale: 0.95, opacity: 0 }}
+            exit={{ scale: 0.94, opacity: 0 }}
+            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
           >
-            {/* Header */}
-            <div className="bg-black p-8 text-center relative text-white">
+            {/* Header with Pink Gradient Accent */}
+            <div className="bg-gradient-to-br from-[#F5F7FA] via-white to-[#FFF5F9] dark:from-[#1F2937] dark:via-[#1F2937] dark:to-[#1F2937] p-8 text-center relative border-b border-[#E5E7EB] dark:border-charcoal-800">
               <button
                 onClick={handleClose}
                 disabled={loading}
-                className="absolute top-4 right-4 w-8 h-8 bg-white/10 flex items-center justify-center text-white hover:bg-white/20 transition-colors disabled:opacity-40"
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-white dark:bg-[#374151] border border-[#E5E7EB] dark:border-charcoal-700 flex items-center justify-center text-[#64748B] hover:text-pink-600 transition-colors disabled:opacity-40"
               >
                 <X className="w-4 h-4" />
               </button>
               <div className="relative">
-                <div className="w-12 h-12 bg-gold-500 text-black flex items-center justify-center mx-auto mb-3">
+                <div className="w-12 h-12 bg-gradient-to-tr from-pink-500 to-fuchsia-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-pink-glow">
                   <span className="font-display font-bold text-xl">S</span>
                 </div>
-                <h2 className="font-display text-2xl font-bold text-white uppercase tracking-tight">SLV Women's Studio</h2>
-                <p className="text-gold-500 text-xs uppercase tracking-widest mt-1 font-semibold">
-                  {step === 'email' ? (isNewUser ? 'Register Account' : 'Customer Login') : 'Verify OTP Code'}
+                <h2 className="font-display text-2xl font-bold text-[#1F2937] dark:text-white tracking-tight">SLV Women's Studio</h2>
+                <p className="text-pink-600 dark:text-pink-400 text-xs uppercase tracking-wider mt-1 font-semibold">
+                  {step === 'email' ? (isNewUser ? 'Create Your Account' : 'Customer Sign In') : 'Verify Security Code'}
                 </p>
               </div>
             </div>
 
             <div className="p-8">
               {step === 'email' ? (
-                <form onSubmit={handleSendOTP} className="space-y-5">
+                <form onSubmit={handleSendOTP} className="space-y-4">
                   <div>
-                    <label className="block text-xs uppercase tracking-wider font-bold text-[#111111] dark:text-white mb-2">
+                    <label className="block text-xs uppercase tracking-wider font-bold text-[#1F2937] dark:text-white mb-2">
                       Email Address
                     </label>
                     <div className="relative">
-                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" />
+                      <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-400" />
                       <input
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         className="input-field pl-10"
-                        placeholder="your@email.com"
+                        placeholder="yourname@example.com"
                         disabled={loading}
                         required
                       />
@@ -140,11 +141,11 @@ export default function LoginModal() {
                   <AnimatePresence>
                     {isNewUser && (
                       <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}>
-                        <label className="block text-xs uppercase tracking-wider font-bold text-[#111111] dark:text-white mb-2">
+                        <label className="block text-xs uppercase tracking-wider font-bold text-[#1F2937] dark:text-white mb-2 mt-3">
                           Full Name
                         </label>
                         <div className="relative">
-                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-charcoal-400" />
+                          <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-pink-400" />
                           <input
                             type="text"
                             value={name}
@@ -156,8 +157,8 @@ export default function LoginModal() {
                             required={isNewUser}
                           />
                         </div>
-                        <p className="text-[11px] text-gold-500 mt-1.5 flex items-center gap-1 font-semibold">
-                          <Sparkles className="w-3.5 h-3.5" /> New account detected — please enter your full name
+                        <p className="text-[11px] text-pink-600 dark:text-pink-400 mt-1.5 flex items-center gap-1 font-semibold">
+                          <Sparkles className="w-3.5 h-3.5" /> Welcome to SLV Studio! Please enter your name.
                         </p>
                       </motion.div>
                     )}
@@ -170,15 +171,15 @@ export default function LoginModal() {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="p-3.5 bg-[#F8F8F8] dark:bg-charcoal-800 border border-[#EAEAEA] dark:border-charcoal-700 space-y-1"
+                        className="p-3.5 bg-[#F5F7FA] dark:bg-[#1F2937] border border-pink-200 dark:border-charcoal-700 rounded-xl space-y-1"
                       >
-                        <div className="flex items-center justify-center gap-2 text-black dark:text-white text-xs font-semibold">
-                          <Loader2 className="w-4 h-4 animate-spin text-gold-500" />
-                          <span>Generating & Delivering OTP...</span>
+                        <div className="flex items-center justify-center gap-2 text-pink-700 dark:text-pink-300 text-xs font-semibold">
+                          <Loader2 className="w-4 h-4 animate-spin text-pink-500" />
+                          <span>Generating & Sending OTP Code...</span>
                         </div>
                         {coldStartNotice && (
-                          <p className="text-[11px] text-center text-[#666666] leading-relaxed pt-1 border-t border-[#EAEAEA] dark:border-charcoal-700">
-                            ⚡ Please wait, the server is starting up. This may take up to 30–60 seconds on the first request.
+                          <p className="text-[11px] text-center text-[#64748B] leading-relaxed pt-1 border-t border-[#E5E7EB] dark:border-charcoal-700">
+                            ⚡ Starting server service. First request may take 30–60 seconds.
                           </p>
                         )}
                       </motion.div>
@@ -188,7 +189,7 @@ export default function LoginModal() {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full btn-primary py-3.5 text-xs uppercase tracking-widest font-bold"
+                    className="w-full btn-primary py-3.5 text-xs font-bold"
                   >
                     {loading ? (
                       <div className="flex items-center justify-center gap-2">
@@ -196,13 +197,13 @@ export default function LoginModal() {
                         <span>Sending Code...</span>
                       </div>
                     ) : (
-                      <><Sparkles className="w-4 h-4 text-gold-500" /> {isNewUser ? 'Create Account & Send OTP' : 'Send OTP'} <ArrowRight className="w-4 h-4" /></>
+                      <><Sparkles className="w-4 h-4 text-white" /> {isNewUser ? 'Create Account & Send OTP' : 'Send One-Time Password'} <ArrowRight className="w-4 h-4" /></>
                     )}
                   </button>
 
-                  <p className="text-center text-[11px] text-[#666666] font-sans">
-                    No password required — login securely via email OTP!
-                  </p>
+                  <div className="flex items-center justify-center gap-1.5 pt-2 text-[11px] text-[#64748B] font-sans">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" /> Passwordless, secure OTP verification
+                  </div>
                 </form>
               ) : (
                 <OTPVerification email={email} name={name} onVerified={handleVerified} onBack={() => setStep('email')} />

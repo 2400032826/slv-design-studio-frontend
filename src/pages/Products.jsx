@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Filter, Grid3X3, List, ChevronDown, X, SlidersHorizontal } from 'lucide-react'
+import { Filter, Grid3X3, List, ChevronDown, X, SlidersHorizontal, Sparkles } from 'lucide-react'
 import api from '../api/axios'
 import ProductCard from '../components/products/ProductCard'
 import { PageLoader } from '../components/common/LoadingSpinner'
@@ -69,14 +69,18 @@ export default function Products() {
   const products = data?.products || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
       {/* Header */}
-      <div className="bg-gradient-hero py-12">
-        <div className="section-container">
-          <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="section-title text-white">
-            Our <span className="text-gradient-gold">Products</span>
+      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 py-12">
+        <div className="section-container text-center">
+          <span className="section-subtitle">Atelier Catalog</span>
+          <motion.h1 initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} className="section-title text-[#1F2937] dark:text-white">
+            Designer <span className="text-gradient-pink">Collection</span>
           </motion.h1>
-          <p className="text-white/60 mt-2">{data?.total || 0} products available</p>
+          <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-3 rounded-full" />
+          <p className="text-[#64748B] dark:text-charcoal-300 text-sm max-w-md mx-auto">
+            Explore {data?.total || 0} handcrafted bridal blouses, custom embroidery outfits, and luxury fabrics.
+          </p>
         </div>
       </div>
 
@@ -85,9 +89,9 @@ export default function Products() {
         <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
-            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm font-medium hover:border-gold-400 transition-colors"
+            className="flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-charcoal-700 rounded-xl text-xs font-bold text-[#1F2937] dark:text-white hover:border-pink-300 shadow-soft transition-colors"
           >
-            <SlidersHorizontal className="w-4 h-4" /> Filters
+            <SlidersHorizontal className="w-4 h-4 text-pink-500" /> Filters
             {Object.values(filters).some(Boolean) && (
               <span className="w-2 h-2 bg-pink-500 rounded-full" />
             )}
@@ -97,7 +101,7 @@ export default function Products() {
             <select
               value={sort}
               onChange={(e) => setSort(e.target.value)}
-              className="input-field py-2 text-sm w-auto"
+              className="input-field py-2 text-xs font-semibold w-auto cursor-pointer"
             >
               {sortOptions.map((o) => (
                 <option key={o.value} value={o.value}>{o.label}</option>
@@ -106,12 +110,12 @@ export default function Products() {
           </div>
         </div>
 
-        {/* Search bar */}
+        {/* Search bar tag */}
         {filters.search && (
           <div className="mb-4 flex items-center gap-2">
-            <span className="text-sm text-gray-500">Searching for:</span>
-            <span className="badge badge-purple">{filters.search}</span>
-            <button onClick={() => updateFilter('search', '')} className="text-gray-400 hover:text-red-500">
+            <span className="text-xs text-[#64748B]">Searching for:</span>
+            <span className="badge badge-soft text-xs">{filters.search}</span>
+            <button onClick={() => updateFilter('search', '')} className="text-[#64748B] hover:text-rose-500">
               <X className="w-4 h-4" />
             </button>
           </div>
@@ -127,15 +131,15 @@ export default function Products() {
                 exit={{ width: 0, opacity: 0 }}
                 className="flex-shrink-0 overflow-hidden"
               >
-                <div className="bg-white dark:bg-gray-800 rounded-2xl p-5 border border-gray-200 dark:border-gray-700 space-y-6">
-                  <div className="flex items-center justify-between">
-                    <h3 className="font-semibold text-gray-900 dark:text-white">Filters</h3>
-                    <button onClick={clearFilters} className="text-xs text-pink-500 hover:underline">Clear All</button>
+                <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-5 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card space-y-6">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
+                    <h3 className="font-display font-bold text-sm text-[#1F2937] dark:text-white">Filters</h3>
+                    <button onClick={clearFilters} className="text-xs text-pink-600 font-bold hover:underline">Clear All</button>
                   </div>
 
                   {/* Categories */}
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Category</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-3">Category</h4>
                     <div className="space-y-2">
                       {(categories || []).map((cat) => (
                         <label key={cat._id} className="flex items-center gap-2 cursor-pointer group">
@@ -145,9 +149,9 @@ export default function Products() {
                             value={cat._id}
                             checked={filters.category === cat._id}
                             onChange={(e) => updateFilter('category', e.target.value)}
-                            className="accent-gold-500"
+                            className="accent-pink-600"
                           />
-                          <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gold-600">{cat.name}</span>
+                          <span className="text-xs font-medium text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600 transition-colors">{cat.name}</span>
                         </label>
                       ))}
                     </div>
@@ -155,7 +159,7 @@ export default function Products() {
 
                   {/* Price Range */}
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Price Range</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-3">Price Range</h4>
                     <div className="space-y-2">
                       {priceRanges.map((range) => (
                         <label key={range.label} className="flex items-center gap-2 cursor-pointer group">
@@ -164,9 +168,9 @@ export default function Products() {
                             name="price"
                             checked={filters.minPrice === String(range.min) && filters.maxPrice === String(range.max)}
                             onChange={() => { updateFilter('minPrice', String(range.min)); updateFilter('maxPrice', String(range.max)) }}
-                            className="accent-gold-500"
+                            className="accent-pink-600"
                           />
-                          <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gold-600">{range.label}</span>
+                          <span className="text-xs font-medium text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600 transition-colors">{range.label}</span>
                         </label>
                       ))}
                     </div>
@@ -174,19 +178,19 @@ export default function Products() {
 
                   {/* Rating */}
                   <div>
-                    <h4 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">Min Rating</h4>
+                    <h4 className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-3">Min Rating</h4>
                     {[4, 3, 2].map((r) => (
-                      <label key={r} className="flex items-center gap-2 cursor-pointer mb-2">
-                        <input type="radio" name="rating" value={r} checked={filters.rating === String(r)} onChange={(e) => updateFilter('rating', e.target.value)} className="accent-gold-500" />
-                        <span className="text-sm text-gray-600 dark:text-gray-400">{r}+ Stars</span>
+                      <label key={r} className="flex items-center gap-2 cursor-pointer mb-2 group">
+                        <input type="radio" name="rating" value={r} checked={filters.rating === String(r)} onChange={(e) => updateFilter('rating', e.target.value)} className="accent-pink-600" />
+                        <span className="text-xs font-medium text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600 transition-colors">{r}+ Stars</span>
                       </label>
                     ))}
                   </div>
 
                   {/* Stock */}
-                  <label className="flex items-center gap-2 cursor-pointer">
-                    <input type="checkbox" checked={filters.inStock === 'true'} onChange={(e) => updateFilter('inStock', e.target.checked ? 'true' : '')} className="accent-gold-500" />
-                    <span className="text-sm text-gray-600 dark:text-gray-400">In Stock Only</span>
+                  <label className="flex items-center gap-2 cursor-pointer pt-2 border-t border-[#E5E7EB]">
+                    <input type="checkbox" checked={filters.inStock === 'true'} onChange={(e) => updateFilter('inStock', e.target.checked ? 'true' : '')} className="accent-pink-600" />
+                    <span className="text-xs font-medium text-[#1F2937] dark:text-white">In Stock Only</span>
                   </label>
                 </div>
               </motion.aside>
@@ -198,23 +202,23 @@ export default function Products() {
             {isLoading ? (
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {Array(12).fill(null).map((_, i) => (
-                  <div key={i} className="rounded-2xl overflow-hidden">
-                    <div className="skeleton aspect-[3/4]" />
-                    <div className="p-4 space-y-2"><div className="skeleton h-4 w-3/4" /><div className="skeleton h-4 w-1/2" /></div>
+                  <div key={i} className="bg-white dark:bg-[#1F2937] rounded-2xl p-3.5 border border-[#E5E7EB]">
+                    <div className="skeleton aspect-[3/4] rounded-xl mb-3" />
+                    <div className="space-y-2"><div className="skeleton h-3.5 w-3/4 rounded" /><div className="skeleton h-3.5 w-1/2 rounded" /></div>
                   </div>
                 ))}
               </div>
             ) : products.length === 0 ? (
-              <div className="text-center py-20">
-                <p className="text-5xl mb-4">🛒</p>
-                <h3 className="text-xl font-semibold text-gray-700 dark:text-gray-300">No products found</h3>
-                <p className="text-gray-500 mt-2">Try adjusting your filters</p>
-                <button onClick={clearFilters} className="btn-primary mt-4">Clear Filters</button>
+              <div className="text-center py-20 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-800">
+                <p className="text-4xl mb-3">👗</p>
+                <h3 className="text-lg font-display font-bold text-[#1F2937] dark:text-white">No products found</h3>
+                <p className="text-[#64748B] text-xs mt-1">Try resetting or adjusting your filter criteria</p>
+                <button onClick={clearFilters} className="btn-primary mt-4 text-xs py-2.5">Clear All Filters</button>
               </div>
             ) : (
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {products.map((product, i) => (
-                  <motion.div key={product._id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.05 }}>
+                  <motion.div key={product._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                     <ProductCard product={product} />
                   </motion.div>
                 ))}
@@ -228,8 +232,10 @@ export default function Products() {
                   <button
                     key={p}
                     onClick={() => setPage(p)}
-                    className={`w-10 h-10 rounded-xl font-medium text-sm transition-all ${
-                      p === page ? 'bg-gradient-royal text-white shadow-pink' : 'bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gold-50'
+                    className={`w-9 h-9 rounded-xl font-bold text-xs transition-all ${
+                      p === page
+                        ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft'
+                        : 'bg-white dark:bg-[#1F2937] text-[#64748B] dark:text-charcoal-300 border border-[#E5E7EB] hover:border-pink-300'
                     }`}
                   >
                     {p}

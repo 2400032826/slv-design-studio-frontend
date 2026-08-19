@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2, Upload, Image, X } from 'lucide-react'
+import { Plus, Trash2, Upload, Image, X, Sparkles } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
@@ -63,38 +63,38 @@ export default function AdminGallery() {
   const items = data?.items || []
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex">
+    <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-60' : 'ml-16'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-gray-950 border-b border-gray-200 dark:border-gray-800 px-6 py-4 flex items-center justify-between">
-          <h1 className="font-display text-xl font-bold text-gray-900 dark:text-white">Gallery Portfolio Management</h1>
-          <span className="text-xs text-gray-400 font-medium">{items.length} total items</span>
+      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
+          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Portfolio Lookbook Management</h1>
+          <span className="badge badge-soft text-xs font-bold">{items.length} Masterpiece Items</span>
         </div>
 
-        <div className="p-6 space-y-6">
+        <div className="p-8 space-y-6 max-w-7xl">
           {/* Upload Form */}
-          <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-100 dark:border-gray-700 shadow-sm">
-            <h2 className="font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-              <Upload className="w-5 h-5 text-gold-500" /> Upload New Media
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
+            <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">
+              <Upload className="w-4 h-4 text-pink-500" /> Upload New Portfolio Media
             </h2>
             <form onSubmit={handleUpload} className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Title (optional)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Title (optional)</label>
                 <input
                   type="text"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="input-field"
+                  className="input-field text-xs"
                   placeholder="e.g. Royal Bridal Embroidery"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Category</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Category</label>
                 <select
                   value={form.category}
                   onChange={(e) => setForm({ ...form, category: e.target.value })}
-                  className="input-field capitalize"
+                  className="input-field text-xs capitalize"
                 >
                   {CATEGORIES.map((c) => (
                     <option key={c} value={c} className="capitalize">{c}</option>
@@ -103,10 +103,10 @@ export default function AdminGallery() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-500 mb-1">Select File(s)</label>
+                <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Select File(s)</label>
                 <div className="flex gap-2">
-                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl cursor-pointer hover:border-gold-500 transition-colors text-sm text-gray-600 dark:text-gray-300">
-                    <Image className="w-4 h-4 text-gold-500" />
+                  <label className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 border-2 border-dashed border-[#E5E7EB] hover:border-pink-500 rounded-xl cursor-pointer transition-colors text-xs font-bold text-[#1F2937] bg-[#F5F7FA]">
+                    <Image className="w-4 h-4 text-pink-500" />
                     <span className="truncate">{form.files && form.files.length > 0 ? `${form.files.length} file(s)` : 'Choose Files'}</span>
                     <input
                       type="file"
@@ -116,11 +116,11 @@ export default function AdminGallery() {
                       onChange={(e) => setForm({ ...form, files: e.target.files })}
                     />
                   </label>
-                  <button type="submit" disabled={uploading} className="btn-primary px-6 py-3 text-sm flex-shrink-0">
+                  <button type="submit" disabled={uploading} className="btn-primary px-6 py-2.5 text-xs font-bold flex-shrink-0 shadow-soft">
                     {uploading ? (
-                      <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                      <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
                     ) : (
-                      'Upload'
+                      'Upload Media'
                     )}
                   </button>
                 </div>
@@ -131,29 +131,29 @@ export default function AdminGallery() {
           {/* Gallery Grid */}
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
             {isLoading ? (
-              Array(12).fill(null).map((_, i) => <div key={i} className="skeleton aspect-square rounded-xl" />)
+              Array(12).fill(null).map((_, i) => <div key={i} className="skeleton aspect-square rounded-2xl" />)
             ) : items.map((item) => {
               const imgUrl = getImageUrl(item.url || item)
               return (
-                <div key={item._id} className="relative group aspect-square rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm">
+                <div key={item._id} className="relative group aspect-square rounded-2xl overflow-hidden bg-white dark:bg-gray-800 border border-[#E5E7EB] dark:border-charcoal-700 shadow-soft">
                   {imgUrl ? (
                     <img src={imgUrl} alt={item.title || 'Gallery'} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                   ) : (
-                    <div className="w-full h-full bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center">
-                      <Image className="w-6 h-6 text-white/40" />
+                    <div className="w-full h-full bg-[#FFF5F9] flex items-center justify-center">
+                      <Image className="w-6 h-6 text-pink-300" />
                     </div>
                   )}
                 <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
                   <button
                     onClick={() => { if (window.confirm('Delete this gallery item?')) deleteMutation.mutate(item._id) }}
-                    className="p-2 bg-red-500 rounded-xl text-white hover:bg-red-600 transition-colors shadow-lg"
+                    className="p-2.5 bg-rose-500 rounded-xl text-white hover:bg-rose-600 transition-colors shadow-lg"
                     title="Delete item"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>
                 </div>
                 {item.category && (
-                  <div className="absolute bottom-1.5 left-1.5 text-[10px] uppercase font-bold tracking-wider bg-black/70 text-gold-400 px-2 py-0.5 rounded-md backdrop-blur-sm">
+                  <div className="absolute bottom-2 left-2 text-[9px] uppercase font-bold tracking-wider bg-white/90 text-[#1F2937] border border-[#E5E7EB] px-2 py-0.5 rounded-full shadow-soft backdrop-blur-sm">
                     {item.category}
                   </div>
                 )}
@@ -162,10 +162,10 @@ export default function AdminGallery() {
           </div>
 
           {items.length === 0 && !isLoading && (
-            <div className="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl border border-gray-100 dark:border-gray-700">
-              <Image className="w-12 h-12 mx-auto mb-3 opacity-30 text-gray-400" />
-              <p className="text-gray-500 font-medium">Gallery is empty</p>
-              <p className="text-gray-400 text-sm mt-1">Select image or video files above and click Upload!</p>
+            <div className="text-center py-16 bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-700">
+              <Image className="w-12 h-12 mx-auto mb-3 opacity-30 text-pink-400" />
+              <p className="text-sm font-semibold text-[#64748B]">Gallery portfolio is empty</p>
+              <p className="text-xs text-[#94A3B8] mt-0.5">Select image or video files above and click Upload Media</p>
             </div>
           )}
         </div>

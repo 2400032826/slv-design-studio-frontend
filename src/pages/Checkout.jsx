@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import {
-  MapPin, Check, Tag, ShoppingBag, MessageCircle, PhoneCall, Calendar
+  MapPin, Check, Tag, ShoppingBag, MessageCircle, PhoneCall, Sparkles, ShieldCheck
 } from 'lucide-react'
 import api from '../api/axios'
 import { clearCart, selectCartTotal } from '../store/slices/cartSlice'
@@ -60,7 +60,7 @@ export default function Checkout() {
   }
 
   const onSubmit = async (address) => {
-    if (items.length === 0) return toast.error('Your cart is empty')
+    if (items.length === 0) return toast.error('Your bag is empty')
     setLoading(true)
     try {
       const orderData = {
@@ -106,7 +106,6 @@ Please contact me regarding my order.`
       const waUrl = `https://wa.me/${BUSINESS_PHONE}?text=${encodeURIComponent(waMessage)}`
       setWhatsappUrl(waUrl)
 
-      // Automatically open WhatsApp in new tab
       try {
         window.open(waUrl, '_blank')
       } catch (e) {
@@ -119,42 +118,42 @@ Please contact me regarding my order.`
     }
   }
 
-  // Order Success Screen (No payment details)
+  // Order Success Screen
   if (orderPlaced) {
     return (
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 flex items-center justify-center p-4 py-12">
+      <div className="min-h-screen bg-white dark:bg-[#111827] flex items-center justify-center p-4 py-12">
         <motion.div
-          initial={{ scale: 0.85, opacity: 0 }}
+          initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="max-w-lg w-full text-center"
         >
-          <div className="bg-white dark:bg-gray-800 rounded-3xl p-8 sm:p-10 shadow-2xl border border-gray-100 dark:border-gray-700">
+          <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-8 sm:p-10 shadow-card border border-[#E5E7EB] dark:border-charcoal-800">
             <motion.div
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
-              transition={{ delay: 0.2, type: 'spring' }}
-              className="w-20 h-20 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-6 shadow-md"
+              transition={{ delay: 0.15, type: 'spring' }}
+              className="w-16 h-16 bg-emerald-100 dark:bg-emerald-950/40 rounded-2xl flex items-center justify-center mx-auto mb-6 text-emerald-600 shadow-soft"
             >
-              <Check className="w-10 h-10 text-green-500" />
+              <Check className="w-8 h-8" />
             </motion.div>
 
-            <h2 className="font-display text-2xl font-bold text-gray-900 dark:text-white mb-2">
-              Your order has been received successfully! 🎉
+            <h2 className="font-display text-xl sm:text-2xl font-bold text-[#1F2937] dark:text-white mb-2">
+              Your order has been booked! 🎉
             </h2>
-            <p className="text-gray-500 dark:text-gray-400 text-sm mb-6">
-              Our team will contact you shortly to confirm your customization and delivery schedule.
+            <p className="text-[#64748B] dark:text-charcoal-300 text-xs sm:text-sm mb-6 leading-relaxed">
+              Our boutique master will connect with you shortly on WhatsApp to confirm tailoring measurements and finishing details.
             </p>
 
             {/* Order Details Card */}
-            <div className="bg-gray-50 dark:bg-gray-700/50 rounded-2xl p-5 mb-6 text-left space-y-2 border border-gray-100 dark:border-gray-700">
-              <div className="flex justify-between items-center pb-2 border-b border-gray-200 dark:border-gray-600">
-                <span className="text-xs text-gray-500 uppercase tracking-wider font-semibold">Booking Order ID</span>
-                <span className="font-bold text-gold-600 text-base">#{orderPlaced.orderNumber}</span>
+            <div className="bg-[#F5F7FA] dark:bg-charcoal-800 rounded-2xl p-5 mb-6 text-left space-y-2 border border-[#E5E7EB] dark:border-charcoal-700">
+              <div className="flex justify-between items-center pb-2.5 border-b border-[#E5E7EB] dark:border-charcoal-700">
+                <span className="text-[10px] text-[#64748B] uppercase tracking-wider font-bold">Booking ID</span>
+                <span className="font-bold text-pink-600 dark:text-pink-400 text-sm">#{orderPlaced.orderNumber}</span>
               </div>
-              <p className="text-sm"><span className="text-gray-400">Customer:</span> <span className="font-medium text-gray-800 dark:text-gray-200">{orderPlaced.shippingAddress?.fullName || user?.name}</span></p>
-              <p className="text-sm"><span className="text-gray-400">Phone:</span> <span className="font-medium text-gray-800 dark:text-gray-200">{orderPlaced.shippingAddress?.phone || user?.phone}</span></p>
-              <p className="text-sm"><span className="text-gray-400">Total Estimated:</span> <span className="font-bold text-gold-500">₹{orderPlaced.totalPrice?.toLocaleString('en-IN')}</span></p>
-              <p className="text-sm"><span className="text-gray-400">Status:</span> <span className="inline-block px-2.5 py-0.5 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">Pending Confirmation</span></p>
+              <p className="text-xs text-[#64748B]"><span className="text-[#94A3B8]">Customer:</span> <span className="font-bold text-[#1F2937] dark:text-white">{orderPlaced.shippingAddress?.fullName || user?.name}</span></p>
+              <p className="text-xs text-[#64748B]"><span className="text-[#94A3B8]">Phone:</span> <span className="font-bold text-[#1F2937] dark:text-white">{orderPlaced.shippingAddress?.phone || user?.phone}</span></p>
+              <p className="text-xs text-[#64748B]"><span className="text-[#94A3B8]">Total Estimated:</span> <span className="font-bold text-pink-600 dark:text-pink-400 price-tag">₹{orderPlaced.totalPrice?.toLocaleString('en-IN')}</span></p>
+              <p className="text-xs text-[#64748B]"><span className="text-[#94A3B8]">Status:</span> <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold uppercase bg-amber-50 text-amber-800 border border-amber-200">Pending Confirmation</span></p>
             </div>
 
             {/* WhatsApp CTA */}
@@ -163,18 +162,18 @@ Please contact me regarding my order.`
                 href={whatsappUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 bg-green-500 hover:bg-green-600 text-white font-bold py-3.5 px-6 rounded-2xl shadow-lg transition-all mb-4"
+                className="w-full inline-flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-soft transition-all mb-4 text-xs"
               >
-                <MessageCircle className="w-5 h-5 fill-white" /> Open WhatsApp Chat
+                <MessageCircle className="w-4 h-4 fill-white" /> Open WhatsApp Chat Confirmation
               </a>
             )}
 
             <div className="flex gap-3 pt-2">
-              <button onClick={() => navigate('/dashboard/orders')} className="btn-primary flex-1 py-3 text-sm">
-                Track Booking
+              <button onClick={() => navigate('/dashboard/orders')} className="btn-primary flex-1 py-3 text-xs font-bold">
+                Track Order
               </button>
-              <button onClick={() => navigate('/products')} className="btn-outline flex-1 py-3 text-sm">
-                Shop More
+              <button onClick={() => navigate('/products')} className="btn-secondary flex-1 py-3 text-xs font-bold">
+                Browse More
               </button>
             </div>
           </div>
@@ -185,22 +184,25 @@ Please contact me regarding my order.`
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <ShoppingBag className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-2xl font-bold text-gray-700 dark:text-gray-300">Cart is empty</h2>
-          <button onClick={() => navigate('/products')} className="btn-primary mt-4">Browse Products</button>
+      <div className="min-h-screen bg-white dark:bg-[#111827] flex items-center justify-center p-4">
+        <div className="text-center p-8 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] max-w-sm">
+          <ShoppingBag className="w-14 h-14 text-pink-400 mx-auto mb-3" />
+          <h2 className="text-xl font-display font-bold text-[#1F2937] dark:text-white">Your bag is empty</h2>
+          <p className="text-xs text-[#64748B] mt-1 mb-5">Add some beautiful designer blouses to your bag first.</p>
+          <button onClick={() => navigate('/products')} className="btn-primary w-full text-xs py-2.5">Browse Catalog</button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      <div className="bg-gradient-hero py-10">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
+      {/* Header */}
+      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 py-10">
         <div className="section-container">
-          <h1 className="font-display text-3xl font-bold text-white">Book Your Order</h1>
-          <p className="text-white/70 text-sm mt-1">Fill in your delivery address to submit your order booking request</p>
+          <span className="badge badge-soft text-[10px] mb-2 inline-block">Secure Checkout</span>
+          <h1 className="font-display text-2xl sm:text-3xl font-bold text-[#1F2937] dark:text-white">Book Your Custom Order</h1>
+          <p className="text-[#64748B] dark:text-charcoal-400 text-xs mt-1">Provide your delivery address to submit your tailor booking.</p>
         </div>
       </div>
 
@@ -210,56 +212,56 @@ Please contact me regarding my order.`
             {/* Left: Address */}
             <div className="lg:col-span-2 space-y-6">
               {/* Delivery Address */}
-              <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
-                  <MapPin className="w-5 h-5 text-gold-500" /> Delivery Address & Contact
+              <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
+                <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2 pb-3 border-b border-[#E5E7EB]">
+                  <MapPin className="w-4 h-4 text-pink-600" /> Delivery Address & Contact
                 </h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Full Name *</label>
                     <input {...register('name', { required: 'Name required' })} className="input-field" placeholder="Full Name" />
-                    {errors.name && <p className="text-pink-500 text-xs mt-1">{errors.name.message}</p>}
+                    {errors.name && <p className="text-rose-500 text-xs mt-1">{errors.name.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone Number *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Phone Number *</label>
                     <input {...register('phone', { required: 'Phone number required' })} className="input-field" placeholder="+91 9876543210" />
-                    {errors.phone && <p className="text-pink-500 text-xs mt-1">{errors.phone.message}</p>}
+                    {errors.phone && <p className="text-rose-500 text-xs mt-1">{errors.phone.message}</p>}
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email Address *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Email Address *</label>
                     <input {...register('email', { required: 'Email required' })} className="input-field" placeholder="your@email.com" />
                   </div>
                   <div className="sm:col-span-2">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Shipping Address *</label>
-                    <textarea {...register('address', { required: 'Address required' })} rows={2} className="input-field resize-none" placeholder="House no., Street, Area" />
-                    {errors.address && <p className="text-pink-500 text-xs mt-1">{errors.address.message}</p>}
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Shipping Street Address *</label>
+                    <textarea {...register('address', { required: 'Address required' })} rows={2} className="input-field resize-none" placeholder="Door / Flat no., Street, Landmark" />
+                    {errors.address && <p className="text-rose-500 text-xs mt-1">{errors.address.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
-                    <input {...register('city', { required: 'City required' })} className="input-field" placeholder="City" />
-                    {errors.city && <p className="text-pink-500 text-xs mt-1">{errors.city.message}</p>}
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">City *</label>
+                    <input {...register('city', { required: 'City required' })} className="input-field" placeholder="Bengaluru" />
+                    {errors.city && <p className="text-rose-500 text-xs mt-1">{errors.city.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode *</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Pincode *</label>
                     <input {...register('pincode', { required: 'Pincode required', pattern: { value: /^\d{6}$/, message: '6-digit pincode' } })} className="input-field" placeholder="560001" />
-                    {errors.pincode && <p className="text-pink-500 text-xs mt-1">{errors.pincode.message}</p>}
+                    {errors.pincode && <p className="text-rose-500 text-xs mt-1">{errors.pincode.message}</p>}
                   </div>
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">State</label>
                     <input {...register('state')} className="input-field" defaultValue="Karnataka" />
                   </div>
                 </div>
               </div>
 
-              {/* No Payment Notice */}
-              <div className="bg-gradient-to-r from-purple-900/10 to-pink-900/10 border border-gold-500/30 rounded-2xl p-5 flex items-center gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-gold flex items-center justify-center flex-shrink-0 shadow-gold">
-                  <PhoneCall className="w-6 h-6 text-purple-900" />
+              {/* Direct Studio Booking Notice */}
+              <div className="bg-[#F5F7FA] dark:bg-pink-950/20 border border-[#E5E7EB] dark:border-pink-900/40 rounded-2xl p-5 flex items-center gap-4 shadow-soft">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-pink-500 to-fuchsia-600 flex items-center justify-center flex-shrink-0 text-white shadow-soft">
+                  <PhoneCall className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 dark:text-white text-base">Direct Studio Booking</h3>
-                  <p className="text-xs text-gray-600 dark:text-gray-300 mt-0.5">
-                    No online payment required now! Once you click <strong>Book Order</strong>, your details will be sent directly to our studio team. We will call you & connect on WhatsApp to confirm your order details.
+                  <h3 className="font-bold text-[#1F2937] dark:text-white text-xs sm:text-sm">Direct Atelier Booking (Zero Upfront Pay)</h3>
+                  <p className="text-[11px] text-[#64748B] dark:text-charcoal-300 mt-0.5 leading-relaxed">
+                    No online payment required now! Once you click <strong>Book Custom Order</strong>, our boutique master connects with you on WhatsApp to finalize measurement specs and fabric selection.
                   </p>
                 </div>
               </div>
@@ -267,82 +269,85 @@ Please contact me regarding my order.`
 
             {/* Right: Order Summary */}
             <div className="lg:col-span-1">
-              <div className="sticky top-24 bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 space-y-4 shadow-sm">
-                <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <ShoppingBag className="w-5 h-5 text-gold-500" /> Order Items ({items.length})
+              <div className="sticky top-24 bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 space-y-4 shadow-card">
+                <h2 className="font-display text-sm font-bold text-[#1F2937] dark:text-white flex items-center gap-2 pb-3 border-b border-[#E5E7EB]">
+                  <ShoppingBag className="w-4 h-4 text-pink-600" /> Order Summary ({items.length})
                 </h2>
 
                 {/* Items */}
-                <div className="space-y-3 max-h-64 overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
                   {items.map((item, i) => {
                     const itemImg = getImageUrl(item.product.images?.[0])
                     return (
-                      <div key={i} className="flex gap-3">
-                        <div className="w-12 h-12 rounded-lg overflow-hidden bg-gray-100 dark:bg-gray-700 flex-shrink-0">
+                      <div key={i} className="flex gap-3 items-center p-2 rounded-xl bg-[#F5F7FA]/50 border border-[#E5E7EB]">
+                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-[#E5E7EB]">
                           {itemImg ? (
                             <img src={itemImg} alt="" className="w-full h-full object-cover" />
                           ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-purple-900 to-pink-900 flex items-center justify-center text-lg">👗</div>
+                            <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center text-lg">👗</div>
                           )}
                         </div>
                         <div className="flex-1 min-w-0">
-                          <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{item.product.name}</p>
-                          <p className="text-xs text-gray-400">Qty: {item.quantity} {item.size ? `| ${item.size}` : ''}</p>
+                          <p className="text-xs font-bold text-[#1F2937] dark:text-white truncate">{item.product.name}</p>
+                          <p className="text-[10px] text-[#64748B]">Qty: {item.quantity} {item.size ? `• ${item.size}` : ''}</p>
                         </div>
-                        <p className="text-sm font-bold text-gold-500">₹{((item.product.offerPrice || item.product.price) * item.quantity).toLocaleString('en-IN')}</p>
+                        <p className="text-xs font-bold text-pink-600 dark:text-pink-400 price-tag">₹{((item.product.offerPrice || item.product.price) * item.quantity).toLocaleString('en-IN')}</p>
                       </div>
                     )
                   })}
                 </div>
 
-                <div className="border-t border-gray-200 dark:border-gray-700 pt-3 space-y-2">
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>Subtotal</span><span>₹{subtotal.toLocaleString('en-IN')}</span>
+                <div className="border-t border-[#E5E7EB] pt-3 space-y-1.5 text-xs text-[#64748B]">
+                  <div className="flex justify-between">
+                    <span>Items Subtotal</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
-                  <div className="flex justify-between text-sm text-gray-500">
-                    <span>Delivery</span>
-                    <span className={delivery === 0 ? 'text-green-500 font-semibold' : ''}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span>
+                  <div className="flex justify-between">
+                    <span>Boutique Delivery</span>
+                    <span className={delivery === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937]'}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span>
                   </div>
                   {discount > 0 && (
-                    <div className="flex justify-between text-sm text-green-500">
-                      <span>Coupon Discount</span><span>-₹{discount}</span>
+                    <div className="flex justify-between text-emerald-600 font-bold">
+                      <span>Promo Coupon</span><span>-₹{discount}</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-gray-900 dark:text-white text-base border-t border-gray-200 dark:border-gray-700 pt-2">
-                    <span>Total Estimated</span><span>₹{total.toLocaleString('en-IN')}</span>
+                  <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] pt-2">
+                    <span>Total Estimated</span><span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{total.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
                 {/* Coupon */}
-                <div className="flex gap-2">
+                <div className="flex gap-2 pt-1">
                   <input
                     type="text"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                    className="input-field flex-1 py-2 text-sm"
-                    placeholder="Coupon code"
+                    className="input-field flex-1 py-2 text-xs"
+                    placeholder="Enter Coupon (e.g. SLV50)"
                     disabled={!!coupon}
                   />
                   <button type="button" onClick={handleApplyCoupon} disabled={couponLoading || !!coupon}
-                    className="px-3 py-2 bg-gradient-royal text-white text-sm font-medium rounded-xl disabled:opacity-50">
-                    <Tag className="w-4 h-4" />
+                    className="px-3.5 py-2 btn-primary text-xs font-bold disabled:opacity-50">
+                    <Tag className="w-3.5 h-3.5" />
                   </button>
                 </div>
                 {coupon && (
-                  <p className="text-green-500 text-xs flex items-center gap-1">
-                    <Check className="w-3 h-3" /> {coupon.code} applied! {coupon.discountPercent}% off
+                  <p className="text-emerald-600 text-xs font-semibold flex items-center gap-1">
+                    <Check className="w-3 h-3" /> {coupon.code} applied! ({coupon.discountPercent}% off)
                   </p>
                 )}
 
                 <button type="submit" disabled={loading}
-                  className="w-full btn-gold py-4 text-base font-bold shadow-gold mt-2">
+                  className="w-full btn-primary py-3.5 text-xs font-bold shadow-pink-glow mt-2">
                   {loading ? (
-                    <div className="w-5 h-5 border-2 border-purple-900 border-t-transparent rounded-full animate-spin mx-auto" />
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
                   ) : (
-                    'Book Order'
+                    'Book Custom Order'
                   )}
                 </button>
-                <p className="text-xs text-gray-400 text-center">No payment required now — studio team will confirm on WhatsApp</p>
+                <div className="flex items-center justify-center gap-1 text-[10px] text-[#64748B] pt-1">
+                  <ShieldCheck className="w-3.5 h-3.5 text-pink-600" />
+                  <span>No payment required now — confirmed on WhatsApp</span>
+                </div>
               </div>
             </div>
           </div>

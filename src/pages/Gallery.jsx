@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, ZoomIn } from 'lucide-react'
+import { X, ZoomIn, Sparkles } from 'lucide-react'
 import api from '../api/axios'
 import { getImageUrl } from '../utils/imageUtils'
 
@@ -29,18 +29,18 @@ export default function Gallery() {
   const items = data?.length > 0 ? data : fallbackGallery
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
       {/* Header Banner */}
-      <div className="bg-black py-16 text-center text-white">
-        <div className="section-container">
-          <span className="text-gold-500 text-xs font-bold uppercase tracking-[0.25em] mb-2 block">
-            Atelier Portfolio
+      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 py-16 text-center">
+        <div className="section-container max-w-2xl mx-auto">
+          <span className="badge badge-soft text-[10px] uppercase font-bold tracking-widest mb-2 inline-flex items-center gap-1">
+            <Sparkles className="w-3 h-3 text-pink-500" />
+            Atelier Lookbook
           </span>
-          <h1 className="section-title text-white">
-            Our Portfolio & <span className="text-gold-500">Gallery</span>
+          <h1 className="font-display text-3xl sm:text-4xl font-bold text-[#1F2937] dark:text-white mt-1">
+            Masterwork <span className="text-gradient-pink">Lookbook & Gallery</span>
           </h1>
-          <div className="h-px bg-charcoal-800 max-w-xs mx-auto my-4" />
-          <p className="text-white/70 text-sm max-w-xl mx-auto font-light font-sans">
+          <p className="text-[#64748B] dark:text-charcoal-400 text-xs sm:text-sm mt-2 leading-relaxed">
             Handcrafted embroidery, tailored bridal blouses, and custom digital fabric prints created at SLV Women's Studio.
           </p>
         </div>
@@ -53,10 +53,10 @@ export default function Gallery() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-5 py-2 font-semibold text-xs uppercase tracking-wider transition-all duration-200 ${
+              className={`px-4 py-2 font-bold text-xs uppercase tracking-wider rounded-full transition-all duration-200 ${
                 activeCategory === cat
-                  ? 'bg-black text-white border border-black'
-                  : 'bg-white text-black border border-[#EAEAEA] hover:border-black'
+                  ? 'btn-primary text-white shadow-soft'
+                  : 'bg-white dark:bg-[#1F2937] text-[#64748B] border border-[#E5E7EB] dark:border-charcoal-700 hover:border-pink-300'
               }`}
             >
               {cat}
@@ -68,20 +68,20 @@ export default function Gallery() {
         {isLoading ? (
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {Array(8).fill(null).map((_, i) => (
-              <div key={i} className="skeleton aspect-[3/4]" />
+              <div key={i} className="skeleton aspect-[3/4] rounded-2xl" />
             ))}
           </div>
         ) : (
-          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-6 space-y-6">
+          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-5 space-y-5">
             {items.map((item, i) => {
               const imgUrl = getImageUrl(item.url || item)
               return (
                 <motion.div
                   key={item._id || item.id || i}
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
+                  initial={{ opacity: 0, y: 15 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.03 }}
-                  className="relative overflow-hidden cursor-pointer group break-inside-avoid bg-white dark:bg-charcoal-900 border border-[#EAEAEA] dark:border-charcoal-800"
+                  className="relative overflow-hidden cursor-pointer group break-inside-avoid bg-[#F5F7FA] dark:bg-charcoal-900 border border-[#E5E7EB] dark:border-charcoal-800 rounded-2xl shadow-soft hover:shadow-card"
                   onClick={() => imgUrl && setSelected({ ...item, resolvedUrl: imgUrl })}
                 >
                   <img
@@ -93,15 +93,15 @@ export default function Gallery() {
                       e.target.src = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80';
                     }}
                   />
-                  <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-5">
-                    <span className="badge-gold text-[9px] font-bold tracking-widest uppercase mb-1 self-start">
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col justify-end p-4">
+                    <span className="badge bg-pink-500 text-white text-[9px] font-bold tracking-widest uppercase mb-1 self-start shadow-soft">
                       {item.category || 'Atelier Creation'}
                     </span>
-                    <h3 className="text-white font-display font-semibold text-sm leading-snug">
+                    <h3 className="text-white font-display font-semibold text-xs leading-snug">
                       {item.title || 'Handcrafted Design'}
                     </h3>
                   </div>
-                  <div className="absolute top-3 right-3 w-8 h-8 bg-white text-black opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center">
+                  <div className="absolute top-3 right-3 w-8 h-8 bg-white/90 rounded-full text-[#1F2937] opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex items-center justify-center shadow-soft border border-[#E5E7EB]">
                     <ZoomIn className="w-4 h-4" />
                   </div>
                 </motion.div>
@@ -129,17 +129,17 @@ export default function Gallery() {
             </button>
             <div
               onClick={(e) => e.stopPropagation()}
-              className="max-w-3xl w-full max-h-[85vh] overflow-hidden bg-black border border-charcoal-800"
+              className="max-w-3xl w-full max-h-[85vh] overflow-hidden bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-800 shadow-card"
             >
               <img
                 src={selected.resolvedUrl || getImageUrl(selected.url)}
                 alt={selected.title}
-                className="w-full h-full max-h-[78vh] object-contain mx-auto"
+                className="w-full h-full max-h-[75vh] object-contain mx-auto"
               />
               {selected.title && (
-                <div className="p-4 bg-black text-center border-t border-charcoal-800">
-                  <p className="font-display font-semibold text-white text-sm">{selected.title}</p>
-                  <span className="text-gold-500 text-xs uppercase tracking-widest">{selected.category}</span>
+                <div className="p-4 bg-[#F5F7FA] dark:bg-[#1F2937] text-center border-t border-[#E5E7EB] dark:border-charcoal-800">
+                  <p className="font-display font-bold text-[#1F2937] dark:text-white text-sm">{selected.title}</p>
+                  <span className="text-pink-600 text-xs font-bold uppercase tracking-wider">{selected.category}</span>
                 </div>
               )}
             </div>
