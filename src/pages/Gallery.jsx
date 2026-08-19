@@ -4,29 +4,19 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { X, ZoomIn, Sparkles } from 'lucide-react'
 import api from '../api/axios'
 import { getImageUrl } from '../utils/imageUtils'
+import { getUnifiedGalleryItems } from '../utils/galleryService'
 
 const categories = ['all', 'embroidery', 'printing', 'stitching', 'wedding', 'bridal', 'jewellery', 'other']
-
-const fallbackGallery = [
-  { id: 1, category: 'embroidery', title: 'Royal Bridal Maggam Work', url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?q=80&w=800' },
-  { id: 2, category: 'stitching', title: 'Designer Velvet Blouse', url: 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?q=80&w=800' },
-  { id: 3, category: 'printing', title: 'Digital Silk Dupatta Print', url: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?q=80&w=800' },
-  { id: 4, category: 'wedding', title: 'South Indian Silk Zari Saree', url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?q=80&w=800' },
-  { id: 5, category: 'bridal', title: 'Gold Zardosi Embroidery', url: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?q=80&w=800' },
-  { id: 6, category: 'jewellery', title: '1-Gram Gold Bridal Choker', url: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800' },
-]
 
 export default function Gallery() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [selected, setSelected] = useState(null)
 
-  const { data, isLoading } = useQuery({
+  const { data: items = [], isLoading } = useQuery({
     queryKey: ['gallery', activeCategory],
-    queryFn: () => api.get(`/gallery?${activeCategory !== 'all' ? `category=${activeCategory}&` : ''}limit=50`).then((r) => r.data.items),
-    staleTime: 5 * 60 * 1000,
+    queryFn: () => getUnifiedGalleryItems(activeCategory),
+    staleTime: 1 * 60 * 1000,
   })
-
-  const items = data?.length > 0 ? data : fallbackGallery
 
   return (
     <div className="min-h-screen bg-white dark:bg-[#111827]">

@@ -14,14 +14,17 @@ const sampleGallery = [
   { id: 6, title: 'Custom Apparel Branding', category: 'DTF & Embroidery', url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80' },
 ]
 
-export default function GallerySection() {
-  const { data } = useQuery({
-    queryKey: ['gallery-featured'],
-    queryFn: () => api.get('/gallery?featured=true&limit=6').then((r) => r.data.items),
-    staleTime: 10 * 60 * 1000,
-  })
+import { getUnifiedGalleryItems } from '../../utils/galleryService'
 
-  const items = data || []
+export default function GallerySection() {
+  const { data: items = [] } = useQuery({
+    queryKey: ['gallery-featured'],
+    queryFn: async () => {
+      const all = await getUnifiedGalleryItems('all')
+      return all.slice(0, 6)
+    },
+    staleTime: 1 * 60 * 1000,
+  })
 
   return (
     <section className="py-20 bg-[#F8F9FB] dark:bg-[#111827] border-b border-[#E8EAF0] dark:border-slate-800">
@@ -37,7 +40,7 @@ export default function GallerySection() {
         </motion.div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-          {(items.length > 0 ? items : sampleGallery).map((item, i) => {
+          {items.map((item, i) => {
             const imgUrl = getImageUrl(item.url || item)
             return (
               <motion.div
