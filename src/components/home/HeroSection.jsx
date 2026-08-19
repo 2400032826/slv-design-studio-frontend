@@ -75,49 +75,43 @@ export default function HeroSection() {
               className="inline-flex items-center gap-2 px-3.5 py-1.5 bg-[#FFF1F6] dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/50 text-[#C52E74] dark:text-pink-300 text-xs font-bold uppercase tracking-widest rounded-full mb-5 shadow-subtle"
             >
               <Sparkles className="w-3.5 h-3.5 text-pink-500 fill-pink-500" />
-              <span>Signature Bridal & Fashion Atelier</span>
+              <span>SLV FASHION STUDIO</span>
             </motion.div>
 
-            {/* Headline - Refined & Balanced */}
+            {/* Headline - Unified Single Dark Color */}
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.1 }}
-              className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[52px] font-bold text-[#252A34] dark:text-white leading-[1.18] tracking-tight mb-5"
+              className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-[46px] xl:text-[52px] font-bold text-[#1F2937] dark:text-white leading-[1.18] tracking-tight mb-5"
             >
-              Custom Embroidery. <br />
-              <span className="font-normal italic text-[#64707D] dark:text-slate-300">
-                Tailored for Your
-              </span>{' '}
-              <span className="text-gradient-pink font-bold not-italic">
-                Grand Moments.
-              </span>
+              Your Fashion. Your Design. Made Your Way.
             </motion.h1>
 
-            {/* Short Professional Description */}
+            {/* Natural Human Description */}
             <motion.p
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.2 }}
-              className="text-[#64707D] dark:text-slate-300 text-sm sm:text-base max-w-xl mb-6 font-sans leading-relaxed"
+              className="text-[#64748B] dark:text-slate-300 text-sm sm:text-base max-w-xl mb-6 font-sans leading-relaxed"
             >
-              Specializing in bespoke bridal blouses, authentic South Indian Maggam & Zardosi work, and precision computer embroidery tailored to your exact measurements.
+              From bridal blouses and traditional Maggam work to custom embroidery, garment printing and personalised designs — we bring your ideas to life.
             </motion.p>
 
-            {/* Authentic Studio Hallmarks (No Fake Ratings/Numbers) */}
+            {/* Service Line */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex flex-wrap items-center gap-3 text-xs font-semibold text-[#64707D] dark:text-slate-300 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-lg"
+              className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs font-semibold text-[#64748B] dark:text-slate-300 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-lg"
             >
-              <span className="inline-flex items-center gap-1 text-pink-600 dark:text-pink-400 font-bold">
-                <Sparkles className="w-3.5 h-3.5" /> Boutique Atelier
-              </span>
-              <span>•</span>
-              <span>Handcrafted Maggam & Zari</span>
-              <span>•</span>
-              <span>Direct Master Tailor Fitting</span>
+              <span>Bridal & Fashion Wear</span>
+              <span className="text-pink-400">•</span>
+              <span>Embroidery & Maggam Work</span>
+              <span className="text-pink-400">•</span>
+              <span>Custom Printing</span>
+              <span className="text-pink-400">•</span>
+              <span>Personalised Designs</span>
             </motion.div>
 
             {/* CTA Buttons */}
@@ -131,7 +125,7 @@ export default function HeroSection() {
                 to="/products"
                 className="btn-primary text-xs tracking-wider px-7 py-3.5 font-bold shadow-card group"
               >
-                Explore Collection
+                Explore Our Work
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
@@ -139,13 +133,13 @@ export default function HeroSection() {
                 className="btn-secondary text-xs tracking-wider px-7 py-3.5 font-bold flex items-center gap-2"
               >
                 <Scissors className="w-4 h-4 text-pink-500" />
-                Customize Design
+                Customize Your Design
               </Link>
               <Link
                 to="/contact"
                 className="btn-outline text-xs tracking-wider px-6 py-3.5 font-bold"
               >
-                Contact Boutique
+                Contact Us
               </Link>
             </motion.div>
 
@@ -156,15 +150,15 @@ export default function HeroSection() {
               transition={{ delay: 0.45 }}
               className="grid grid-cols-3 gap-3 max-w-lg w-full"
             >
-              <div className="flex items-center gap-2 text-[11px] text-[#64707D] dark:text-slate-300 font-medium">
+              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
                 <CheckCircle2 className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Handcrafted Maggam</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#64707D] dark:text-slate-300 font-medium">
+              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
                 <ShieldCheck className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Perfect Fit Guaranteed</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#64707D] dark:text-slate-300 font-medium">
+              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
                 <HeartHandshake className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Express Stitching</span>
               </div>
