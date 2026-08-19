@@ -3,26 +3,26 @@ import { motion } from 'framer-motion'
 import { Phone, Mail, MapPin, Instagram, Facebook, Youtube, Heart, Sparkles } from 'lucide-react'
 
 const services = [
-  'Computer Embroidery', 'DTF Printing', 'Blouse Stitching', 'Custom Tailoring',
-  'Kurti Stitching', 'Bridal Collections', '1 Gram Gold Jewellery', 'Custom Gifts',
+  'Computer Embroidery', 'Digital & DTF Printing', 'Blouse Stitching', "Men's Garment Customization",
+  'Custom Kurtis & Dresses', 'Bridal Lehengas', '1 Gram Gold Jewellery', 'Custom Gifts',
 ]
 
 const quickLinks = [
   { label: 'Home', path: '/' },
   { label: 'Products', path: '/products' },
   { label: 'Services', path: '/services' },
-  { label: 'Customize', path: '/customize' },
-  { label: 'Gallery', path: '/gallery' },
+  { label: 'Customize Studio', path: '/customize' },
+  { label: 'Gallery Lookbook', path: '/gallery' },
   { label: 'Blog', path: '/blog' },
   { label: 'FAQ', path: '/faq' },
-  { label: 'Contact', path: '/contact' },
+  { label: 'Contact Us', path: '/contact' },
 ]
 
 export default function Footer() {
   const year = new Date().getFullYear()
 
   return (
-    <footer className="bg-white dark:bg-[#1F2937] text-[#1F2937] dark:text-slate-100 pt-16 pb-8 border-t border-[#E5E7EB] dark:border-slate-800">
+    <footer className="bg-white dark:bg-[#1F2937] text-[#1F2937] dark:text-slate-100 pt-16 pb-8 border-t border-[#E8EAF0] dark:border-slate-800">
       <div className="section-container">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
@@ -32,35 +32,42 @@ export default function Footer() {
                 <span className="text-white font-display font-bold text-xl">S</span>
               </div>
               <div>
-                <p className="font-display font-bold text-base md:text-lg text-[#1F2937] dark:text-white">SLV Women's</p>
+                <p className="font-display font-bold text-base md:text-lg text-[#252A34] dark:text-white">SLV Women's</p>
                 <p className="text-xs text-pink-600 dark:text-pink-400 font-semibold tracking-wider uppercase">Fashion Studio</p>
               </div>
             </Link>
-            <p className="text-[#64748B] dark:text-slate-300 text-sm leading-relaxed mb-6">
-              Customize Your Style with Premium Women's Embroidery & Tailoring. Your trusted boutique for bespoke South Indian & designer wear.
+            <p className="text-[#64707D] dark:text-slate-300 text-sm leading-relaxed mb-6">
+              Customize Your Style with Premium Women's Embroidery & Tailoring. Your trusted boutique for bespoke South Indian bridal & designer wear.
             </p>
             <div className="flex gap-3">
-              {[
-                { Icon: Instagram, href: '#', label: 'Instagram' },
-                { Icon: Facebook, href: '#', label: 'Facebook' },
-                { Icon: Youtube, href: '#', label: 'YouTube' },
-              ].map(({ Icon, href, label }) => (
-                <a key={label} href={href} target="_blank" rel="noopener noreferrer"
-                  className="w-10 h-10 bg-[#F5F7FA] dark:bg-slate-800 hover:bg-[#FFF5F9] border border-[#E5E7EB] dark:border-slate-700 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:text-pink-600 hover:border-pink-300 transition-all duration-300 hover:scale-105"
-                  title={label}>
-                  <Icon className="w-4 h-4" />
-                </a>
-              ))}
+              <a
+                href="https://www.instagram.com/slv_design_studio/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-[#F7F8FA] dark:bg-slate-800 hover:bg-[#FFF1F6] border border-[#E8EAF0] dark:border-slate-700 rounded-xl flex items-center justify-center text-[#252A34] dark:text-white hover:text-pink-600 hover:border-pink-300 transition-all duration-300 hover:scale-105"
+                title="SLV Design Studio Instagram"
+              >
+                <Instagram className="w-4 h-4" />
+              </a>
+              <a
+                href="https://wa.me/919731912413"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 bg-[#F7F8FA] dark:bg-slate-800 hover:bg-[#FFF1F6] border border-[#E8EAF0] dark:border-slate-700 rounded-xl flex items-center justify-center text-[#252A34] dark:text-white hover:text-pink-600 hover:border-pink-300 transition-all duration-300 hover:scale-105"
+                title="WhatsApp Consultation"
+              >
+                <Sparkles className="w-4 h-4" />
+              </a>
             </div>
           </div>
 
           {/* Services */}
           <div>
-            <h3 className="font-display font-semibold text-lg mb-4 text-[#1F2937] dark:text-white">Our Services</h3>
+            <h3 className="font-display font-semibold text-lg mb-4 text-[#252A34] dark:text-white">Our Services</h3>
             <ul className="space-y-2.5">
               {services.map((s) => (
                 <li key={s}>
-                  <Link to="/services" className="text-[#64748B] dark:text-slate-300 text-sm hover:text-pink-600 dark:hover:text-pink-400 transition-colors flex items-center gap-2">
+                  <Link to="/services" className="text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 dark:hover:text-pink-400 transition-colors flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
                     {s}
                   </Link>
@@ -71,11 +78,11 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="font-display font-semibold text-lg mb-4 text-[#1F2937] dark:text-white">Quick Links</h3>
+            <h3 className="font-display font-semibold text-lg mb-4 text-[#252A34] dark:text-white">Quick Links</h3>
             <ul className="space-y-2.5">
               {quickLinks.map(({ label, path }) => (
                 <li key={path}>
-                  <Link to={path} className="text-[#64748B] dark:text-slate-300 text-sm hover:text-pink-600 dark:hover:text-pink-400 transition-colors flex items-center gap-2">
+                  <Link to={path} className="text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 dark:hover:text-pink-400 transition-colors flex items-center gap-2">
                     <span className="w-1.5 h-1.5 bg-pink-500 rounded-full" />
                     {label}
                   </Link>
@@ -86,22 +93,32 @@ export default function Footer() {
 
           {/* Contact */}
           <div>
-            <h3 className="font-display font-semibold text-lg mb-4 text-[#1F2937] dark:text-white">Contact Us</h3>
+            <h3 className="font-display font-semibold text-lg mb-4 text-[#252A34] dark:text-white">Visit Our Studio</h3>
             <ul className="space-y-3.5">
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-pink-500 mt-0.5 flex-shrink-0" />
-                <p className="text-[#64748B] dark:text-slate-300 text-sm">SLV Women's Fashion Studio,<br />Karnataka, India</p>
+                <div>
+                  <p className="text-[#64707D] dark:text-slate-300 text-sm">SLV Women's Fashion Studio,<br />Karnataka, India</p>
+                  <a
+                    href="https://maps.google.com/?q=Karnataka,India"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-bold text-pink-600 hover:text-pink-700 mt-1"
+                  >
+                    Get Directions →
+                  </a>
+                </div>
               </li>
               <li>
-                <a href="tel:+919731912413" className="flex items-center gap-3 text-[#64748B] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
+                <a href="tel:+919731912413" className="flex items-center gap-3 text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
                   <Phone className="w-4 h-4 text-pink-500 flex-shrink-0" />
                   +91 9731912413
                 </a>
               </li>
               <li>
-                <a href="mailto:slvdesignstudio@gmail.com" className="flex items-center gap-3 text-[#64748B] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
+                <a href="mailto:slvfashionstudiio@gmail.com" className="flex items-center gap-3 text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
                   <Mail className="w-4 h-4 text-pink-500 flex-shrink-0" />
-                  slvdesignstudio@gmail.com
+                  slvfashionstudiio@gmail.com
                 </a>
               </li>
               <li>

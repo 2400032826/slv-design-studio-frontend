@@ -9,7 +9,7 @@ export default function AdminSettings() {
     businessName: "SLV Women's Fashion Studio",
     tagline: 'Crafting Bespoke Embroidery & Haute Tailoring for Discerning Women',
     phone: '+91 9731912413',
-    email: 'slvdesignstudio@gmail.com',
+    email: 'slvfashionstudiio@gmail.com',
     address: 'Bengaluru, Karnataka, India',
     whatsapp: '919731912413',
     freeDeliveryThreshold: 500,

@@ -7,23 +7,27 @@ import api from '../api/axios'
 const serviceCategories = [
   {
     id: 'embroidery', name: 'Computerized Embroidery', emoji: '🧵',
-    services: ['Customized Name Embroidery', 'Logo Embroidery', 'School Uniform Embroidery', 'Corporate Uniform Embroidery']
+    services: ['Customized Name & Monogram', 'Corporate & School Logo Embroidery', 'Maggam-Style Zari Patterns', 'Saree & Dupatta Border Work']
   },
   {
-    id: 'printing', name: 'Custom Apparel Printing', emoji: '🖨️',
-    services: ['DTF Printing', 'Screen Printing', 'Photo Printing', 'T-Shirt Printing', 'Custom Printing']
+    id: 'printing', name: 'Digital & DTF Apparel Printing', emoji: '🖨️',
+    services: ['High-Definition DTF Printing', 'Direct Heat Press Application', 'Custom T-Shirt & Hoodie Graphics', 'Silk Dupatta Textile Printing']
   },
   {
     id: 'stitching', name: 'Designer Blouse Stitching', emoji: '👗',
-    services: ['Wedding Blouse Stitching', 'Designer Blouse Stitching', 'Simple Blouse Stitching', 'Bridal Blouse Stitching']
+    services: ['Bridal Maggam Blouse Stitching', 'Designer Padded Blouses', 'Traditional Kanjivaram Cuts', 'Deep Neck & Tassel Tie-Backs']
   },
   {
-    id: 'tailoring', name: "Bespoke Couture Tailoring", emoji: '✂️',
-    services: ["Men's Shirt Stitching", 'Pant Stitching', 'Kurti Stitching', 'Chudidar Stitching', 'Kids Dress Stitching', 'Lehenga Stitching']
+    id: 'mens-customization', name: "Men's Garment Customization", emoji: '👔',
+    services: ['Logo & Name Embroidery on Shirts', 'Artwork & Graphic Heat Transfer', 'Corporate & Event Garment Branding', 'Kurta & Jacket Monogramming']
   },
   {
-    id: 'alterations', name: 'Alterations & Finishings', emoji: '🪡',
-    services: ['Saree Fall Pico', 'Alterations', 'Custom Logo Creation', 'Customized Gifts', '1 Gram Gold Jewellery']
+    id: 'tailoring', name: "Women's Ethnic Tailoring", emoji: '✂️',
+    services: ['Bridal Lehenga Choli Tailoring', 'Designer Kurtis & Anarkalis', 'Chudidar & Salwar Suits', 'Saree Fall, Pico & Kuchu Tassels']
+  },
+  {
+    id: 'jewellery-gifts', name: 'Jewellery & Customized Gifts', emoji: '💎',
+    services: ['1-Gram Gold Temple Jewellery', 'Bridal Chokers & Jhumkas', 'Personalized Photo Gifts', 'Bespoke Trousseau Gift Boxes']
   },
 ]
 

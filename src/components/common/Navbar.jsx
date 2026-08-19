@@ -55,8 +55,8 @@ export default function Navbar() {
             <a href="tel:+919731912413" className="flex items-center gap-1.5 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium">
               <Phone className="w-3.5 h-3.5 text-pink-500" /> +91 9731912413
             </a>
-            <a href="mailto:slvdesignstudio@gmail.com" className="hidden sm:flex items-center gap-1.5 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium">
-              <Mail className="w-3.5 h-3.5 text-pink-500" /> slvdesignstudio@gmail.com
+            <a href="mailto:slvfashionstudiio@gmail.com" className="hidden sm:flex items-center gap-1.5 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium">
+              <Mail className="w-3.5 h-3.5 text-pink-500" /> slvfashionstudiio@gmail.com
             </a>
           </div>
           <div className="flex items-center gap-4">
