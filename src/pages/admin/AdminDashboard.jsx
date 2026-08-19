@@ -37,50 +37,81 @@ export function AdminSidebar({ isOpen, onToggle }) {
   }
 
   return (
-    <aside className={`fixed left-0 top-0 h-full z-40 bg-[#1F2937] text-white transition-all duration-200 flex flex-col ${isOpen ? 'w-64' : 'w-20'}`}>
-      <div className="p-5 border-b border-[#1F2937] flex items-center gap-3.5">
-        <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-soft">
-          <span className="font-display font-bold text-lg">S</span>
+    <>
+      {/* Mobile Backdrop */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+          onClick={onToggle}
+        />
+      )}
+
+      <aside
+        className={`fixed left-0 top-0 h-full z-50 bg-[#1F2937] text-white transition-all duration-200 flex flex-col ${
+          isOpen
+            ? 'w-64 translate-x-0 shadow-2xl'
+            : '-translate-x-full md:translate-x-0 md:w-20'
+        }`}
+      >
+        <div className="p-4 sm:p-5 border-b border-slate-700/50 flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3 min-w-0">
+            <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-soft">
+              <span className="font-display font-bold text-lg">S</span>
+            </div>
+            {(isOpen || typeof window !== 'undefined' && window.innerWidth < 768) && (
+              <div className="min-w-0">
+                <p className="text-white font-display font-bold text-sm truncate">SLV Design Studio</p>
+                <p className="text-pink-400 text-[10px] uppercase tracking-widest font-bold">Admin Portal</p>
+              </div>
+            )}
+          </div>
+          <button
+            onClick={onToggle}
+            className="md:hidden p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-700 transition-colors"
+          >
+            ✕
+          </button>
         </div>
-        {isOpen && (
-          <div className="min-w-0">
-            <p className="text-white font-display font-bold text-sm truncate">SLV Design Studio</p>
-            <p className="text-pink-400 text-[10px] uppercase tracking-widest font-bold">Admin Portal</p>
-          </div>
-        )}
-      </div>
 
-      <nav className="flex-1 py-4 overflow-y-auto space-y-1 px-3">
-        {sidebarLinks.map(({ label, icon: Icon, path }) => {
-          const isActive = location.pathname === path
-          return (
-            <Link key={path} to={path}
-              className={`flex items-center gap-3.5 px-4 py-3 text-xs font-semibold rounded-xl transition-all ${
-                isActive ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft font-bold' : 'text-white/70 hover:text-white hover:bg-white/5'
-              } ${!isOpen && 'justify-center'}`}
-              title={!isOpen ? label : ''}
-            >
-              <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-pink-400'}`} />
-              {isOpen && <span className="truncate">{label}</span>}
-            </Link>
-          )
-        })}
-      </nav>
+        <nav className="flex-1 py-4 overflow-y-auto space-y-1 px-3">
+          {sidebarLinks.map(({ label, icon: Icon, path }) => {
+            const isActive = location.pathname === path
+            return (
+              <Link
+                key={path}
+                to={path}
+                onClick={() => {
+                  if (window.innerWidth < 768 && onToggle) onToggle()
+                }}
+                className={`flex items-center gap-3.5 px-4 py-3 text-xs font-semibold rounded-xl transition-all ${
+                  isActive ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft font-bold' : 'text-white/70 hover:text-white hover:bg-white/5'
+                } ${!isOpen && 'md:justify-center'}`}
+                title={!isOpen ? label : ''}
+              >
+                <Icon className={`w-4 h-4 flex-shrink-0 ${isActive ? 'text-white' : 'text-pink-400'}`} />
+                {(isOpen || (typeof window !== 'undefined' && window.innerWidth < 768)) && <span className="truncate">{label}</span>}
+              </Link>
+            )
+          })}
+        </nav>
 
-      <div className="p-4 border-t border-[#1F2937] space-y-2">
-        {isOpen && (
-          <div className="px-3 py-2 bg-[#1F2937] rounded-xl border border-white/5">
-            <p className="text-white text-xs font-semibold truncate">{admin?.name || 'Super Admin'}</p>
-            <p className="text-pink-400 text-[10px] truncate">{admin?.email || 'admin@slvstudio.com'}</p>
-          </div>
-        )}
-        <button onClick={handleLogout}
-          className={`flex items-center gap-3 px-4 py-3 w-full text-rose-400 hover:text-rose-300 hover:bg-white/5 transition-colors text-xs font-bold rounded-xl ${!isOpen && 'justify-center'}`}>
-          <LogOut className="w-4 h-4 text-rose-400 flex-shrink-0" />
-          {isOpen && <span>Sign Out</span>}
-        </button>
-      </div>
-    </aside>
+        <div className="p-4 border-t border-slate-700/50 space-y-2">
+          {isOpen && (
+            <div className="px-3 py-2 bg-slate-800/80 rounded-xl border border-white/5">
+              <p className="text-white text-xs font-semibold truncate">{admin?.name || 'Super Admin'}</p>
+              <p className="text-pink-400 text-[10px] truncate">{admin?.email || 'admin@slvstudio.com'}</p>
+            </div>
+          )}
+          <button
+            onClick={handleLogout}
+            className={`flex items-center gap-3 px-4 py-3 w-full text-rose-400 hover:text-rose-300 hover:bg-white/5 transition-colors text-xs font-bold rounded-xl ${!isOpen && 'md:justify-center'}`}
+          >
+            <LogOut className="w-4 h-4 text-rose-400 flex-shrink-0" />
+            {(isOpen || (typeof window !== 'undefined' && window.innerWidth < 768)) && <span>Sign Out</span>}
+          </button>
+        </div>
+      </aside>
+    </>
   )
 }
 
@@ -129,21 +160,21 @@ export default function AdminDashboard() {
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
 
-      <div className={`flex-1 transition-all duration-200 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
+      <div className={`flex-1 transition-all duration-200 ml-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
         {/* Top bar */}
-        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-soft">
           <div className="flex items-center gap-3">
             <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 hover:bg-[#F5F7FA] rounded-xl border border-[#E5E7EB] text-[#64748B] transition-colors">
               <Menu className="w-4 h-4" />
             </button>
-            <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Executive Atelier Dashboard</h1>
+            <h1 className="font-display text-base sm:text-xl font-bold text-[#1F2937] dark:text-white truncate">Executive Atelier Dashboard</h1>
           </div>
           <div className="flex items-center gap-2">
-            <span className="badge badge-soft text-[10px]">Realtime Synced</span>
+            <span className="badge badge-soft text-[10px] hidden sm:inline-flex">Realtime Synced</span>
           </div>
         </div>
 
-        <div className="p-8 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-8 space-y-6 max-w-7xl">
           {/* Stats Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <StatCard title="Total Revenue" value={`₹${(stats.totalRevenue || 0).toLocaleString('en-IN')}`} icon={DollarSign} gradient="from-pink-500 to-rose-500" />

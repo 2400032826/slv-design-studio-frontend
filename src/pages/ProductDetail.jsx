@@ -399,6 +399,34 @@ export default function ProductDetail() {
         )}
       </div>
 
+      {/* Mobile Sticky Bottom Action Bar */}
+      <div className="md:hidden fixed bottom-16 left-0 right-0 z-30 bg-white/95 dark:bg-[#1F2937]/95 backdrop-blur-lg border-t border-[#E5E7EB] dark:border-slate-800 p-3 px-4 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] flex items-center justify-between gap-3">
+        <div>
+          <span className="text-[10px] text-[#64748B] block font-bold uppercase">Total Price</span>
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-display font-bold text-lg text-[#1F2937] dark:text-white">₹{(price * quantity).toLocaleString('en-IN')}</span>
+            {discount > 0 && <span className="text-[10px] text-rose-600 font-bold bg-rose-50 dark:bg-rose-950/40 px-1.5 py-0.5 rounded">{discount}% OFF</span>}
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 flex-1 justify-end max-w-xs">
+          <button
+            onClick={handleAddToCart}
+            disabled={data.stock === 0}
+            className="btn-secondary text-xs px-3.5 py-2.5 font-bold flex-1 justify-center whitespace-nowrap"
+          >
+            Add to Bag
+          </button>
+          <button
+            onClick={handleBuyNow}
+            disabled={data.stock === 0}
+            className="btn-primary text-xs px-4 py-2.5 font-bold flex-1 justify-center whitespace-nowrap shadow-soft"
+          >
+            Buy Now
+          </button>
+        </div>
+      </div>
+
       {/* Lightbox */}
       <AnimatePresence>
         {lightboxOpen && mainImgUrl && (

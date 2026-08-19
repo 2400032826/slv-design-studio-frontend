@@ -6,6 +6,7 @@ import toast from 'react-hot-toast'
 // Layout components
 import Navbar from './components/common/Navbar'
 import Footer from './components/common/Footer'
+import MobileBottomNav from './components/common/MobileBottomNav'
 import WhatsAppButton from './components/common/WhatsAppButton'
 import FloatingCallButton from './components/common/FloatingCallButton'
 import { ProtectedRoute, AdminRoute } from './components/common/ProtectedRoute'
@@ -65,10 +66,13 @@ function MainLayout({ children }) {
   return (
     <>
       <Navbar />
-      {children}
+      <div className="pb-16 md:pb-0">
+        {children}
+      </div>
       <Footer />
       <WhatsAppButton />
       <FloatingCallButton />
+      <MobileBottomNav />
       <LoginModal />
       <Cart />
     </>

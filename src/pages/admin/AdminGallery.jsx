@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2, Upload, Image, X, Sparkles, Tag, Edit2, Check } from 'lucide-react'
+import { Plus, Trash2, Upload, Image, X, Sparkles, Tag, Edit2, Check, Menu } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 import { getImageUrl } from '../../utils/imageUtils'
@@ -94,16 +94,24 @@ export default function AdminGallery() {
   return (
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
-          <div>
-            <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Portfolio Lookbook Management</h1>
-            <p className="text-xs text-[#64748B] mt-0.5">Manage the live portfolio displayed on the public Customer Gallery</p>
+      <div className={`flex-1 transition-all duration-300 ml-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-soft">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 hover:bg-[#F5F7FA] rounded-xl border border-[#E5E7EB] text-[#64748B] transition-colors md:hidden"
+            >
+              <Menu className="w-4 h-4" />
+            </button>
+            <div>
+              <h1 className="font-display text-base sm:text-xl font-bold text-[#1F2937] dark:text-white">Portfolio Lookbook Management</h1>
+              <p className="text-[11px] text-[#64748B] mt-0.5 hidden sm:block">Manage the live portfolio displayed on the public Customer Gallery</p>
+            </div>
           </div>
-          <span className="badge badge-soft text-xs font-bold">{items.length} Total Masterpiece Items</span>
+          <span className="badge badge-soft text-xs font-bold">{items.length} Items</span>
         </div>
 
-        <div className="p-8 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-8 space-y-6 max-w-7xl">
           {/* Upload Form */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
             <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">

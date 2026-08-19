@@ -5,7 +5,7 @@ export default function FloatingCallButton() {
   return (
     <motion.a
       href="tel:+919731912413"
-      className="floating-btn bottom-6 right-6 z-40"
+      className="floating-btn bottom-36 right-4 md:bottom-6 md:right-6 z-30"
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ delay: 1.8, type: 'spring' }}

@@ -36,14 +36,14 @@ export default function Gallery() {
         </div>
       </div>
 
-      <div className="section-container py-12">
-        {/* Category Filters */}
-        <div className="flex flex-wrap justify-center gap-2 mb-10">
+      <div className="section-container py-8 sm:py-12">
+        {/* Category Filters - Horizontal swipe on mobile, wrap on desktop */}
+        <div className="flex overflow-x-auto no-scrollbar sm:flex-wrap sm:justify-center gap-2 pb-2 mb-8 -mx-4 px-4 sm:mx-0 sm:px-0">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-4 py-2 font-bold text-xs uppercase tracking-wider rounded-full transition-all duration-200 ${
+              className={`px-4 py-2 font-bold text-xs uppercase tracking-wider rounded-full whitespace-nowrap transition-all duration-200 flex-shrink-0 ${
                 activeCategory === cat
                   ? 'btn-primary text-white shadow-soft'
                   : 'bg-white dark:bg-[#1F2937] text-[#64748B] border border-[#E5E7EB] dark:border-charcoal-700 hover:border-pink-300'
@@ -56,13 +56,13 @@ export default function Gallery() {
 
         {/* Portfolio Masonry Grid */}
         {isLoading ? (
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
             {Array(8).fill(null).map((_, i) => (
               <div key={i} className="skeleton aspect-[3/4] rounded-2xl" />
             ))}
           </div>
         ) : (
-          <div className="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-5 space-y-5">
+          <div className="columns-2 md:columns-3 lg:columns-4 gap-3 sm:gap-5 space-y-3 sm:space-y-5">
             {items.map((item, i) => {
               const imgUrl = getImageUrl(item.url || item)
               return (

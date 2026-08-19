@@ -94,31 +94,29 @@ export default function ProductCard({ product }) {
 
           {/* Floating Action Buttons */}
           <div
-            className={`absolute top-2.5 right-2.5 flex flex-col gap-1.5 z-10 transition-all duration-200 ${
-              hovered ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-1'
-            }`}
+            className={`absolute top-2 right-2 flex flex-col gap-1.5 z-10 transition-all duration-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}
           >
             <button
               onClick={handleWishlist}
-              className={`w-8 h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors ${
+              className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors ${
                 inWishlist ? 'text-pink-500' : 'text-[#64748B]'
               }`}
               title="Add to Wishlist"
             >
-              <Heart className={`w-4 h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
+              <Heart className={`w-3.5 h-3.5 sm:w-4 sm:h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
             </button>
             <button
               onClick={handleShare}
-              className="w-8 h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors text-[#64748B]"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-white/95 dark:bg-[#1F2937]/95 border border-[#E5E7EB] dark:border-slate-700 shadow-soft flex items-center justify-center hover:border-pink-400 transition-colors text-[#64748B]"
               title="Share"
             >
-              <Share2 className="w-3.5 h-3.5" />
+              <Share2 className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
             </button>
           </div>
 
-          {/* Quick Add to Bag Button */}
+          {/* Quick Add to Bag Button (Desktop Hover) */}
           <div
-            className={`absolute bottom-0 left-0 right-0 p-3 z-10 transition-all duration-200 ${
+            className={`hidden sm:block absolute bottom-0 left-0 right-0 p-3 z-10 transition-all duration-200 ${
               hovered ? 'translate-y-0 opacity-100' : 'translate-y-2 opacity-0 pointer-events-none'
             }`}
           >
@@ -132,12 +130,12 @@ export default function ProductCard({ product }) {
         </div>
 
         {/* Details Container */}
-        <div className="p-4 flex-1 flex flex-col justify-between bg-white dark:bg-[#1F2937]">
+        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between bg-white dark:bg-[#1F2937]">
           <div>
-            <p className="text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-bold mb-1">
+            <p className="text-[9px] sm:text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-bold mb-0.5 sm:mb-1">
               {product.category?.name || 'Designer Collection'}
             </p>
-            <h3 className="font-display font-semibold text-[#1F2937] dark:text-white text-sm leading-snug mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
+            <h3 className="font-display font-semibold text-[#1F2937] dark:text-white text-xs sm:text-sm leading-snug mb-1 sm:mb-2 line-clamp-2 group-hover:text-pink-600 transition-colors">
               {product.name}
             </h3>
           </div>

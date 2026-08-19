@@ -13,10 +13,12 @@
 
   html {
     scroll-behavior: smooth;
+    overflow-x: hidden;
   }
 
   body {
     @apply font-sans bg-[#F5F7FA] dark:bg-[#111827] text-[#1F2937] dark:text-slate-100 transition-colors duration-200 antialiased selection:bg-pink-500 selection:text-white;
+    overflow-x: hidden;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -163,5 +165,15 @@
 
 .text-gradient-gold {
   @apply bg-clip-text text-transparent bg-gradient-to-r from-amber-400 to-orange-500;
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
 }
 

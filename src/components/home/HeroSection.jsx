@@ -123,25 +123,25 @@ export default function HeroSection() {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4, delay: 0.35 }}
-              className="flex flex-wrap items-center gap-3.5 mb-8"
+              className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 mb-8 w-full sm:w-auto"
             >
               <Link
                 to="/products"
-                className="btn-primary text-xs tracking-wider px-7 py-3.5 font-bold shadow-card group"
+                className="btn-primary text-xs tracking-wider px-6 py-3.5 font-bold shadow-card group text-center justify-center"
               >
                 Explore Our Products & Services
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
               </Link>
               <Link
                 to="/customize"
-                className="btn-secondary text-xs tracking-wider px-7 py-3.5 font-bold flex items-center gap-2"
+                className="btn-secondary text-xs tracking-wider px-6 py-3.5 font-bold flex items-center justify-center gap-2 text-center"
               >
                 <Scissors className="w-4 h-4 text-pink-500" />
                 Customize Your Design
               </Link>
               <Link
                 to="/contact"
-                className="btn-outline text-xs tracking-wider px-6 py-3.5 font-bold"
+                className="btn-outline text-xs tracking-wider px-5 py-3.5 font-bold text-center justify-center"
               >
                 Contact Us
               </Link>
@@ -152,18 +152,18 @@ export default function HeroSection() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.45 }}
-              className="grid grid-cols-3 gap-3 max-w-lg w-full"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-lg w-full"
             >
-              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
-                <CheckCircle2 className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs sm:text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
+                <CheckCircle2 className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Handcrafted Maggam</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
-                <ShieldCheck className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs sm:text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
+                <ShieldCheck className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Perfect Fit Guaranteed</span>
               </div>
-              <div className="flex items-center gap-2 text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
-                <HeartHandshake className="w-3.5 h-3.5 text-pink-500 flex-shrink-0" />
+              <div className="flex items-center gap-2 text-xs sm:text-[11px] text-[#64748B] dark:text-slate-300 font-medium">
+                <HeartHandshake className="w-4 h-4 sm:w-3.5 sm:h-3.5 text-pink-500 flex-shrink-0" />
                 <span>Express Stitching</span>
               </div>
             </motion.div>
