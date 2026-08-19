@@ -20,11 +20,11 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <WhyChooseUs />
       <ServicesSection />
       <FeaturedProducts />
-      <OffersSection />
       <GallerySection />
+      <WhyChooseUs />
+      <OffersSection />
       <TestimonialsSection />
     </main>
   )

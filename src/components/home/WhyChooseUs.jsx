@@ -12,8 +12,8 @@ const pillars = [
   },
   {
     icon: Star,
-    title: '10+ Years Craftsmanship',
-    desc: 'Over a decade of specialized expertise in South Indian bridal Maggam & custom tailoring.',
+    title: 'Master Tailor Expertise',
+    desc: 'Specialized craftsmanship in South Indian bridal Maggam work, precision zari needlework, and bespoke silhouettes.',
     iconBg: 'bg-[#FFF1F6] dark:bg-pink-950/30',
     iconColor: 'text-[#E83E8C]',
     border: 'border-pink-200 dark:border-pink-900/40',

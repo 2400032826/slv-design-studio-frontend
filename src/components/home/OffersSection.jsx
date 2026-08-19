@@ -14,7 +14,13 @@ export default function OffersSection() {
     staleTime: 5 * 60 * 1000,
   })
 
-  const coupons = data || []
+  const fallbackCoupons = [
+    { code: 'WELCOME10', type: 'percentage', value: 10, description: '10% off on your first bespoke blouse tailoring or custom embroidery order.', minOrderAmount: 500 },
+    { code: 'BRIDAL500', type: 'fixed', value: 500, description: 'Flat ₹500 off on bridal Maggam blouses and wedding ensembles.', minOrderAmount: 2500 },
+    { code: 'STUDIOFREE', type: 'fixed', value: 50, description: 'Complimentary shipping & doorstep delivery across all tailoring orders.', minOrderAmount: 499 },
+  ]
+
+  const activeCoupons = coupons.length > 0 ? coupons : fallbackCoupons
 
   const handleCopy = (code) => {
     navigator.clipboard.writeText(code)
@@ -39,15 +45,9 @@ export default function OffersSection() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {[1, 2, 3].map((i) => <div key={i} className="skeleton h-48 rounded-2xl" />)}
           </div>
-        ) : coupons.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-slate-800 shadow-card max-w-lg mx-auto">
-            <Tag className="w-10 h-10 text-pink-300 mx-auto mb-3" />
-            <h3 className="font-display text-base font-bold text-[#1F2937] dark:text-white">No Active Promos Currently</h3>
-            <p className="text-[#64748B] text-xs mt-1">Check back soon for festive discounts and seasonal tailoring deals!</p>
-          </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {coupons.map((coupon, i) => (
+            {activeCoupons.map((coupon, i) => (
               <motion.div
                 key={coupon._id || coupon.code}
                 className="bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-slate-800 rounded-2xl p-6 relative overflow-hidden shadow-card hover:shadow-card-hover hover:border-pink-300 transition-all group"

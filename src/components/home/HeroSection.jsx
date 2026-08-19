@@ -104,24 +104,20 @@ export default function HeroSection() {
               Specializing in bespoke bridal blouses, authentic South Indian Maggam & Zardosi work, and precision computer embroidery tailored to your exact measurements.
             </motion.p>
 
-            {/* Social Proof / Rating */}
+            {/* Authentic Studio Hallmarks (No Fake Ratings/Numbers) */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.3 }}
-              className="flex items-center gap-3 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-lg"
+              className="flex flex-wrap items-center gap-3 text-xs font-semibold text-[#64707D] dark:text-slate-300 mb-8 pb-6 border-b border-[#E8EAF0] dark:border-slate-800 w-full max-w-lg"
             >
-              <div className="flex items-center gap-0.5">
-                {[...Array(5)].map((_, i) => (
-                  <Star key={i} className="w-4 h-4 fill-amber-400 text-amber-400" />
-                ))}
-              </div>
-              <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
-                4.9 / 5.0 Rating
+              <span className="inline-flex items-center gap-1 text-pink-600 dark:text-pink-400 font-bold">
+                <Sparkles className="w-3.5 h-3.5" /> Boutique Atelier
               </span>
-              <span className="text-xs text-[#64707D] dark:text-slate-400">
-                • Trusted by 500+ Brides & Boutiques
-              </span>
+              <span>•</span>
+              <span>Handcrafted Maggam & Zari</span>
+              <span>•</span>
+              <span>Direct Master Tailor Fitting</span>
             </motion.div>
 
             {/* CTA Buttons */}

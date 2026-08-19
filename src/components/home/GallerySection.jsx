@@ -6,12 +6,12 @@ import api from '../../api/axios'
 import { getImageUrl } from '../../utils/imageUtils'
 
 const sampleGallery = [
-  { id: 1, category: 'embroidery', gradient: 'from-pink-500/20 to-fuchsia-600/20' },
-  { id: 2, category: 'stitching', gradient: 'from-rose-500/20 to-pink-500/20' },
-  { id: 3, category: 'printing', gradient: 'from-purple-500/20 to-pink-500/20' },
-  { id: 4, category: 'wedding', gradient: 'from-pink-500/20 to-amber-500/20' },
-  { id: 5, category: 'bridal', gradient: 'from-fuchsia-500/20 to-rose-500/20' },
-  { id: 6, category: 'jewellery', gradient: 'from-amber-500/20 to-pink-500/20' },
+  { id: 1, title: 'Bridal Maggam Blouse', category: 'Bridal Embroidery', url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80' },
+  { id: 2, title: 'Gold Zari Saree Work', category: 'Saree Atelier', url: 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=600&q=80' },
+  { id: 3, title: 'Computerized Threadwork', category: 'Machine Embroidery', url: 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=600&q=80' },
+  { id: 4, title: 'Festive Kurti Tailoring', category: 'Ethnic Wear', url: 'https://images.unsplash.com/photo-1609357605129-26f69add5d6e?w=600&q=80' },
+  { id: 5, title: 'Royal Wedding Lehenga', category: 'Haute Bridal', url: 'https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?w=600&q=80' },
+  { id: 6, title: 'Custom Apparel Branding', category: 'DTF & Embroidery', url: 'https://images.unsplash.com/photo-1521572267360-ee0c2909d518?w=600&q=80' },
 ]
 
 export default function GallerySection() {
