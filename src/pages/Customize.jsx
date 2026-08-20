@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useSearchParams, useLocation, useNavigate } from 'react-router-dom'
+import { useSearchParams, useLocation, useNavigate, useParams } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import { showLogin } from '../store/slices/authSlice'
@@ -9,7 +9,7 @@ import {
   Sparkles, Scissors, ShoppingCart, Info, Shirt, Gem, Gift,
   CheckCircle2, Ruler, HelpCircle, Palette, Tag, Edit3,
   HelpCircle as QuestionIcon, Plus, Eye, ChevronDown, ChevronUp,
-  Image as ImageIcon, RefreshCw
+  Image as ImageIcon, RefreshCw, ArrowRight
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import api from '../api/axios'
@@ -184,7 +184,12 @@ export const SERVICE_CONFIG = {
         key: 'placement',
         popularCount: 4,
         options: [
-          { label: 'Multiple Locations', icon: '⭐', desc: 'Chest + Back combo' },
+          { label: 'Left Chest (Standard Logo)', icon: '📌', desc: 'Classic 3-4 inch placement', popular: true },
+          { label: 'Full Front Center', icon: '🎽', desc: 'Large 10-12 inch graphic', popular: true },
+          { label: 'Full Back Center', icon: '🔙', desc: 'Large back graphic/monogram', popular: true },
+          { label: 'Collar / Placket', icon: '👔', desc: 'Subtle monogram along collar', popular: true },
+          { label: 'Sleeve / Cuff', icon: '📐', desc: 'Subtle wrist or bicep logo' },
+          { label: 'Multiple Locations', icon: '⭐', desc: 'Front + Back combination' },
         ],
       },
       {
@@ -577,6 +582,7 @@ const serviceList = Object.values(SERVICE_CONFIG)
 
 export default function Customize() {
   const [searchParams, setSearchParams] = useSearchParams()
+  const { id: routeDesignId } = useParams()
   const location = useLocation()
   const navigate = useNavigate()
 
@@ -597,6 +603,7 @@ export default function Customize() {
   // Persistent reference design state
   const [referenceDesign, setReferenceDesign] = useState(null)
   const [designNotFound, setDesignNotFound] = useState(false)
+  const [missingDesignId, setMissingDesignId] = useState('')
   const [initialLoading, setInitialLoading] = useState(true)
 
   const dispatch = useDispatch()
@@ -609,53 +616,96 @@ export default function Customize() {
     async function initializeStudio() {
       setInitialLoading(true)
       setDesignNotFound(false)
+      setMissingDesignId('')
 
-      const serviceParam = searchParams.get('service') || searchParams.get('serviceId') || location.state?.serviceId
-      const designParam = searchParams.get('design') || searchParams.get('productId') || searchParams.get('id') || location.state?.designId || location.state?.product?._id
+      const rawDesignParam = searchParams.get('designId') || searchParams.get('design') || searchParams.get('productId') || searchParams.get('id') || routeDesignId || location.state?.designId || location.state?.product?._id
+      const designParam = rawDesignParam ? String(rawDesignParam).trim() : null
+
+      const rawServiceParam = searchParams.get('service') || searchParams.get('serviceId') || location.state?.serviceId
+      const serviceParam = rawServiceParam ? String(rawServiceParam).trim() : null
+
       const stepParam = searchParams.get('step') || location.state?.step
 
+      // =========================================================================
+      // FLOW A: GENERIC CUSTOMIZER STUDIO (Direct / navbar / google / link)
+      // =========================================================================
+      if (!designParam) {
+        setDesignNotFound(false)
+        setReferenceDesign(null)
+
+        if (serviceParam) {
+          setSelectedServiceKey(normalizeServiceKey(serviceParam))
+          setActiveStepId(stepParam || 'options')
+        } else {
+          // Direct generic visit: Step 1 (or restore existing user draft)
+          try {
+            const savedDraft = localStorage.getItem('slv_customize_draft')
+            if (savedDraft) {
+              const parsed = JSON.parse(savedDraft)
+              if (parsed.selectedServiceKey && SERVICE_CONFIG[parsed.selectedServiceKey]) {
+                setSelectedServiceKey(parsed.selectedServiceKey)
+                if (parsed.activeStepId) setActiveStepId(parsed.activeStepId)
+                if (parsed.formData) setFormData(parsed.formData)
+                if (parsed.measurements) setMeasurements(parsed.measurements)
+                if (parsed.specialInstructions) setSpecialInstructions(parsed.specialInstructions)
+              }
+            } else {
+              setSelectedServiceKey('blouse')
+              setActiveStepId('service')
+            }
+          } catch (e) {
+            setSelectedServiceKey('blouse')
+            setActiveStepId('service')
+          }
+        }
+
+        setInitialLoading(false)
+        return
+      }
+
+      // =========================================================================
+      // FLOW B: SPECIFIC DESIGN FLOW (Explicit design ID requested in URL)
+      // =========================================================================
       let foundDesign = location.state?.product || null
 
-      if (designParam && !foundDesign) {
-        // Look in Lookbook gallery
+      // 1. Look in Lookbook gallery master items
+      if (!foundDesign) {
         try {
           const galleryItems = await getUnifiedGalleryItems('all')
-          foundDesign = galleryItems.find((item) => item._id === designParam || item.id === designParam)
+          foundDesign = galleryItems.find((item) => String(item._id) === designParam || String(item.id) === designParam)
         } catch (e) {
           console.warn('Gallery search error:', e)
         }
+      }
 
-        // Look in remote products API
-        if (!foundDesign) {
-          try {
-            const res = await api.get(`/products/${designParam}`)
-            if (res.data?.product) {
-              foundDesign = res.data.product
-            }
-          } catch (e) {
-            console.warn('Product search error:', e)
+      // 2. Look in remote products API
+      if (!foundDesign) {
+        try {
+          const res = await api.get(`/products/${designParam}`)
+          if (res.data?.product) {
+            foundDesign = res.data.product
           }
+        } catch (e) {
+          console.warn('Product search error:', e)
         }
+      }
 
-        // Look in localStorage cart
-        if (!foundDesign) {
-          try {
-            const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
-            const cartMatch = cart.find((item) => item.product?._id === designParam)
-            if (cartMatch) foundDesign = cartMatch.product
-          } catch (e) {
-            console.warn('Cart lookup error:', e)
-          }
-        }
-
-        if (!foundDesign && !serviceParam) {
-          setDesignNotFound(true)
+      // 3. Look in local cart storage
+      if (!foundDesign) {
+        try {
+          const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
+          const cartMatch = cart.find((item) => String(item.product?._id) === designParam)
+          if (cartMatch?.product) foundDesign = cartMatch.product
+        } catch (e) {
+          console.warn('Cart lookup error:', e)
         }
       }
 
       if (isCancelled) return
 
       if (foundDesign) {
+        // Design located successfully
+        setDesignNotFound(false)
         setReferenceDesign(foundDesign)
         const mappedService = foundDesign.category?.name
           ? normalizeServiceKey(foundDesign.category.name)
@@ -665,30 +715,18 @@ export default function Customize() {
         const targetService = serviceParam ? normalizeServiceKey(serviceParam) : mappedService
         setSelectedServiceKey(targetService)
         setActiveStepId(stepParam || 'options')
-        if (foundDesign.url) {
-          setFormData((prev) => ({ ...prev, referenceImageTitle: foundDesign.title, referenceImageUrl: foundDesign.url }))
+        if (foundDesign.url || foundDesign.images?.[0]?.url) {
+          setFormData((prev) => ({
+            ...prev,
+            referenceImageTitle: foundDesign.title || foundDesign.name,
+            referenceImageUrl: foundDesign.url || foundDesign.images?.[0]?.url
+          }))
         }
-      } else if (serviceParam) {
-        setSelectedServiceKey(normalizeServiceKey(serviceParam))
-        setActiveStepId(stepParam || 'options')
       } else {
-        // Restore local draft
-        try {
-          const savedDraft = localStorage.getItem('slv_customize_draft')
-          if (savedDraft) {
-            const parsed = JSON.parse(savedDraft)
-            if (parsed.selectedServiceKey && SERVICE_CONFIG[parsed.selectedServiceKey]) {
-              setSelectedServiceKey(parsed.selectedServiceKey)
-              if (parsed.activeStepId) setActiveStepId(parsed.activeStepId)
-              if (parsed.formData) setFormData(parsed.formData)
-              if (parsed.measurements) setMeasurements(parsed.measurements)
-              if (parsed.specialInstructions) setSpecialInstructions(parsed.specialInstructions)
-              if (parsed.referenceDesign) setReferenceDesign(parsed.referenceDesign)
-            }
-          }
-        } catch (e) {
-          console.warn('Draft restoration error:', e)
-        }
+        // Explicit design ID requested but not found in any central store
+        setDesignNotFound(true)
+        setMissingDesignId(designParam)
+        setReferenceDesign(null)
       }
 
       setInitialLoading(false)
@@ -699,7 +737,7 @@ export default function Customize() {
     return () => {
       isCancelled = true
     }
-  }, [searchParams, location.state])
+  }, [searchParams, location.state, routeDesignId])
 
   // 2. Persistent Local Storage Auto-Saver for Drafts
   useEffect(() => {
@@ -831,6 +869,49 @@ export default function Customize() {
 
   const currentStepIndex = flowSteps.findIndex((s) => s.id === activeStepId)
 
+  // Full screen Design Not Found state when an explicit invalid design ID was requested
+  if (designNotFound) {
+    return (
+      <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111827] flex items-center justify-center px-4 py-16">
+        <div className="text-center p-8 sm:p-10 bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-700 max-w-lg shadow-card">
+          <div className="w-16 h-16 bg-[#FFF5F9] dark:bg-pink-950/40 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4 text-pink-600">
+            👗
+          </div>
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/50 text-amber-800 dark:text-amber-300 text-[10px] font-bold uppercase tracking-widest rounded-full mb-3">
+            Design Notice
+          </span>
+          <h2 className="text-xl sm:text-2xl font-display font-bold text-[#1F2937] dark:text-white mb-2">
+            Design Reference Not Found
+          </h2>
+          <p className="text-xs sm:text-sm text-[#64748B] dark:text-charcoal-400 mb-6 leading-relaxed">
+            The requested design reference {missingDesignId ? `("${missingDesignId}") ` : ''}could not be found in our active collection. You can start a fresh custom order below or explore our ready-to-wear catalog.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <button
+              onClick={() => {
+                setDesignNotFound(false)
+                setMissingDesignId('')
+                setReferenceDesign(null)
+                setSearchParams({})
+                navigate('/customize', { replace: true })
+                setActiveStepId('service')
+              }}
+              className="btn-primary text-xs py-3 px-6 font-bold shadow-soft"
+            >
+              <Sparkles className="w-4 h-4 mr-1.5" /> Start Customization Studio
+            </button>
+            <button
+              onClick={() => navigate('/products')}
+              className="btn-secondary text-xs py-3 px-6 font-bold"
+            >
+              <Package className="w-4 h-4 mr-1.5" /> Browse Product Catalog
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="min-h-screen bg-[#F7F8FA] dark:bg-[#111827] pb-24 md:pb-12">
       
@@ -889,7 +970,7 @@ export default function Customize() {
           </div>
         </div>
 
-        {/* Reference Design Active Banner */}
+        {/* Reference Design Active Banner (When Flow B has found a reference design) */}
         {referenceDesign && (
           <div className="mb-6 max-w-4xl mx-auto bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/60 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-subtle">
             <div className="flex items-center gap-3 min-w-0">
@@ -920,44 +1001,12 @@ export default function Customize() {
               onClick={() => {
                 setReferenceDesign(null)
                 setSearchParams({})
+                navigate('/customize', { replace: true })
               }}
               className="text-xs text-pink-600 dark:text-pink-400 hover:underline font-bold flex-shrink-0"
             >
               Clear
             </button>
-          </div>
-        )}
-
-        {/* Safe Fallback: Design Not Found Banner */}
-        {designNotFound && !referenceDesign && (
-          <div className="mb-6 max-w-4xl mx-auto bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-subtle">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-700 dark:text-amber-300 font-bold flex-shrink-0">
-                <Info className="w-5 h-5" />
-              </div>
-              <div>
-                <p className="font-display font-bold text-sm text-amber-900 dark:text-amber-200">
-                  Design ID Not Found in Current Catalog
-                </p>
-                <p className="text-xs text-amber-700 dark:text-amber-300/90">
-                  You can still choose any studio service below to craft your custom garment or browse our full catalog.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-shrink-0">
-              <button
-                onClick={() => navigate('/products')}
-                className="btn-primary text-xs py-2 px-4 font-bold shadow-soft"
-              >
-                Browse Catalog
-              </button>
-              <button
-                onClick={() => setDesignNotFound(false)}
-                className="btn-secondary text-xs py-2 px-3 font-bold"
-              >
-                Dismiss
-              </button>
-            </div>
           </div>
         )}
 
