@@ -27,10 +27,12 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 mb-12">
           {/* Brand */}
           <div className="lg:col-span-1">
-            <Link to="/" className="flex items-center gap-3 mb-4">
-              <div className="w-11 h-11 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-xl flex items-center justify-center shadow-soft">
-                <span className="text-white font-display font-bold text-xl">S</span>
-              </div>
+            <Link to="/" className="flex items-center gap-3 mb-4 group">
+              <img
+                src="/slv-logo.png"
+                alt="SLV Women's Fashion Studio"
+                className="w-12 h-12 rounded-full object-contain shadow-soft group-hover:scale-105 transition-transform flex-shrink-0"
+              />
               <div>
                 <p className="font-display font-bold text-base md:text-lg text-[#252A34] dark:text-white">SLV Women's</p>
                 <p className="text-xs text-pink-600 dark:text-pink-400 font-semibold tracking-wider uppercase">Fashion Studio</p>

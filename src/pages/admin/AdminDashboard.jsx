@@ -55,9 +55,11 @@ export function AdminSidebar({ isOpen, onToggle }) {
       >
         <div className="p-4 sm:p-5 border-b border-slate-700/50 flex items-center justify-between gap-3">
           <div className="flex items-center gap-3 min-w-0">
-            <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-xl flex items-center justify-center flex-shrink-0 text-white shadow-soft">
-              <span className="font-display font-bold text-lg">S</span>
-            </div>
+            <img
+              src="/slv-logo.png"
+              alt="SLV Women's Fashion Studio"
+              className="w-10 h-10 rounded-full object-contain flex-shrink-0 shadow-soft"
+            />
             {(isOpen || typeof window !== 'undefined' && window.innerWidth < 768) && (
               <div className="min-w-0">
                 <p className="text-white font-display font-bold text-sm truncate">SLV Design Studio</p>

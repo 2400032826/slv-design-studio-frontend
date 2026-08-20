@@ -27,13 +27,16 @@ export function PageLoader() {
       <div className="text-center relative z-10 px-4">
         <div className="relative inline-block mb-6">
           <motion.div
-            className="w-20 h-20 rounded-2xl bg-gradient-to-tr from-pink-500 to-fuchsia-600 flex items-center justify-center mx-auto shadow-pink-glow"
+            className="w-20 h-20 rounded-full mx-auto shadow-pink-glow overflow-hidden"
             animate={{ scale: [1, 1.05, 1] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <span className="text-white font-display font-bold text-3xl">S</span>
+            <img
+              src="/slv-logo.png"
+              alt="SLV Women's Fashion Studio"
+              className="w-full h-full object-contain"
+            />
           </motion.div>
-          <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-pink-400 rounded-full animate-ping opacity-75" />
         </div>
 
         <motion.h2

@@ -107,9 +107,11 @@ export default function LoginModal() {
                 <X className="w-4 h-4" />
               </button>
               <div className="relative">
-                <div className="w-12 h-12 bg-gradient-to-tr from-pink-500 to-fuchsia-600 text-white rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-pink-glow">
-                  <span className="font-display font-bold text-xl">S</span>
-                </div>
+                <img
+                  src="/slv-logo.png"
+                  alt="SLV Women's Fashion Studio"
+                  className="w-14 h-14 rounded-full object-contain mx-auto mb-3 shadow-soft"
+                />
                 <h2 className="font-display text-2xl font-bold text-[#1F2937] dark:text-white tracking-tight">SLV Women's Studio</h2>
                 <p className="text-pink-600 dark:text-pink-400 text-xs uppercase tracking-wider mt-1 font-semibold">
                   {step === 'email' ? (isNewUser ? 'Create Your Account' : 'Customer Sign In') : 'Verify Security Code'}

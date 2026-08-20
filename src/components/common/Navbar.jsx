@@ -81,18 +81,19 @@ export default function Navbar() {
         <div className="section-container">
           <div className="flex items-center justify-between h-20">
             {/* Brand Logo */}
-            <Link to="/" className="flex items-center gap-3 group">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-xl flex items-center justify-center shadow-soft group-hover:scale-105 transition-transform">
-                  <span className="text-white font-display font-bold text-xl">S</span>
-                </div>
-                <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-pink-500 rounded-full border-2 border-white dark:border-[#111827]" />
+            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group flex-shrink-0">
+              <div className="relative flex-shrink-0 flex items-center justify-center">
+                <img
+                  src="/slv-logo.png"
+                  alt="SLV Women's Fashion Studio"
+                  className="w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] md:w-[56px] md:h-[56px] rounded-full object-contain shadow-soft group-hover:scale-105 transition-transform"
+                />
               </div>
-              <div>
-                <p className="font-display font-bold text-lg md:text-xl text-[#1F2937] dark:text-white leading-tight tracking-tight">
+              <div className="min-w-0">
+                <p className="font-display font-bold text-base sm:text-lg md:text-xl text-[#1F2937] dark:text-white leading-tight tracking-tight whitespace-nowrap">
                   SLV Women's
                 </p>
-                <p className="text-[10px] text-pink-600 dark:text-pink-400 font-bold tracking-[0.2em] uppercase">Fashion Studio</p>
+                <p className="text-[9px] sm:text-[10px] text-pink-600 dark:text-pink-400 font-bold tracking-[0.2em] uppercase whitespace-nowrap">Fashion Studio</p>
               </div>
             </Link>
 

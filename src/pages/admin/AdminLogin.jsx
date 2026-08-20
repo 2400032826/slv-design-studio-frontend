@@ -38,9 +38,11 @@ export default function AdminLogin() {
       <motion.div initial={{ opacity: 0, y: 20, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-md relative z-10">
         <div className="bg-white dark:bg-[#1F2937] p-8 sm:p-10 rounded-3xl border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
           <div className="text-center mb-8">
-            <div className="w-16 h-16 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-2xl flex items-center justify-center mx-auto mb-4 text-white shadow-soft">
-              <Shield className="w-8 h-8" />
-            </div>
+            <img
+              src="/slv-logo.png"
+              alt="SLV Women's Fashion Studio"
+              className="w-16 h-16 rounded-full object-contain mx-auto mb-4 shadow-soft"
+            />
             <span className="badge badge-soft text-[10px] uppercase font-bold tracking-widest mb-1.5 inline-block">Management Portal</span>
             <h1 className="font-display text-2xl font-bold text-[#1F2937] dark:text-white">Studio Admin</h1>
             <p className="text-[#64748B] dark:text-charcoal-400 text-xs mt-1">SLV Women's Fashion Studio</p>
