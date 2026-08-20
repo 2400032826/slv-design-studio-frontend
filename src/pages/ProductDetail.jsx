@@ -35,18 +35,53 @@ export default function ProductDetail() {
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
-      // 1. Remote API product fetch
-      try {
-        const res = await api.get(`/products/${id}`)
-        if (res.data?.product) return res.data.product
-      } catch (err) {
-        console.warn('Product not in remote DB, resolving local design repository:', err.message)
+      if (!id) return null
+
+      // 1. Direct Remote API product fetch by ID
+      const isHexId = /^[0-9a-fA-F]{24}$/.test(id)
+      if (isHexId) {
+        try {
+          const res = await api.get(`/products/${id}`)
+          if (res.data?.product) return res.data.product
+        } catch (err) {
+          console.warn('Direct product ID fetch error:', err.message)
+        }
       }
 
-      // 2. Check Unified Gallery / Lookbook items
+      // 2. Fetch from full remote catalog to resolve by slug, id, or title
+      try {
+        const res = await api.get('/products?limit=100')
+        const products = res.data?.products || []
+        const matched = products.find(
+          (p) =>
+            p._id === id ||
+            p.slug === id ||
+            (p.name && p.name.toLowerCase() === id.toLowerCase()) ||
+            (p.slug && p.slug.toLowerCase() === id.toLowerCase())
+        )
+        if (matched) return matched
+      } catch (err) {
+        console.warn('Catalog list fetch error:', err.message)
+      }
+
+      // 3. Fallback search via backend search API
+      try {
+        const res = await api.get(`/products?search=${encodeURIComponent(id)}`)
+        const products = res.data?.products || []
+        const matched = products.find(
+          (p) =>
+            p._id === id ||
+            p.slug === id ||
+            (p.name && p.name.toLowerCase() === id.toLowerCase()) ||
+            (p.slug && p.slug.toLowerCase() === id.toLowerCase())
+        )
+        if (matched) return matched
+      } catch (err) {}
+
+      // 4. Check Unified Gallery / Lookbook items
       try {
         const galleryItems = await getUnifiedGalleryItems('all')
-        const match = galleryItems.find((item) => item._id === id || item.id === id)
+        const match = galleryItems.find((item) => String(item._id) === id || String(item.id) === id)
         if (match) {
           return {
             _id: match._id || match.id,
@@ -67,10 +102,10 @@ export default function ProductDetail() {
         console.warn('Gallery lookup error:', err)
       }
 
-      // 3. Check persistent Cart items
+      // 5. Check persistent Cart items
       try {
         const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
-        const cartMatch = cart.find((item) => item.product?._id === id)
+        const cartMatch = cart.find((item) => String(item.product?._id) === id || String(item.product?.slug) === id)
         if (cartMatch?.product) return cartMatch.product
       } catch (err) {
         console.warn('Cart lookup error:', err)

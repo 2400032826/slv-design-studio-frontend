@@ -38,7 +38,7 @@ export default function ProductCard({ product }) {
 
   const handleShare = (e) => {
     e.preventDefault()
-    const url = window.location.origin + `/products/${product.slug || product._id}`
+    const url = window.location.origin + `/products/${product._id || product.slug}`
     if (navigator.share) {
       navigator.share({ title: product.name, url })
     } else {
@@ -48,7 +48,7 @@ export default function ProductCard({ product }) {
   }
 
   return (
-    <Link to={`/products/${product.slug || product._id}`} className="block h-full group">
+    <Link to={`/products/${product._id || product.slug}`} className="block h-full group">
       <div
         className="product-card h-full flex flex-col justify-between"
         onMouseEnter={() => setHovered(true)}

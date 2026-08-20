@@ -8,7 +8,20 @@ import ProductCard from '../products/ProductCard'
 export default function FeaturedProducts() {
   const { data, isLoading } = useQuery({
     queryKey: ['featured-products'],
-    queryFn: () => api.get('/products/featured').then((r) => r.data.products),
+    queryFn: async () => {
+      try {
+        const res = await api.get('/products/featured')
+        if (res.data?.products && res.data.products.length > 0) {
+          return res.data.products
+        }
+      } catch (e) {}
+      try {
+        const fallbackRes = await api.get('/products?limit=8')
+        return fallbackRes.data?.products || []
+      } catch (e) {
+        return []
+      }
+    },
   })
 
   const skeleton = Array(4).fill(null)

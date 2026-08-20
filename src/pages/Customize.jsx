@@ -678,15 +678,35 @@ export default function Customize() {
         }
       }
 
-      // 2. Look in remote products API
+      // 2. Look in remote products API (by ID or slug)
       if (!foundDesign) {
-        try {
-          const res = await api.get(`/products/${designParam}`)
-          if (res.data?.product) {
-            foundDesign = res.data.product
+        const isHexId = /^[0-9a-fA-F]{24}$/.test(designParam)
+        if (isHexId) {
+          try {
+            const res = await api.get(`/products/${designParam}`)
+            if (res.data?.product) {
+              foundDesign = res.data.product
+            }
+          } catch (e) {
+            console.warn('Product direct search error:', e)
           }
-        } catch (e) {
-          console.warn('Product search error:', e)
+        }
+
+        // Full catalog slug & name search
+        if (!foundDesign) {
+          try {
+            const res = await api.get('/products?limit=100')
+            const products = res.data?.products || []
+            foundDesign = products.find(
+              (p) =>
+                p._id === designParam ||
+                p.slug === designParam ||
+                (p.name && p.name.toLowerCase() === designParam.toLowerCase()) ||
+                (p.slug && p.slug.toLowerCase() === designParam.toLowerCase())
+            ) || null
+          } catch (e) {
+            console.warn('Catalog slug lookup error:', e)
+          }
         }
       }
 
