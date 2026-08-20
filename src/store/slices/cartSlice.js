@@ -14,6 +14,8 @@ const cartSlice = createSlice({
   initialState: {
     items: getStoredCart(),
     isOpen: false,
+    validationMap: {},
+    isValidating: false,
   },
   reducers: {
     addToCart: (state, action) => {
@@ -29,7 +31,11 @@ const cartSlice = createSlice({
       localStorage.setItem('slv_cart', JSON.stringify(state.items))
     },
     removeFromCart: (state, action) => {
+      const removedItem = state.items[action.payload]
       state.items = state.items.filter((_, i) => i !== action.payload)
+      if (removedItem?.product?._id) {
+        delete state.validationMap[removedItem.product._id]
+      }
       localStorage.setItem('slv_cart', JSON.stringify(state.items))
     },
     updateQuantity: (state, action) => {
@@ -43,7 +49,14 @@ const cartSlice = createSlice({
     },
     clearCart: (state) => {
       state.items = []
+      state.validationMap = {}
       localStorage.removeItem('slv_cart')
+    },
+    setCartValidation: (state, action) => {
+      state.validationMap = action.payload || {}
+    },
+    setIsValidating: (state, action) => {
+      state.isValidating = !!action.payload
     },
     toggleCart: (state) => { state.isOpen = !state.isOpen },
     openCart: (state) => { state.isOpen = true },
@@ -51,14 +64,58 @@ const cartSlice = createSlice({
   },
 })
 
-export const { addToCart, removeFromCart, updateQuantity, clearCart, toggleCart, openCart, closeCart } = cartSlice.actions
+export const {
+  addToCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart,
+  setCartValidation,
+  setIsValidating,
+  toggleCart,
+  openCart,
+  closeCart,
+} = cartSlice.actions
+
 export default cartSlice.reducer
 
-export const selectCartTotal = (state) =>
-  state.cart.items.reduce((total, item) => {
-    const price = item.product.offerPrice || item.product.price
+// Cart total for ONLY valid & available products
+export const selectValidCartTotal = (state) => {
+  const { items, validationMap } = state.cart
+  return items.reduce((total, item, idx) => {
+    const key = item.product?._id || item.product?.id || `cart_item_${idx}`
+    const val = validationMap[key]
+    if (val && (val.status === 'OUT_OF_STOCK' || val.status === 'NO_LONGER_AVAILABLE')) {
+      return total
+    }
+    const price = val?.currentPrice || item.product.offerPrice || item.product.price || 0
     return total + price * item.quantity
   }, 0)
+}
+
+// Fallback all items total
+export const selectCartTotal = (state) => selectValidCartTotal(state)
+
+export const selectValidCartCount = (state) => {
+  const { items, validationMap } = state.cart
+  return items.reduce((count, item, idx) => {
+    const key = item.product?._id || item.product?.id || `cart_item_${idx}`
+    const val = validationMap[key]
+    if (val && (val.status === 'OUT_OF_STOCK' || val.status === 'NO_LONGER_AVAILABLE')) {
+      return count
+    }
+    return count + item.quantity
+  }, 0)
+}
 
 export const selectCartCount = (state) =>
   state.cart.items.reduce((count, item) => count + item.quantity, 0)
+
+export const selectHasInvalidCartItems = (state) => {
+  const { items, validationMap } = state.cart
+  return items.some((item, idx) => {
+    const key = item.product?._id || item.product?.id || `cart_item_${idx}`
+    const val = validationMap[key]
+    return val && (val.status === 'OUT_OF_STOCK' || val.status === 'NO_LONGER_AVAILABLE')
+  })
+}
+

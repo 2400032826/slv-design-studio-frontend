@@ -1,15 +1,20 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useSelector, useDispatch } from 'react-redux'
 import { useForm } from 'react-hook-form'
 import {
-  MapPin, Check, Tag, ShoppingBag, MessageCircle, PhoneCall, Sparkles, ShieldCheck
+  MapPin, Check, Tag, ShoppingBag, MessageCircle, PhoneCall, Sparkles, ShieldCheck,
+  AlertTriangle, AlertCircle, Trash2
 } from 'lucide-react'
 import api from '../api/axios'
-import { clearCart, selectCartTotal } from '../store/slices/cartSlice'
+import {
+  clearCart, removeFromCart, setCartValidation, setIsValidating,
+  selectValidCartTotal, selectValidCartCount, selectHasInvalidCartItems
+} from '../store/slices/cartSlice'
 import toast from 'react-hot-toast'
 import { getImageUrl } from '../utils/imageUtils'
+import { validateCartItems } from '../utils/cartValidator'
 
 const DELIVERY_CHARGE = 50
 const FREE_DELIVERY_THRESHOLD = 500
@@ -18,9 +23,11 @@ const BUSINESS_PHONE = '919731912413'
 export default function Checkout() {
   const navigate = useNavigate()
   const dispatch = useDispatch()
-  const { items } = useSelector((s) => s.cart)
+  const { items, validationMap, isValidating } = useSelector((s) => s.cart)
   const { user } = useSelector((s) => s.auth)
-  const subtotal = useSelector(selectCartTotal)
+  const subtotal = useSelector(selectValidCartTotal)
+  const hasInvalidItems = useSelector(selectHasInvalidCartItems)
+  const validCount = useSelector(selectValidCartCount)
 
   const [couponCode, setCouponCode] = useState('')
   const [coupon, setCoupon] = useState(null)
@@ -28,6 +35,32 @@ export default function Checkout() {
   const [loading, setLoading] = useState(false)
   const [orderPlaced, setOrderPlaced] = useState(null)
   const [whatsappUrl, setWhatsappUrl] = useState('')
+
+  // Validate cart against remote database on checkout load
+  useEffect(() => {
+    let isCancelled = false
+
+    async function checkAvailability() {
+      if (items.length === 0) return
+      dispatch(setIsValidating(true))
+      try {
+        const { validationMap: map } = await validateCartItems(items)
+        if (!isCancelled) {
+          dispatch(setCartValidation(map))
+        }
+      } catch (e) {
+        console.warn('Checkout validation error:', e)
+      } finally {
+        if (!isCancelled) dispatch(setIsValidating(false))
+      }
+    }
+
+    checkAvailability()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [items, dispatch])
 
   const { register, handleSubmit, formState: { errors } } = useForm({
     defaultValues: {
@@ -41,7 +74,7 @@ export default function Checkout() {
     }
   })
 
-  const delivery = subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : DELIVERY_CHARGE
+  const delivery = subtotal >= FREE_DELIVERY_THRESHOLD || subtotal === 0 ? 0 : DELIVERY_CHARGE
   const discount = coupon ? Math.round((subtotal * coupon.discountPercent) / 100) : 0
   const total = subtotal + delivery - discount
 
@@ -61,10 +94,32 @@ export default function Checkout() {
 
   const onSubmit = async (address) => {
     if (items.length === 0) return toast.error('Your bag is empty')
+    
     setLoading(true)
     try {
+      // 1. Real-time validation against live remote production database before booking
+      const { validationMap: liveMap, hasInvalidItems: invalid } = await validateCartItems(items)
+      dispatch(setCartValidation(liveMap))
+
+      if (invalid) {
+        setLoading(false)
+        return toast.error('Some items in your bag are out of stock or no longer available. Please remove them to proceed.')
+      }
+
+      // Filter only available items
+      const validItems = items.filter((item, idx) => {
+        const key = item.product?._id || item.product?.id || `cart_item_${idx}`
+        const val = liveMap[key]
+        return !val || (val.status !== 'OUT_OF_STOCK' && val.status !== 'NO_LONGER_AVAILABLE')
+      })
+
+      if (validItems.length === 0) {
+        setLoading(false)
+        return toast.error('No available items in bag to place order.')
+      }
+
       const orderData = {
-        items: items.map((item) => ({
+        items: validItems.map((item) => ({
           product: item.product._id,
           quantity: item.quantity,
           price: item.product.offerPrice || item.product.price,
@@ -88,9 +143,9 @@ export default function Checkout() {
       toast.success('Order booked successfully! 🎉')
 
       // Build WhatsApp message
-      const firstItem = items[0]
+      const firstItem = validItems[0]
       const productName = firstItem?.product?.name || 'Boutique Custom Wear'
-      const qty = items.reduce((acc, i) => acc + i.quantity, 0)
+      const qty = validItems.reduce((acc, i) => acc + i.quantity, 0)
 
       const waMessage = `Hello SLV Women's Fashion Studio,
 I have placed a new order.
@@ -270,48 +325,111 @@ Please contact me regarding my order.`
             {/* Right: Order Summary */}
             <div className="lg:col-span-1">
               <div className="sticky top-24 bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 space-y-4 shadow-card">
-                <h2 className="font-display text-sm font-bold text-[#1F2937] dark:text-white flex items-center gap-2 pb-3 border-b border-[#E5E7EB]">
-                  <ShoppingBag className="w-4 h-4 text-pink-600" /> Order Summary ({items.length})
+                <h2 className="font-display text-sm font-bold text-[#1F2937] dark:text-white flex items-center justify-between pb-3 border-b border-[#E5E7EB] dark:border-charcoal-800">
+                  <span className="flex items-center gap-2">
+                    <ShoppingBag className="w-4 h-4 text-pink-600" /> Order Summary ({items.length})
+                  </span>
+                  {isValidating && <span className="text-[10px] text-pink-600 animate-pulse font-normal">Validating stock...</span>}
                 </h2>
 
+                {/* Stock notice banner if any item is out of stock or deleted */}
+                {hasInvalidItems && (
+                  <div className="bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900/60 rounded-xl p-3 flex items-start gap-2">
+                    <AlertTriangle className="w-4 h-4 text-rose-600 flex-shrink-0 mt-0.5" />
+                    <p className="text-[11px] text-rose-700 dark:text-rose-300 font-medium leading-relaxed">
+                      Some items are out of stock or no longer available. Please remove them below to proceed.
+                    </p>
+                  </div>
+                )}
+
                 {/* Items */}
-                <div className="space-y-3 max-h-60 overflow-y-auto pr-1">
+                <div className="space-y-3 max-h-72 overflow-y-auto pr-1">
                   {items.map((item, i) => {
-                    const itemImg = getImageUrl(item.product.images?.[0])
+                    const prod = item.product || {}
+                    const key = prod._id || prod.id || `cart_item_${i}`
+                    const itemValidation = validationMap[key] || { status: 'AVAILABLE' }
+                    const isOutOfStock = itemValidation.status === 'OUT_OF_STOCK'
+                    const isNoLongerAvailable = itemValidation.status === 'NO_LONGER_AVAILABLE'
+                    const isInvalid = isOutOfStock || isNoLongerAvailable
+                    const itemImg = getImageUrl(prod.images?.[0])
+
                     return (
-                      <div key={i} className="flex gap-3 items-center p-2 rounded-xl bg-[#F5F7FA]/50 border border-[#E5E7EB]">
-                        <div className="w-12 h-12 rounded-xl overflow-hidden bg-white flex-shrink-0 border border-[#E5E7EB]">
+                      <div
+                        key={i}
+                        className={`flex gap-3 items-center p-2.5 rounded-xl border transition-all ${
+                          isInvalid
+                            ? 'bg-rose-50/60 dark:bg-rose-950/20 border-rose-300 dark:border-rose-900/60'
+                            : 'bg-[#F5F7FA]/50 dark:bg-charcoal-800/40 border-[#E5E7EB] dark:border-charcoal-800'
+                        }`}
+                      >
+                        <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-white dark:bg-charcoal-800 flex-shrink-0 border border-[#E5E7EB]">
                           {itemImg ? (
-                            <img src={itemImg} alt="" className="w-full h-full object-cover" />
+                            <img src={itemImg} alt="" className={`w-full h-full object-cover ${isInvalid ? 'grayscale opacity-60' : ''}`} />
                           ) : (
                             <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center text-lg">👗</div>
                           )}
                         </div>
+
                         <div className="flex-1 min-w-0">
-                          <p className="text-xs font-bold text-[#1F2937] dark:text-white truncate">{item.product.name}</p>
-                          <p className="text-[10px] text-[#64748B]">Qty: {item.quantity} {item.size ? `• ${item.size}` : ''}</p>
+                          <p className={`text-xs font-bold truncate ${isInvalid ? 'text-rose-900 dark:text-rose-200 line-through' : 'text-[#1F2937] dark:text-white'}`}>
+                            {prod.name}
+                          </p>
+
+                          {/* Status Badges */}
+                          {isOutOfStock && (
+                            <span className="inline-flex items-center gap-0.5 text-[8px] font-bold text-amber-700 dark:text-amber-300 bg-amber-100 dark:bg-amber-950/60 px-1.5 py-0.5 rounded">
+                              <AlertCircle className="w-2 h-2" /> OUT OF STOCK
+                            </span>
+                          )}
+                          {isNoLongerAvailable && (
+                            <span className="inline-flex items-center gap-0.5 text-[8px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/60 px-1.5 py-0.5 rounded">
+                              <AlertCircle className="w-2 h-2" /> NO LONGER AVAILABLE
+                            </span>
+                          )}
+                          {!isInvalid && (
+                            <p className="text-[10px] text-[#64748B]">Qty: {item.quantity} {item.size ? `• ${item.size}` : ''}</p>
+                          )}
                         </div>
-                        <p className="text-xs font-bold text-pink-600 dark:text-pink-400 price-tag">₹{((item.product.offerPrice || item.product.price) * item.quantity).toLocaleString('en-IN')}</p>
+
+                        <div className="text-right flex flex-col items-end gap-1 flex-shrink-0">
+                          <p className={`text-xs font-bold price-tag ${isInvalid ? 'text-gray-400 line-through' : 'text-pink-600 dark:text-pink-400'}`}>
+                            ₹{((itemValidation.currentPrice || prod.offerPrice || prod.price || 0) * item.quantity).toLocaleString('en-IN')}
+                          </p>
+                          {isInvalid && (
+                            <button
+                              type="button"
+                              onClick={() => dispatch(removeFromCart(i))}
+                              className="text-[10px] text-white bg-rose-600 hover:bg-rose-700 px-2 py-0.5 rounded font-bold transition-colors"
+                              title="Remove unavailable item"
+                            >
+                              Remove
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )
                   })}
                 </div>
 
-                <div className="border-t border-[#E5E7EB] pt-3 space-y-1.5 text-xs text-[#64748B]">
+                <div className="border-t border-[#E5E7EB] dark:border-charcoal-800 pt-3 space-y-1.5 text-xs text-[#64748B] dark:text-charcoal-400">
                   <div className="flex justify-between">
-                    <span>Items Subtotal</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{subtotal.toLocaleString('en-IN')}</span>
+                    <span>Available Items Subtotal</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{subtotal.toLocaleString('en-IN')}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Boutique Delivery</span>
-                    <span className={delivery === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937]'}>{delivery === 0 ? 'FREE' : `₹${delivery}`}</span>
+                    <span className={delivery === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937] dark:text-white'}>
+                      {delivery === 0 ? 'FREE' : `₹${delivery}`}
+                    </span>
                   </div>
                   {discount > 0 && (
                     <div className="flex justify-between text-emerald-600 font-bold">
                       <span>Promo Coupon</span><span>-₹{discount}</span>
                     </div>
                   )}
-                  <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] pt-2">
-                    <span>Total Estimated</span><span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{total.toLocaleString('en-IN')}</span>
+                  <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-800 pt-2">
+                    <span>Total Estimated</span>
+                    <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{total.toLocaleString('en-IN')}</span>
                   </div>
                 </div>
 
@@ -323,10 +441,14 @@ Please contact me regarding my order.`
                     onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
                     className="input-field flex-1 py-2 text-xs"
                     placeholder="Enter Coupon (e.g. SLV50)"
-                    disabled={!!coupon}
+                    disabled={!!coupon || hasInvalidItems}
                   />
-                  <button type="button" onClick={handleApplyCoupon} disabled={couponLoading || !!coupon}
-                    className="px-3.5 py-2 btn-primary text-xs font-bold disabled:opacity-50">
+                  <button
+                    type="button"
+                    onClick={handleApplyCoupon}
+                    disabled={couponLoading || !couponCode.trim() || !!coupon || hasInvalidItems}
+                    className="px-3.5 py-2 btn-primary text-xs font-bold disabled:opacity-50"
+                  >
                     <Tag className="w-3.5 h-3.5" />
                   </button>
                 </div>
@@ -336,10 +458,19 @@ Please contact me regarding my order.`
                   </p>
                 )}
 
-                <button type="submit" disabled={loading}
-                  className="w-full btn-primary py-3.5 text-xs font-bold shadow-pink-glow mt-2">
+                <button
+                  type="submit"
+                  disabled={loading || hasInvalidItems || items.length === 0 || isValidating}
+                  className={`w-full py-3.5 text-xs font-bold rounded-xl shadow-pink-glow mt-2 transition-all ${
+                    hasInvalidItems || items.length === 0
+                      ? 'bg-gray-300 dark:bg-charcoal-700 text-gray-500 cursor-not-allowed shadow-none'
+                      : 'btn-primary'
+                  }`}
+                >
                   {loading ? (
                     <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto" />
+                  ) : hasInvalidItems ? (
+                    'Remove Unavailable Items to Book'
                   ) : (
                     'Book Custom Order'
                   )}
