@@ -1,21 +1,25 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams, useLocation, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import { showLogin } from '../store/slices/authSlice'
-import { addToCart } from '../store/slices/cartSlice'
+import { addToCart, openCart } from '../store/slices/cartSlice'
 import {
   Upload, Check, ChevronRight, ChevronLeft, Package,
   Sparkles, Scissors, ShoppingCart, Info, Shirt, Gem, Gift,
   CheckCircle2, Ruler, HelpCircle, Palette, Tag, Edit3,
-  HelpCircle as QuestionIcon, Plus, Eye, ChevronDown, ChevronUp
+  HelpCircle as QuestionIcon, Plus, Eye, ChevronDown, ChevronUp,
+  Image as ImageIcon, RefreshCw
 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import api from '../api/axios'
+import { getUnifiedGalleryItems } from '../utils/galleryService'
 
 // ============================================================================
 // DYNAMIC SERVICE CONFIGURATION SYSTEM WITH HUMAN-FRIENDLY LABELS
 // ============================================================================
 
-const SERVICE_CONFIG = {
+export const SERVICE_CONFIG = {
   blouse: {
     id: 'blouse',
     label: 'Blouse Stitching & Tailoring',
@@ -138,67 +142,48 @@ const SERVICE_CONFIG = {
     label: "Men's Garment Customization",
     category: 'Men & Corporate',
     emoji: '👔',
-    basePrice: 250,
-    badge: 'Embroidery & Branding',
-    shortDesc: 'Customize your existing shirt, t-shirt, kurta, or uniform with computer embroidery, company logos, names, and heat-transfer designs.',
+    basePrice: 450,
+    badge: 'Embroidery & Heat Transfer',
+    shortDesc: 'Custom logo embroidery, name monogramming, and graphic heat press for shirts, t-shirts, jackets, and traditional kurtas.',
     steps: [
       {
-        id: 'garment',
+        id: 'garmentItem',
         title: 'Which garment are you customizing?',
-        subtitle: 'Select the garment you are providing or ordering',
-        type: 'visual_grid',
+        subtitle: 'Select the apparel item',
+        type: 'select',
         key: 'garmentType',
         popularCount: 4,
         options: [
-          { label: 'Men’s Shirt', icon: '👔', desc: 'Formal or casual shirts', popular: true },
-          { label: 'T-Shirt / Polo', icon: '👕', desc: 'Cotton, polyester, polo collars', popular: true },
-          { label: 'Kurta', icon: '🥻', desc: 'Ethnic festive / wedding kurta', popular: true },
-          { label: 'Hoodie / Sweatshirt', icon: '🧥', desc: 'Winter wear & fleece', popular: true },
-          { label: 'Jacket / Blazer', icon: '🧥', desc: 'Suiting & club jackets' },
-          { label: 'Uniform / Workwear', icon: '👷', desc: 'Corporate / school uniforms' },
-          { label: 'Pants / Trousers', icon: '👖', desc: 'Pocket / leg logo branding' },
-          { label: 'Other Garment', icon: '📦', desc: 'Caps, bags, aprons, etc.' },
+          { label: 'Formal / Casual Shirt', desc: 'Chest pocket embroidery or cuff monogram', addPrice: 50, icon: '👔', popular: true },
+          { label: 'T-Shirt / Polo', desc: 'Custom DTF graphic or chest emblem', addPrice: 0, icon: '👕', popular: true },
+          { label: 'Ethnic Kurta / Sherwani', desc: 'Neck collar embroidery & royal placket work', addPrice: 200, icon: '🥻', popular: true },
+          { label: 'Jacket / Blazer / Hoodie', desc: 'Back branding or left chest badge', addPrice: 150, icon: '🧥', popular: true },
+          { label: 'Pant / Trouser Monogram', desc: 'Pocket edge initial embroidery', addPrice: 50, icon: '👖' },
+          { label: 'Customer Provided Garment', desc: 'You send the garment for studio work', addPrice: 0, icon: '📦' },
         ],
       },
       {
-        id: 'addition',
-        title: 'What would you like to add to the garment?',
-        subtitle: 'Choose your main customization element',
-        type: 'chips',
-        key: 'customizationElement',
-        popularCount: 4,
-        options: ['Brand / Company Logo', 'Personalized Name / Monogram', 'Custom Typography / Text', 'Photo / Graphic Image', 'Custom Vector Artwork', 'Embroidery Border / Pattern', 'Multi-Position Branding'],
-      },
-      {
-        id: 'technique',
-        title: 'Choose the customization technique',
-        subtitle: 'Needlework thread embroidery or high-definition heat print',
+        id: 'customizationTechnique',
+        title: 'Choose your personalization technique',
+        subtitle: 'Select thread embroidery, digital printing, or heat press',
         type: 'select',
         key: 'technique',
-        helpText: 'Embroidery uses real threads for long-lasting elegance; DTF printing uses full-color digital ink heat-pressed on fabric.',
-        hasAdvisor: true,
+        helpText: 'Embroidery is thread-stitched directly into the fabric; Heat Transfer / DTF allows full-color graphics & photos.',
         options: [
-          { label: 'Computerized Embroidery', desc: 'Durable, premium thread embroidery that lasts forever', addPrice: 150, icon: '🧵', popular: true },
-          { label: 'HD DTF / Heat Transfer', desc: 'Vibrant full-color photo print with sharp gradients', addPrice: 100, icon: '🖨️', popular: true },
-          { label: 'Direct Heat Press Vinyl', desc: 'Clean single-color metallic or solid logo application', addPrice: 80, icon: '⚡' },
-          { label: 'Let SLV Master Artisan Recommend', desc: 'We will inspect your design and choose the best technique', addPrice: 100, icon: '✨', popular: true },
+          { label: 'Computerized Thread Embroidery', desc: 'High-precision thread stitched logo or text (never fades)', addPrice: 150, icon: '🧵', popular: true },
+          { label: 'HD DTF / Heat Transfer Print', desc: 'Full-color photorealistic print heat-fused to garment', addPrice: 100, icon: '🖨️', popular: true },
+          { label: 'Reflective / Metallic Heat Press', desc: 'High-visibility silver or gold chrome film', addPrice: 120, icon: '✨', popular: true },
+          { label: 'Combo (Embroidery + Print)', desc: 'Front chest embroidery with full back graphic print', addPrice: 250, icon: '🌟' },
         ],
       },
       {
         id: 'placement',
-        title: 'Where should we place the design?',
-        subtitle: 'Tap the location on the garment',
+        title: 'Where should the design be placed?',
+        subtitle: 'Select placement position on the garment',
         type: 'visual_grid',
         key: 'placement',
         popularCount: 4,
         options: [
-          { label: 'Front Left Chest', icon: '📍', desc: 'Standard 3-4 inch pocket area', popular: true },
-          { label: 'Front Center', icon: '🎯', desc: 'Mid-chest statement graphic', popular: true },
-          { label: 'Full Back', icon: '🛡️', desc: 'Large back branding / team name', popular: true },
-          { label: 'Left / Right Sleeve', icon: '💪', desc: 'Bicep logo / badge', popular: true },
-          { label: 'Full Front', icon: '🔲', desc: 'Large A4/A3 front placement' },
-          { label: 'Upper Back / Nape', icon: '🔝', desc: 'Subtle neck logo' },
-          { label: 'Collar / Cuff', icon: '👔', desc: 'Monogram & initials' },
           { label: 'Multiple Locations', icon: '⭐', desc: 'Chest + Back combo' },
         ],
       },
@@ -591,6 +576,10 @@ const SERVICE_CONFIG = {
 const serviceList = Object.values(SERVICE_CONFIG)
 
 export default function Customize() {
+  const [searchParams, setSearchParams] = useSearchParams()
+  const location = useLocation()
+  const navigate = useNavigate()
+
   const [selectedServiceKey, setSelectedServiceKey] = useState('blouse')
   const [activeStepId, setActiveStepId] = useState('service') // 'service', 'options', 'measurements', 'uploads', 'review'
   const [formData, setFormData] = useState({})
@@ -604,9 +593,136 @@ export default function Customize() {
   const [expandedGroups, setExpandedGroups] = useState({}) // track "View More" toggles per question
   const [showAdvisor, setShowAdvisor] = useState(false) // "Help Me Choose" assistant modal
   const [advisorArtworkType, setAdvisorArtworkType] = useState('')
+  
+  // Persistent reference design state
+  const [referenceDesign, setReferenceDesign] = useState(null)
+  const [designNotFound, setDesignNotFound] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
 
   const dispatch = useDispatch()
   const { isAuthenticated } = useSelector((s) => s.auth)
+
+  // 1. Initial URL Params & Persistent Draft Loader
+  useEffect(() => {
+    let isCancelled = false
+
+    async function initializeStudio() {
+      setInitialLoading(true)
+      setDesignNotFound(false)
+
+      const serviceParam = searchParams.get('service') || searchParams.get('serviceId') || location.state?.serviceId
+      const designParam = searchParams.get('design') || searchParams.get('productId') || searchParams.get('id') || location.state?.designId || location.state?.product?._id
+      const stepParam = searchParams.get('step') || location.state?.step
+
+      let foundDesign = location.state?.product || null
+
+      if (designParam && !foundDesign) {
+        // Look in Lookbook gallery
+        try {
+          const galleryItems = await getUnifiedGalleryItems('all')
+          foundDesign = galleryItems.find((item) => item._id === designParam || item.id === designParam)
+        } catch (e) {
+          console.warn('Gallery search error:', e)
+        }
+
+        // Look in remote products API
+        if (!foundDesign) {
+          try {
+            const res = await api.get(`/products/${designParam}`)
+            if (res.data?.product) {
+              foundDesign = res.data.product
+            }
+          } catch (e) {
+            console.warn('Product search error:', e)
+          }
+        }
+
+        // Look in localStorage cart
+        if (!foundDesign) {
+          try {
+            const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
+            const cartMatch = cart.find((item) => item.product?._id === designParam)
+            if (cartMatch) foundDesign = cartMatch.product
+          } catch (e) {
+            console.warn('Cart lookup error:', e)
+          }
+        }
+
+        if (!foundDesign && !serviceParam) {
+          setDesignNotFound(true)
+        }
+      }
+
+      if (isCancelled) return
+
+      if (foundDesign) {
+        setReferenceDesign(foundDesign)
+        const mappedService = foundDesign.category?.name
+          ? normalizeServiceKey(foundDesign.category.name)
+          : foundDesign.category
+          ? normalizeServiceKey(foundDesign.category)
+          : 'blouse'
+        const targetService = serviceParam ? normalizeServiceKey(serviceParam) : mappedService
+        setSelectedServiceKey(targetService)
+        setActiveStepId(stepParam || 'options')
+        if (foundDesign.url) {
+          setFormData((prev) => ({ ...prev, referenceImageTitle: foundDesign.title, referenceImageUrl: foundDesign.url }))
+        }
+      } else if (serviceParam) {
+        setSelectedServiceKey(normalizeServiceKey(serviceParam))
+        setActiveStepId(stepParam || 'options')
+      } else {
+        // Restore local draft
+        try {
+          const savedDraft = localStorage.getItem('slv_customize_draft')
+          if (savedDraft) {
+            const parsed = JSON.parse(savedDraft)
+            if (parsed.selectedServiceKey && SERVICE_CONFIG[parsed.selectedServiceKey]) {
+              setSelectedServiceKey(parsed.selectedServiceKey)
+              if (parsed.activeStepId) setActiveStepId(parsed.activeStepId)
+              if (parsed.formData) setFormData(parsed.formData)
+              if (parsed.measurements) setMeasurements(parsed.measurements)
+              if (parsed.specialInstructions) setSpecialInstructions(parsed.specialInstructions)
+              if (parsed.referenceDesign) setReferenceDesign(parsed.referenceDesign)
+            }
+          }
+        } catch (e) {
+          console.warn('Draft restoration error:', e)
+        }
+      }
+
+      setInitialLoading(false)
+    }
+
+    initializeStudio()
+
+    return () => {
+      isCancelled = true
+    }
+  }, [searchParams, location.state])
+
+  // 2. Persistent Local Storage Auto-Saver for Drafts
+  useEffect(() => {
+    if (initialLoading) return
+    try {
+      const draft = {
+        selectedServiceKey,
+        activeStepId,
+        formData,
+        measurements,
+        specialInstructions,
+        quantity,
+        deliveryDate,
+        expressDelivery,
+        giftWrap,
+        referenceDesign,
+        updatedAt: Date.now(),
+      }
+      localStorage.setItem('slv_customize_draft', JSON.stringify(draft))
+    } catch (e) {
+      console.warn('Draft save error:', e)
+    }
+  }, [selectedServiceKey, activeStepId, formData, measurements, specialInstructions, quantity, deliveryDate, expressDelivery, giftWrap, referenceDesign, initialLoading])
 
   const activeService = SERVICE_CONFIG[selectedServiceKey] || SERVICE_CONFIG.blouse
 
@@ -646,23 +762,25 @@ export default function Customize() {
     setMeasurements({})
     setUploadedFiles({})
     setActiveStepId('options')
+    setSearchParams({ service: key })
   }
 
+  // 3. Robust Add to Bag Flow (Permanent & Mobile Friendly)
   const handleAddToCart = () => {
-    if (!isAuthenticated) {
-      dispatch(showLogin())
-      return
-    }
-
     const customProduct = {
       _id: `custom_${activeService.id}_${Date.now()}`,
-      name: `Bespoke ${activeService.label}`,
+      name: referenceDesign ? `${referenceDesign.title || referenceDesign.name} (Bespoke Customization)` : `Bespoke ${activeService.label}`,
       price: estimatedTotal,
       offerPrice: null,
-      images: [],
+      images: referenceDesign?.url
+        ? [{ url: referenceDesign.url, alt: referenceDesign.title }]
+        : (referenceDesign?.images?.length ? referenceDesign.images : [{ url: 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800' }]),
+      category: { name: activeService.category || "Custom Boutique" },
       customization: {
         serviceId: activeService.id,
         serviceName: activeService.label,
+        referenceDesignId: referenceDesign?._id || referenceDesign?.id,
+        referenceDesignTitle: referenceDesign?.title || referenceDesign?.name,
         options: formData,
         measurements: activeService.needsMeasurements ? measurements : null,
         specialInstructions,
@@ -675,7 +793,13 @@ export default function Customize() {
     }
 
     dispatch(addToCart({ product: customProduct, quantity: 1 }))
-    toast.success(`${activeService.label} added to your shopping bag! 🛍️`)
+    dispatch(openCart())
+    toast.success(`${customProduct.name} added to your shopping bag! 🛍️`)
+
+    // Clear saved draft
+    try {
+      localStorage.removeItem('slv_customize_draft')
+    } catch (e) {}
   }
 
   // Advisor recommendation generator
@@ -764,6 +888,78 @@ export default function Customize() {
             })}
           </div>
         </div>
+
+        {/* Reference Design Active Banner */}
+        {referenceDesign && (
+          <div className="mb-6 max-w-4xl mx-auto bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900/60 rounded-2xl p-4 flex items-center justify-between gap-4 shadow-subtle">
+            <div className="flex items-center gap-3 min-w-0">
+              {(referenceDesign.url || referenceDesign.images?.[0]?.url) ? (
+                <img
+                  src={referenceDesign.url || referenceDesign.images?.[0]?.url}
+                  alt={referenceDesign.title || referenceDesign.name}
+                  className="w-12 h-12 rounded-xl object-cover border border-pink-200 flex-shrink-0"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-xl bg-pink-200 dark:bg-pink-900 flex items-center justify-center text-pink-700 dark:text-pink-300 font-bold flex-shrink-0">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+              )}
+              <div className="min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className="badge bg-pink-500 text-white text-[9px] font-bold uppercase">Reference Design Selected</span>
+                </div>
+                <p className="font-display font-bold text-sm text-[#1F2937] dark:text-white truncate">
+                  {referenceDesign.title || referenceDesign.name || 'Selected Design'}
+                </p>
+                <p className="text-[11px] text-[#64748B] dark:text-slate-400">
+                  Customizing options & measurements for this inspiration piece.
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={() => {
+                setReferenceDesign(null)
+                setSearchParams({})
+              }}
+              className="text-xs text-pink-600 dark:text-pink-400 hover:underline font-bold flex-shrink-0"
+            >
+              Clear
+            </button>
+          </div>
+        )}
+
+        {/* Safe Fallback: Design Not Found Banner */}
+        {designNotFound && !referenceDesign && (
+          <div className="mb-6 max-w-4xl mx-auto bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-900/60 rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-subtle">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 dark:bg-amber-900 flex items-center justify-center text-amber-700 dark:text-amber-300 font-bold flex-shrink-0">
+                <Info className="w-5 h-5" />
+              </div>
+              <div>
+                <p className="font-display font-bold text-sm text-amber-900 dark:text-amber-200">
+                  Design ID Not Found in Current Catalog
+                </p>
+                <p className="text-xs text-amber-700 dark:text-amber-300/90">
+                  You can still choose any studio service below to craft your custom garment or browse our full catalog.
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <button
+                onClick={() => navigate('/products')}
+                className="btn-primary text-xs py-2 px-4 font-bold shadow-soft"
+              >
+                Browse Catalog
+              </button>
+              <button
+                onClick={() => setDesignNotFound(false)}
+                className="btn-secondary text-xs py-2 px-3 font-bold"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        )}
 
         {/* ========================================================================= */}
         {/* MAIN STUDIO 2-COLUMN LAYOUT                                              */}

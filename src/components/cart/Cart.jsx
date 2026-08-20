@@ -123,6 +123,11 @@ export default function Cart() {
                         <div className="flex-1 min-w-0 flex flex-col justify-between">
                           <div>
                             <h4 className="font-semibold text-[#1F2937] dark:text-white text-xs line-clamp-1">{item.product.name}</h4>
+                            {item.product.customization && (
+                              <span className="inline-flex items-center gap-1 text-[9px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 px-1.5 py-0.5 rounded mt-0.5">
+                                ✨ {item.product.customization.serviceName || 'Bespoke Fitting'}
+                              </span>
+                            )}
                             {item.size && <p className="text-[11px] text-[#64748B] mt-0.5">Size: {item.size}</p>}
                             {item.color && <p className="text-[11px] text-[#64748B]">Color: {item.color}</p>}
                             <p className="text-pink-600 dark:text-pink-400 font-bold text-sm mt-0.5 price-tag">

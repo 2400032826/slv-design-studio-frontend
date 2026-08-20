@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, ZoomIn, Sparkles } from 'lucide-react'
@@ -127,9 +128,19 @@ export default function Gallery() {
                 className="w-full h-full max-h-[75vh] object-contain mx-auto"
               />
               {selected.title && (
-                <div className="p-4 bg-[#F5F7FA] dark:bg-[#1F2937] text-center border-t border-[#E5E7EB] dark:border-charcoal-800">
-                  <p className="font-display font-bold text-[#1F2937] dark:text-white text-sm">{selected.title}</p>
-                  <span className="text-pink-600 text-xs font-bold uppercase tracking-wider">{selected.category}</span>
+                <div className="p-4 bg-[#F5F7FA] dark:bg-[#1F2937] text-center border-t border-[#E5E7EB] dark:border-charcoal-800 space-y-2">
+                  <div>
+                    <p className="font-display font-bold text-[#1F2937] dark:text-white text-sm">{selected.title}</p>
+                    <span className="text-pink-600 text-xs font-bold uppercase tracking-wider">{selected.category}</span>
+                  </div>
+                  <div>
+                    <Link
+                      to={`/customize?service=${selected.category || 'embroidery'}&design=${selected._id || selected.id}`}
+                      className="btn-primary text-xs font-bold py-2 px-5 inline-flex items-center gap-1.5 shadow-soft"
+                    >
+                      <Sparkles className="w-3.5 h-3.5" /> Customize This Lookbook Design
+                    </Link>
+                  </div>
                 </div>
               )}
             </div>

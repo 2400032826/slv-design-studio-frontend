@@ -5,7 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ShoppingCart, Heart, Share2, Star, ChevronLeft, ChevronRight,
-  ZoomIn, Truck, Shield, RefreshCw, Award, Plus, Minus, Check, Sparkles
+  ZoomIn, Truck, Shield, RefreshCw, Award, Plus, Minus, Check, Sparkles,
+  Info, Palette
 } from 'lucide-react'
 import api from '../api/axios'
 import { addToCart } from '../store/slices/cartSlice'
@@ -15,6 +16,7 @@ import { openCart } from '../store/slices/cartSlice'
 import toast from 'react-hot-toast'
 import ProductCard from '../components/products/ProductCard'
 import { getImageUrl } from '../utils/imageUtils'
+import { getUnifiedGalleryItems } from '../utils/galleryService'
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -32,7 +34,51 @@ export default function ProductDetail() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
-    queryFn: () => api.get(`/products/${id}`).then((r) => r.data.product),
+    queryFn: async () => {
+      // 1. Remote API product fetch
+      try {
+        const res = await api.get(`/products/${id}`)
+        if (res.data?.product) return res.data.product
+      } catch (err) {
+        console.warn('Product not in remote DB, resolving local design repository:', err.message)
+      }
+
+      // 2. Check Unified Gallery / Lookbook items
+      try {
+        const galleryItems = await getUnifiedGalleryItems('all')
+        const match = galleryItems.find((item) => item._id === id || item.id === id)
+        if (match) {
+          return {
+            _id: match._id || match.id,
+            name: match.title || 'Handcrafted Design Piece',
+            description: match.description || 'Exclusive designer collection piece from SLV Women’s Fashion Studio.',
+            price: 1499,
+            offerPrice: 1299,
+            mrp: 1899,
+            images: [{ url: match.url, alt: match.title }],
+            category: { _id: match.category, name: (match.category || 'Embroidery').toUpperCase() },
+            sizes: ['XS', 'S', 'M', 'L', 'XL', 'Custom Fit'],
+            colors: ['Antique Gold & Pink', 'Royal Navy', 'Crimson Red', 'Emerald Green', 'Custom Fabric'],
+            stock: 10,
+            isCustomizable: true,
+          }
+        }
+      } catch (err) {
+        console.warn('Gallery lookup error:', err)
+      }
+
+      // 3. Check persistent Cart items
+      try {
+        const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
+        const cartMatch = cart.find((item) => item.product?._id === id)
+        if (cartMatch?.product) return cartMatch.product
+      } catch (err) {
+        console.warn('Cart lookup error:', err)
+      }
+
+      return null
+    },
+    staleTime: 5 * 60 * 1000,
   })
 
   const { data: relatedProducts } = useQuery({
@@ -58,11 +104,23 @@ export default function ProductDetail() {
   )
 
   if (!data) return (
-    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827]">
-      <div className="text-center p-8 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] max-w-sm">
-        <p className="text-4xl mb-3">👗</p>
-        <h2 className="text-xl font-display font-bold text-[#1F2937] dark:text-white">Design not found</h2>
-        <button onClick={() => navigate('/products')} className="btn-primary mt-4 text-xs py-2.5">Browse Catalog</button>
+    <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827] px-4">
+      <div className="text-center p-8 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-700 max-w-md shadow-card">
+        <div className="w-16 h-16 bg-[#FFF5F9] dark:bg-pink-950/40 rounded-2xl flex items-center justify-center text-3xl mx-auto mb-4">
+          👗
+        </div>
+        <h2 className="text-xl font-display font-bold text-[#1F2937] dark:text-white mb-2">Design Not Found</h2>
+        <p className="text-xs text-[#64748B] dark:text-charcoal-400 mb-6 leading-relaxed">
+          The requested design could not be loaded or was part of a previous session. You can browse our active collection or launch the customizer studio to create your own style.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <button onClick={() => navigate('/products')} className="btn-primary text-xs py-2.5 px-5 font-bold shadow-soft">
+            Browse Catalog
+          </button>
+          <button onClick={() => navigate('/customize')} className="btn-secondary text-xs py-2.5 px-5 font-bold">
+            Launch Customizer
+          </button>
+        </div>
       </div>
     </div>
   )
@@ -283,26 +341,39 @@ export default function ProductDetail() {
             </div>
 
             {/* Action buttons */}
-            <div className="flex flex-col sm:flex-row gap-3 pt-2">
-              <button onClick={handleAddToCart} disabled={data.stock === 0} className="btn-primary flex-1 py-3.5 text-xs font-bold shadow-pink-glow">
-                <ShoppingCart className="w-4 h-4" /> Add to Shopping Bag
-              </button>
-              <button onClick={handleBuyNow} disabled={data.stock === 0} className="btn-secondary flex-1 py-3.5 text-xs font-bold shadow-soft">
-                Book Fit & Order
-              </button>
-              <button onClick={handleWishlist}
-                className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-all ${
-                  inWishlist ? 'border-pink-500 bg-[#FFF5F9] text-pink-600' : 'border-[#E5E7EB] dark:border-charcoal-700 text-[#64748B] hover:border-pink-300'
-                }`}
-                title="Wishlist"
+            <div className="space-y-2.5 pt-2">
+              <div className="flex flex-col sm:flex-row gap-3">
+                <button onClick={handleAddToCart} disabled={data.stock === 0} className="btn-primary flex-1 py-3.5 text-xs font-bold shadow-pink-glow">
+                  <ShoppingCart className="w-4 h-4" /> Add to Shopping Bag
+                </button>
+                <button onClick={handleBuyNow} disabled={data.stock === 0} className="btn-secondary flex-1 py-3.5 text-xs font-bold shadow-soft">
+                  Book Fit & Order
+                </button>
+                <div className="flex gap-2">
+                  <button onClick={handleWishlist}
+                    className={`w-11 h-11 rounded-xl border flex items-center justify-center transition-all ${
+                      inWishlist ? 'border-pink-500 bg-[#FFF5F9] text-pink-600' : 'border-[#E5E7EB] dark:border-charcoal-700 text-[#64748B] hover:border-pink-300'
+                    }`}
+                    title="Wishlist"
+                  >
+                    <Heart className={`w-4 h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
+                  </button>
+                  <button onClick={handleShare}
+                    className="w-11 h-11 rounded-xl border border-[#E5E7EB] dark:border-charcoal-700 flex items-center justify-center text-[#64748B] hover:border-pink-300 transition-all"
+                    title="Share Design"
+                  >
+                    <Share2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Direct Studio Customizer Link */}
+              <button
+                onClick={() => navigate(`/customize?service=${data.category?.name?.toLowerCase() || 'blouse'}&design=${data._id}`)}
+                className="w-full py-2.5 px-4 rounded-xl border border-pink-200 dark:border-pink-900/60 bg-[#FFF5F9] dark:bg-pink-950/20 text-pink-700 dark:text-pink-300 hover:bg-pink-100 text-xs font-bold transition-all flex items-center justify-center gap-2"
               >
-                <Heart className={`w-4 h-4 ${inWishlist ? 'fill-pink-500 text-pink-500' : ''}`} />
-              </button>
-              <button onClick={handleShare}
-                className="w-11 h-11 rounded-xl border border-[#E5E7EB] dark:border-charcoal-700 flex items-center justify-center text-[#64748B] hover:border-pink-300 transition-all"
-                title="Share Design"
-              >
-                <Share2 className="w-4 h-4" />
+                <Palette className="w-4 h-4 text-pink-500" />
+                Customize / Alter This Design in Studio
               </button>
             </div>
 
