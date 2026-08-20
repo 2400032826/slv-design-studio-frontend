@@ -81,19 +81,19 @@ export default function Navbar() {
         <div className="section-container">
           <div className="flex items-center justify-between h-20">
             {/* Brand Logo */}
-            <Link to="/" className="flex items-center gap-2.5 sm:gap-3 group flex-shrink-0">
+            <Link to="/" className="flex items-center gap-1.5 sm:gap-2.5 group flex-shrink min-w-0">
               <div className="relative flex-shrink-0 flex items-center justify-center">
                 <img
                   src="/slv-logo.png"
                   alt="SLV Women's Fashion Studio"
-                  className="w-[66px] h-[66px] sm:w-[70px] sm:h-[70px] md:w-[56px] md:h-[56px] rounded-full object-contain shadow-soft group-hover:scale-105 transition-transform"
+                  className="w-[52px] h-[52px] xs:w-[60px] xs:h-[60px] sm:w-[68px] sm:h-[68px] md:w-[56px] md:h-[56px] rounded-full object-contain shadow-soft group-hover:scale-105 transition-transform"
                 />
               </div>
-              <div className="min-w-0">
-                <p className="font-display font-bold text-base sm:text-lg md:text-xl text-[#1F2937] dark:text-white leading-tight tracking-tight whitespace-nowrap">
+              <div className="min-w-0 flex-shrink">
+                <p className="font-display font-bold text-xs xs:text-sm sm:text-lg md:text-xl text-[#1F2937] dark:text-white leading-tight tracking-tight truncate">
                   SLV Women's
                 </p>
-                <p className="text-[9px] sm:text-[10px] text-pink-600 dark:text-pink-400 font-bold tracking-[0.2em] uppercase whitespace-nowrap">Fashion Studio</p>
+                <p className="text-[8px] xs:text-[9px] sm:text-[10px] text-pink-600 dark:text-pink-400 font-bold tracking-[0.1em] sm:tracking-[0.2em] uppercase truncate">Fashion Studio</p>
               </div>
             </Link>
 
@@ -125,21 +125,23 @@ export default function Navbar() {
             </div>
 
             {/* Right Actions */}
-            <div className="flex items-center gap-1.5 sm:gap-2">
+            <div className="flex items-center gap-1 sm:gap-2 flex-shrink-0 ml-auto">
               <button
                 onClick={() => setSearchOpen(true)}
-                className="w-10 h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors"
+                className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors flex-shrink-0"
                 title="Search products"
               >
-                <Search className="w-5 h-5" />
+                <Search className="w-4 h-4 sm:w-5 sm:h-5" />
               </button>
 
-              <DarkModeToggle />
+              <div className="flex-shrink-0 scale-90 sm:scale-100 origin-center">
+                <DarkModeToggle />
+              </div>
 
               {/* Wishlist Link */}
               <Link
                 to="/dashboard/wishlist"
-                className="hidden sm:flex w-10 h-10 rounded-xl items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors"
+                className="hidden sm:flex w-10 h-10 rounded-xl items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors flex-shrink-0"
                 title="Wishlist"
               >
                 <Heart className="w-5 h-5" />
@@ -148,12 +150,12 @@ export default function Navbar() {
               {/* Cart Drawer Button */}
               <button
                 onClick={handleCartClick}
-                className="relative w-10 h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors"
+                className="relative w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 hover:text-pink-600 transition-colors flex-shrink-0"
                 title="Shopping Bag"
               >
-                <ShoppingCart className="w-5 h-5" />
+                <ShoppingCart className="w-4 h-4 sm:w-5 sm:h-5" />
                 {cartCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-[9px] rounded-full flex items-center justify-center font-bold shadow-soft">
+                  <span className="absolute top-1 right-1 sm:top-1.5 sm:right-1.5 w-3.5 h-3.5 sm:w-4 sm:h-4 bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white text-[8px] sm:text-[9px] rounded-full flex items-center justify-center font-bold shadow-soft">
                     {cartCount > 9 ? '9+' : cartCount}
                   </span>
                 )}
@@ -161,12 +163,12 @@ export default function Navbar() {
 
               {/* User Session Handler */}
               {isAuthenticated ? (
-                <div className="relative">
+                <div className="relative flex-shrink-0">
                   <button
                     onClick={() => setUserDropdown(!userDropdown)}
-                    className="flex items-center gap-2 p-1.5 rounded-xl border border-[#E5E7EB] dark:border-slate-700 hover:border-pink-300 hover:bg-[#FFF5F9] transition-all"
+                    className="flex items-center gap-1 sm:gap-2 p-1 sm:p-1.5 rounded-xl border border-[#E5E7EB] dark:border-slate-700 hover:border-pink-300 hover:bg-[#FFF5F9] transition-all"
                   >
-                    <div className="w-7 h-7 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-lg flex items-center justify-center text-white text-xs font-bold shadow-soft">
+                    <div className="w-6 h-6 sm:w-7 sm:h-7 bg-gradient-to-tr from-pink-500 to-fuchsia-600 rounded-lg flex items-center justify-center text-white text-[10px] sm:text-xs font-bold shadow-soft">
                       {user?.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <ChevronDown className="w-3.5 h-3.5 text-[#64748B] dark:text-white hidden sm:block mr-1" />
@@ -209,19 +211,19 @@ export default function Navbar() {
               ) : (
                 <button
                   onClick={() => dispatch(showLogin())}
-                  className="hidden sm:flex btn-primary text-xs px-5 py-2.5 shadow-card"
+                  className="hidden sm:flex btn-primary text-xs px-5 py-2.5 shadow-card flex-shrink-0"
                 >
                   <User className="w-4 h-4" /> Login
                 </button>
               )}
 
-              {/* Mobile Drawer Trigger */}
+              {/* Mobile Drawer Trigger (Hamburger Menu) - ALWAYS VISIBLE AT FAR RIGHT */}
               <button
                 onClick={() => setMobileOpen(!mobileOpen)}
-                className="lg:hidden w-10 h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] transition-colors"
-                title="Menu"
+                className="lg:hidden w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center text-[#1F2937] dark:text-white hover:bg-[#FFF5F9] dark:hover:bg-slate-800 transition-colors flex-shrink-0 ml-0.5"
+                title="Toggle Menu"
               >
-                {mobileOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+                {mobileOpen ? <X className="w-5 h-5 sm:w-6 sm:h-6" /> : <Menu className="w-5 h-5 sm:w-6 sm:h-6" />}
               </button>
             </div>
           </div>
