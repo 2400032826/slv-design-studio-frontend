@@ -146,17 +146,22 @@ export default function Checkout() {
       const firstItem = validItems[0]
       const productName = firstItem?.product?.name || 'Boutique Custom Wear'
       const qty = validItems.reduce((acc, i) => acc + i.quantity, 0)
+      const hasCustomService = validItems.some((i) => i.product?.customization?.isPriceToConfirm || i.product?.isCustomQuote || i.product?.price === 0)
+      const priceText = hasCustomService && subtotal === 0
+        ? 'Price: To be confirmed by SLV Fashion Studio'
+        : `Total: ₹${total.toLocaleString('en-IN')}`
 
       const waMessage = `Hello SLV Women's Fashion Studio,
-I have placed a new order.
+I have submitted a new ${hasCustomService ? 'custom design / service request' : 'order'}.
 
-Order ID: ${bookedOrder.orderNumber}
+Order ID: ${bookedOrder.orderNumber || 'SLV-' + Date.now()}
 Name: ${address.name}
 Phone: ${address.phone}
-Product: ${productName}
+Product / Service: ${productName}
 Quantity: ${qty}
+${priceText}
 
-Please contact me regarding my order.`
+${hasCustomService ? 'Please review my design requirements, photos, and measurements, and let me know the final exact price.' : 'Please confirm my order.'}`
 
       const waUrl = `https://wa.me/${BUSINESS_PHONE}?text=${encodeURIComponent(waMessage)}`
       setWhatsappUrl(waUrl)
@@ -392,9 +397,15 @@ Please contact me regarding my order.`
                         </div>
 
                         <div className="text-right flex flex-col items-end gap-1 flex-shrink-0">
-                          <p className={`text-xs font-bold price-tag ${isInvalid ? 'text-gray-400 line-through' : 'text-pink-600 dark:text-pink-400'}`}>
-                            ₹{((itemValidation.currentPrice || prod.offerPrice || prod.price || 0) * item.quantity).toLocaleString('en-IN')}
-                          </p>
+                          {prod.customization?.isPriceToConfirm || prod.isCustomQuote || prod.price === 0 ? (
+                            <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 max-w-[130px] leading-tight text-right">
+                              Price: To be confirmed
+                            </span>
+                          ) : (
+                            <p className={`text-xs font-bold price-tag ${isInvalid ? 'text-gray-400 line-through' : 'text-pink-600 dark:text-pink-400'}`}>
+                              ₹{((itemValidation.currentPrice || prod.offerPrice || prod.price || 0) * item.quantity).toLocaleString('en-IN')}
+                            </p>
+                          )}
                           {isInvalid && (
                             <button
                               type="button"
@@ -412,25 +423,38 @@ Please contact me regarding my order.`
                 </div>
 
                 <div className="border-t border-[#E5E7EB] dark:border-charcoal-800 pt-3 space-y-1.5 text-xs text-[#64748B] dark:text-charcoal-400">
-                  <div className="flex justify-between">
-                    <span>Available Items Subtotal</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{subtotal.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Boutique Delivery</span>
-                    <span className={delivery === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937] dark:text-white'}>
-                      {delivery === 0 ? 'FREE' : `₹${delivery}`}
-                    </span>
-                  </div>
-                  {discount > 0 && (
-                    <div className="flex justify-between text-emerald-600 font-bold">
-                      <span>Promo Coupon</span><span>-₹{discount}</span>
+                  {subtotal === 0 && items.some((i) => i.product?.customization?.isPriceToConfirm || i.product?.isCustomQuote) ? (
+                    <div className="p-3 bg-pink-50 dark:bg-pink-950/30 rounded-xl border border-pink-200 dark:border-pink-900/40 text-center space-y-1">
+                      <p className="text-xs font-bold text-pink-700 dark:text-pink-300">
+                        Price: To be confirmed by SLV Fashion Studio
+                      </p>
+                      <p className="text-[10px] text-[#64748B] dark:text-slate-400">
+                        Zero upfront payment. Final quotation will be provided after manual review.
+                      </p>
                     </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between">
+                        <span>Available Items Subtotal</span>
+                        <span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{subtotal.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Boutique Delivery</span>
+                        <span className={delivery === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937] dark:text-white'}>
+                          {delivery === 0 ? 'FREE' : `₹${delivery}`}
+                        </span>
+                      </div>
+                      {discount > 0 && (
+                        <div className="flex justify-between text-emerald-600 font-bold">
+                          <span>Promo Coupon</span><span>-₹{discount}</span>
+                        </div>
+                      )}
+                      <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-800 pt-2">
+                        <span>Total Estimated</span>
+                        <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{total.toLocaleString('en-IN')}</span>
+                      </div>
+                    </>
                   )}
-                  <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-800 pt-2">
-                    <span>Total Estimated</span>
-                    <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{total.toLocaleString('en-IN')}</span>
-                  </div>
                 </div>
 
                 {/* Coupon */}

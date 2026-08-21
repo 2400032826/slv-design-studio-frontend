@@ -214,9 +214,15 @@ export default function Cart() {
                             {item.size && <p className="text-[11px] text-[#64748B] mt-0.5">Size: {item.size}</p>}
                             {item.color && <p className="text-[11px] text-[#64748B]">Color: {item.color}</p>}
                             
-                            <p className={`font-bold text-sm mt-0.5 price-tag ${isInvalid ? 'text-gray-400 line-through' : 'text-pink-600 dark:text-pink-400'}`}>
-                              ₹{((itemValidation.currentPrice || prod.offerPrice || prod.price || 0) * item.quantity).toLocaleString('en-IN')}
-                            </p>
+                            {prod.customization?.isPriceToConfirm || prod.isCustomQuote || prod.price === 0 ? (
+                              <p className="font-bold text-xs mt-1 text-pink-600 dark:text-pink-400">
+                                Price: To be confirmed by SLV Fashion Studio
+                              </p>
+                            ) : (
+                              <p className={`font-bold text-sm mt-0.5 price-tag ${isInvalid ? 'text-gray-400 line-through' : 'text-pink-600 dark:text-pink-400'}`}>
+                                ₹{((itemValidation.currentPrice || prod.offerPrice || prod.price || 0) * item.quantity).toLocaleString('en-IN')}
+                              </p>
+                            )}
                           </div>
 
                           {/* Quantity Controls & Remove */}
@@ -254,7 +260,7 @@ export default function Cart() {
                               title="Remove item"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
-                              <span>Remove</span>
+                              <span className="text-[11px]">Remove</span>
                             </button>
                           </div>
                         </div>
@@ -269,20 +275,33 @@ export default function Cart() {
             {items.length > 0 && (
               <div className="border-t border-[#E5E7EB] dark:border-charcoal-800 p-5 bg-[#F5F7FA] dark:bg-[#1F2937] space-y-3">
                 <div className="space-y-1.5 text-xs text-[#64748B] dark:text-charcoal-300">
-                  <div className="flex justify-between">
-                    <span>Available Items Subtotal ({count} items)</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{total.toLocaleString('en-IN')}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span className={shipping === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937] dark:text-white'}>
-                      {shipping === 0 ? 'FREE' : `₹${shipping}`}
-                    </span>
-                  </div>
-                  <div className="flex justify-between font-bold text-base text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-2">
-                    <span>Total Amount</span>
-                    <span className="text-pink-600 dark:text-pink-400 price-tag">₹{(total + (count > 0 ? shipping : 0)).toLocaleString('en-IN')}</span>
-                  </div>
+                  {total === 0 && items.some((i) => i.product?.customization?.isPriceToConfirm || i.product?.isCustomQuote) ? (
+                    <div className="p-3 bg-pink-50 dark:bg-pink-950/30 rounded-xl border border-pink-200 dark:border-pink-900/40 text-center space-y-1">
+                      <p className="text-xs font-bold text-pink-700 dark:text-pink-300">
+                        Price: To be confirmed by SLV Fashion Studio
+                      </p>
+                      <p className="text-[10px] text-[#64748B] dark:text-slate-400">
+                        Zero upfront payment. Final exact price confirmed by master artisan after reviewing requirements.
+                      </p>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex justify-between">
+                        <span>Available Items Subtotal ({count} items)</span>
+                        <span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{total.toLocaleString('en-IN')}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>Shipping</span>
+                        <span className={shipping === 0 ? 'text-emerald-600 font-bold' : 'font-semibold text-[#1F2937] dark:text-white'}>
+                          {shipping === 0 ? 'FREE' : `₹${shipping}`}
+                        </span>
+                      </div>
+                      <div className="flex justify-between font-bold text-base text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-2">
+                        <span>Total Amount</span>
+                        <span className="text-pink-600 dark:text-pink-400 price-tag">₹{(total + (count > 0 ? shipping : 0)).toLocaleString('en-IN')}</span>
+                      </div>
+                    </>
+                  )}
                 </div>
 
                 <button
@@ -298,6 +317,8 @@ export default function Cart() {
                     ? 'Remove Unavailable Items to Checkout'
                     : count === 0
                     ? 'No Available Items'
+                    : total === 0 && items.some((i) => i.product?.customization?.isPriceToConfirm || i.product?.isCustomQuote)
+                    ? 'Submit Custom Request Booking'
                     : 'Proceed to Checkout'}
                   {!hasInvalidItems && count > 0 && <ArrowRight className="w-4 h-4" />}
                 </button>

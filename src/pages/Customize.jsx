@@ -784,24 +784,6 @@ export default function Customize() {
 
   const activeService = SERVICE_CONFIG[selectedServiceKey] || SERVICE_CONFIG.blouse
 
-  // Dynamic price calculation
-  const addOnsTotal = (() => {
-    let sum = 0
-    activeService.steps.forEach((st) => {
-      const selectedVal = formData[st.key]
-      if ((st.type === 'select' || st.type === 'visual_grid') && selectedVal) {
-        const opt = st.options.find((o) => o.label === selectedVal)
-        if (opt?.addPrice) sum += opt.addPrice
-      }
-    })
-    return sum
-  })()
-
-  const unitPrice = activeService.basePrice + addOnsTotal
-  const expressFee = expressDelivery ? 200 : 0
-  const giftFee = giftWrap ? 50 : 0
-  const estimatedTotal = (unitPrice * quantity) + expressFee + giftFee
-
   const updateField = (key, val) => {
     setFormData((prev) => ({ ...prev, [key]: val }))
   }
@@ -823,12 +805,14 @@ export default function Customize() {
     setSearchParams({ service: key })
   }
 
-  // 3. Robust Add to Bag Flow (Permanent & Mobile Friendly)
+  // 3. Robust Add to Bag Flow (Price To Be Confirmed By Studio)
   const handleAddToCart = () => {
     const customProduct = {
       _id: `custom_${activeService.id}_${Date.now()}`,
       name: referenceDesign ? `${referenceDesign.title || referenceDesign.name} (Bespoke Customization)` : `Bespoke ${activeService.label}`,
-      price: estimatedTotal,
+      price: 0,
+      isCustomQuote: true,
+      priceDisplay: 'To be confirmed by SLV Fashion Studio',
       offerPrice: null,
       images: referenceDesign?.url
         ? [{ url: referenceDesign.url, alt: referenceDesign.title }]
@@ -837,6 +821,8 @@ export default function Customize() {
       customization: {
         serviceId: activeService.id,
         serviceName: activeService.label,
+        isPriceToConfirm: true,
+        priceText: 'To be confirmed by SLV Fashion Studio',
         referenceDesignId: referenceDesign?._id || referenceDesign?.id,
         referenceDesignTitle: referenceDesign?.title || referenceDesign?.name,
         options: formData,
@@ -846,13 +832,12 @@ export default function Customize() {
         deliveryDate,
         expressDelivery,
         giftWrap,
-        estimatedTotal,
       },
     }
 
     dispatch(addToCart({ product: customProduct, quantity: 1 }))
     dispatch(openCart())
-    toast.success(`${customProduct.name} added to your shopping bag! 🛍️`)
+    toast.success(`Custom request for ${activeService.label} added to your bag! 🛍️`)
 
     // Clear saved draft
     try {
@@ -1078,7 +1063,6 @@ export default function Customize() {
                             <h3 className="font-display font-bold text-sm text-[#252A34] dark:text-white group-hover:text-pink-600 transition-colors">
                               {svc.label}
                             </h3>
-                            <span className="text-xs font-bold text-pink-600 price-tag">From ₹{svc.basePrice}</span>
                           </div>
                           <p className="text-xs text-[#64707D] dark:text-slate-400 mt-1 line-clamp-2">
                             {svc.shortDesc}
@@ -1201,9 +1185,6 @@ export default function Customize() {
                                 <div className="flex-1">
                                   <div className="flex items-center justify-between">
                                     <p className="text-xs font-bold text-[#252A34] dark:text-white">{opt.label}</p>
-                                    {opt.addPrice > 0 && (
-                                      <span className="text-[11px] text-pink-600 font-bold price-tag">+₹{opt.addPrice}</span>
-                                    )}
                                   </div>
                                   <p className="text-[11px] text-[#64707D] dark:text-slate-400 mt-0.5">{opt.desc}</p>
                                 </div>
@@ -1233,9 +1214,6 @@ export default function Customize() {
                                 <p className="text-xs font-bold text-[#252A34] dark:text-white leading-snug">{opt.label}</p>
                                 {opt.desc && (
                                   <p className="text-[10px] text-[#64707D] dark:text-slate-400 mt-0.5 line-clamp-1">{opt.desc}</p>
-                                )}
-                                {opt.addPrice > 0 && (
-                                  <span className="text-[10px] text-pink-600 font-bold mt-1 price-tag">+₹{opt.addPrice}</span>
                                 )}
                               </button>
                             )
@@ -1606,7 +1584,7 @@ export default function Customize() {
                       className="accent-pink-600 w-4 h-4 rounded"
                     />
                     <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
-                      ⚡ Express Atelier Stitching (+₹200)
+                      ⚡ Express Atelier Stitching (Priority Dispatch)
                     </span>
                   </label>
                   <label className="flex items-center gap-2.5 cursor-pointer">
@@ -1617,7 +1595,7 @@ export default function Customize() {
                       className="accent-pink-600 w-4 h-4 rounded"
                     />
                     <span className="text-xs font-semibold text-[#252A34] dark:text-slate-200">
-                      🎁 Trousseau Gift Packaging (+₹50)
+                      🎁 Trousseau Boutique Gift Packaging
                     </span>
                   </label>
                 </div>
@@ -1635,7 +1613,7 @@ export default function Customize() {
                     onClick={handleAddToCart}
                     className="btn-primary text-xs px-8 py-3.5 font-bold shadow-card flex items-center gap-2"
                   >
-                    <ShoppingCart className="w-4 h-4" /> Add Custom Order to Shopping Bag
+                    <ShoppingCart className="w-4 h-4" /> Submit Custom Design Request
                   </button>
                 </div>
               </motion.div>
@@ -1643,7 +1621,7 @@ export default function Customize() {
 
           </div>
 
-          {/* RIGHT 4 COLS: DYNAMIC PRICE ESTIMATOR & LIVE SUMMARY */}
+          {/* RIGHT 4 COLS: CUSTOM DESIGN REQUEST SUMMARY */}
           <div className="lg:col-span-4">
             <div className="sticky top-24 bg-white dark:bg-[#1F2937] rounded-3xl p-6 border border-[#E8EAF0] dark:border-slate-800 shadow-card space-y-6">
               
@@ -1652,31 +1630,22 @@ export default function Customize() {
                 <div className="flex items-center gap-2">
                   <Scissors className="w-4 h-4 text-pink-500" />
                   <h3 className="font-display text-base font-bold text-[#252A34] dark:text-white">
-                    Estimated Total
+                    Custom Order Overview
                   </h3>
                 </div>
                 <span className="text-[10px] font-bold uppercase tracking-wider bg-[#FFF1F6] text-[#C52E74] px-2.5 py-1 rounded-full">
-                  Live Quote
+                  Atelier Service
                 </span>
               </div>
 
               {/* Breakdown */}
               <div className="space-y-3 text-xs text-[#64707D] dark:text-slate-300">
                 <div className="flex justify-between">
-                  <span>Base ({activeService.label})</span>
-                  <span className="font-bold text-[#252A34] dark:text-white price-tag">
-                    ₹{activeService.basePrice}
+                  <span>Selected Service</span>
+                  <span className="font-bold text-[#252A34] dark:text-white text-right">
+                    {activeService.label}
                   </span>
                 </div>
-
-                {addOnsTotal > 0 && (
-                  <div className="flex justify-between">
-                    <span>Selected Add-ons</span>
-                    <span className="font-bold text-pink-600 price-tag">
-                      +₹{addOnsTotal}
-                    </span>
-                  </div>
-                )}
 
                 <div className="flex justify-between">
                   <span>Quantity</span>
@@ -1687,31 +1656,29 @@ export default function Customize() {
 
                 {expressDelivery && (
                   <div className="flex justify-between">
-                    <span>Express Delivery</span>
-                    <span className="font-semibold text-pink-600">+₹200</span>
+                    <span>Delivery Mode</span>
+                    <span className="font-semibold text-pink-600">Priority Express</span>
                   </div>
                 )}
 
                 {giftWrap && (
                   <div className="flex justify-between">
-                    <span>Gift Wrap</span>
-                    <span className="font-semibold text-pink-600">+₹50</span>
+                    <span>Packaging</span>
+                    <span className="font-semibold text-pink-600">Trousseau Gift Box</span>
                   </div>
                 )}
 
-                {/* Total */}
-                <div className="pt-4 border-t border-[#E8EAF0] dark:border-slate-700">
-                  <div className="flex justify-between items-baseline mb-1">
-                    <span className="font-display font-bold text-sm text-[#252A34] dark:text-white">
-                      Total Estimate
-                    </span>
-                    <span className="font-bold text-2xl text-pink-600 dark:text-pink-400 price-tag">
-                      ₹{estimatedTotal.toLocaleString('en-IN')}
-                    </span>
+                {/* Price Confirmation Notice Box */}
+                <div className="pt-3 border-t border-[#E8EAF0] dark:border-slate-700">
+                  <div className="p-4 rounded-2xl bg-[#FFF5F9] dark:bg-pink-950/20 border border-pink-200 dark:border-pink-900/40 space-y-2">
+                    <div className="flex items-start gap-2 text-xs font-bold text-pink-700 dark:text-pink-300">
+                      <Sparkles className="w-4 h-4 text-pink-500 flex-shrink-0 mt-0.5" />
+                      <span>Price: To be confirmed by SLV Fashion Studio</span>
+                    </div>
+                    <p className="text-[11px] text-[#64707D] dark:text-slate-400 leading-relaxed">
+                      Our master artisan will review your design, photos, measurements, material, and embroidery work to manually confirm the exact final price on WhatsApp.
+                    </p>
                   </div>
-                  <p className="text-[11px] text-[#94A3B8] leading-tight">
-                    *Final price confirmed upon master artisan design review.
-                  </p>
                 </div>
               </div>
 

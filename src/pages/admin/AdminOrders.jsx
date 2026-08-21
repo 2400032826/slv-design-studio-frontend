@@ -159,7 +159,15 @@ export default function AdminOrders() {
                             <p className="text-[11px] text-[#64748B]">{order.shippingAddress?.phone || order.user?.email}</p>
                           </td>
                           <td className="px-5 py-4">
-                            <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">₹{order.totalPrice?.toLocaleString('en-IN')}</p>
+                            {order.totalPrice === 0 || !order.totalPrice ? (
+                              <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 px-2 py-0.5 rounded-full border border-pink-200">
+                                Quote to Confirm
+                              </span>
+                            ) : (
+                              <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">
+                                ₹{order.totalPrice.toLocaleString('en-IN')}
+                              </p>
+                            )}
                           </td>
                           <td className="px-5 py-4">
                             <select
@@ -338,7 +346,15 @@ export default function AdminOrders() {
                             </div>
                           )}
                         </div>
-                        <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
+                        {item.customization?.isPriceToConfirm || !item.price || item.price === 0 ? (
+                          <span className="font-bold text-xs text-pink-600 dark:text-pink-400 max-w-[140px] text-right">
+                            Price: To be confirmed by Studio
+                          </span>
+                        ) : (
+                          <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">
+                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                          </p>
+                        )}
                       </div>
                     )
                   })}
