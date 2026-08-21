@@ -1,15 +1,17 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Plus, Search, Edit2, Trash2, Package, Star, X, Upload, Check, Image as ImageIcon, Sparkles } from 'lucide-react'
+import { Plus, Search, Edit2, Trash2, Package, Star, X, Upload, Check, Image as ImageIcon, Sparkles, Filter } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 import { getImageUrl } from '../../utils/imageUtils'
+import { syncAndFetchCategories, resolveCategoryId, STUDIO_CATEGORIES } from '../../utils/categoryHelper'
 
 export default function AdminProducts() {
   const [sidebarOpen, setSidebarOpen] = useState(true)
   const [search, setSearch] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('all')
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [submitting, setSubmitting] = useState(false)
@@ -34,13 +36,24 @@ export default function AdminProducts() {
     files: [],
   })
 
-  // Fetch categories
+  // Fetch & Auto-Sync all studio categories with remote database
   const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => api.get('/categories').then((r) => r.data.categories),
+    queryFn: async () => {
+      try {
+        const res = await api.get('/categories')
+        const cats = res.data?.categories || []
+        return await syncAndFetchCategories(cats)
+      } catch (err) {
+        return await syncAndFetchCategories([])
+      }
+    },
+    staleTime: 60000,
   })
 
-  const categories = categoriesData || []
+  const categories = categoriesData && categoriesData.length > 0
+    ? categoriesData
+    : STUDIO_CATEGORIES.map((c) => ({ _id: `cat_${c.name.toLowerCase().replace(/\s+/g, '_')}`, name: c.name, description: c.description }))
 
   // Fetch products
   const { data, isLoading } = useQuery({
@@ -62,7 +75,7 @@ export default function AdminProducts() {
     setEditingProduct(null)
     setFormData({
       name: '',
-      category: categories[0]?._id || '',
+      category: categories[0]?._id || categories[0]?.name || '',
       price: '',
       mrp: '',
       offerPrice: '',
@@ -81,9 +94,10 @@ export default function AdminProducts() {
 
   const handleOpenEditModal = (product) => {
     setEditingProduct(product)
+    const productCat = product.category?._id || product.category?.id || (typeof product.category === 'string' ? product.category : '') || categories[0]?._id || ''
     setFormData({
       name: product.name || '',
-      category: product.category?._id || product.category || categories[0]?._id || '',
+      category: productCat,
       price: product.price || '',
       mrp: product.mrp || '',
       offerPrice: product.offerPrice || '',
@@ -104,12 +118,16 @@ export default function AdminProducts() {
     e.preventDefault()
     if (!formData.name.trim()) return toast.error('Product name is required')
     if (!formData.price) return toast.error('Price is required')
+    if (!formData.category) return toast.error('Please select a category')
 
     setSubmitting(true)
     try {
+      // Resolve category to permanent MongoDB ObjectId
+      const resolvedCatId = await resolveCategoryId(formData.category, categories)
+
       const dataPayload = new FormData()
       dataPayload.append('name', formData.name.trim())
-      if (formData.category) dataPayload.append('category', formData.category)
+      if (resolvedCatId) dataPayload.append('category', resolvedCatId)
       dataPayload.append('price', formData.price)
       if (formData.mrp) dataPayload.append('mrp', formData.mrp)
       if (formData.offerPrice) dataPayload.append('offerPrice', formData.offerPrice)
@@ -145,6 +163,7 @@ export default function AdminProducts() {
 
       queryClient.invalidateQueries(['admin-products'])
       queryClient.invalidateQueries(['products'])
+      queryClient.invalidateQueries(['categories'])
       setShowForm(false)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save product')
@@ -153,7 +172,16 @@ export default function AdminProducts() {
     }
   }
 
-  const products = data?.products || []
+  const rawProducts = data?.products || []
+  const products = rawProducts.filter((product) => {
+    if (categoryFilter === 'all') return true
+    const productCatId = product.category?._id || product.category?.id || (typeof product.category === 'string' ? product.category : '')
+    const productCatName = product.category?.name || (typeof product.category === 'string' ? product.category : '')
+    return (
+      productCatId === categoryFilter ||
+      productCatName.toLowerCase() === categoryFilter.toLowerCase()
+    )
+  })
 
   return (
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
@@ -168,16 +196,32 @@ export default function AdminProducts() {
         </div>
 
         <div className="p-8 space-y-6 max-w-7xl">
-          {/* Search Bar */}
-          <div className="relative">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
-            <input
-              type="text"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search catalog by title, material..."
-              className="input-field pl-10 py-2.5 w-full max-w-md text-xs shadow-soft"
-            />
+          {/* Search & Category Filter Toolbar */}
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search catalog by title, material..."
+                className="input-field pl-10 py-2.5 w-full text-xs shadow-soft"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <Filter className="w-4 h-4 text-pink-500 flex-shrink-0" />
+              <select
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                className="input-field py-2.5 text-xs font-semibold w-auto cursor-pointer shadow-soft"
+              >
+                <option value="all">All Categories ({categories.length})</option>
+                {categories.map((cat) => (
+                  <option key={cat._id || cat.name} value={cat._id || cat.name}>{cat.name}</option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Products Table */}
@@ -211,7 +255,9 @@ export default function AdminProducts() {
                       <td colSpan={6} className="text-center py-16 text-[#94A3B8]">
                         <Package className="w-12 h-12 mx-auto mb-2 opacity-30 text-pink-400" />
                         <p className="text-sm font-semibold text-[#64748B]">No products found</p>
-                        <p className="text-xs text-[#94A3B8] mt-0.5">Click "Add Design / Product" above to create one</p>
+                        <p className="text-xs text-[#94A3B8] mt-0.5">
+                          {categoryFilter !== 'all' ? 'No products in this category' : 'Click "Add Design / Product" above to create one'}
+                        </p>
                       </td>
                     </tr>
                   ) : (
@@ -228,7 +274,9 @@ export default function AdminProducts() {
                             </div>
                             <div>
                               <p className="font-bold text-xs sm:text-sm text-[#1F2937] dark:text-white line-clamp-1">{product.name}</p>
-                              <p className="text-[11px] text-[#64748B]">{product.category?.name || 'Uncategorized'}</p>
+                              <span className="inline-block mt-0.5 text-[10px] font-semibold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 px-2 py-0.5 rounded-full border border-pink-200 dark:border-pink-900/40">
+                                {product.category?.name || (typeof product.category === 'string' ? product.category : 'Bespoke Atelier')}
+                              </span>
                             </div>
                           </div>
                         </td>
@@ -259,14 +307,24 @@ export default function AdminProducts() {
                           )}
                         </td>
                         <td className="px-5 py-4">
-                          <div className="flex items-center gap-1.5">
-                            <button onClick={() => handleOpenEditModal(product)}
-                              className="p-2 rounded-xl bg-[#F5F7FA] hover:bg-pink-50 text-pink-600 border border-[#E5E7EB] transition-colors" title="Edit Product">
-                              <Edit2 className="w-3.5 h-3.5" />
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => handleOpenEditModal(product)}
+                              className="p-2 rounded-xl text-[#64748B] hover:text-pink-600 hover:bg-[#FFF5F9] dark:hover:bg-charcoal-700 transition-colors"
+                              title="Edit product"
+                            >
+                              <Edit2 className="w-4 h-4" />
                             </button>
-                            <button onClick={() => { if (window.confirm(`Delete "${product.name}"?`)) deleteMutation.mutate(product._id) }}
-                              className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors" title="Delete Product">
-                              <Trash2 className="w-3.5 h-3.5" />
+                            <button
+                              onClick={() => {
+                                if (window.confirm(`Are you sure you want to delete "${product.name}"?`)) {
+                                  deleteMutation.mutate(product._id)
+                                }
+                              }}
+                              className="p-2 rounded-xl text-[#64748B] hover:text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 transition-colors"
+                              title="Delete product"
+                            >
+                              <Trash2 className="w-4 h-4" />
                             </button>
                           </div>
                         </td>
@@ -326,15 +384,18 @@ export default function AdminProducts() {
 
                   {/* Category */}
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Category</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Category *</label>
                     <select
                       value={formData.category}
                       onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                      className="input-field text-xs"
+                      className="input-field text-xs font-medium cursor-pointer"
+                      required
                     >
                       <option value="">Select Category</option>
                       {categories.map((cat) => (
-                        <option key={cat._id} value={cat._id}>{cat.name}</option>
+                        <option key={cat._id || cat.name} value={cat._id || cat.name}>
+                          {cat.name}
+                        </option>
                       ))}
                     </select>
                   </div>

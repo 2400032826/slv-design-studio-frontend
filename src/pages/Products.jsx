@@ -6,6 +6,7 @@ import { Filter, Grid3X3, List, ChevronDown, X, SlidersHorizontal, Sparkles } fr
 import api from '../api/axios'
 import ProductCard from '../components/products/ProductCard'
 import { PageLoader } from '../components/common/LoadingSpinner'
+import { STUDIO_CATEGORIES } from '../utils/categoryHelper'
 
 const sortOptions = [
   { label: 'Newest First', value: '-createdAt' },
@@ -49,11 +50,31 @@ export default function Products() {
     keepPreviousData: true,
   })
 
-  const { data: categories } = useQuery({
+  const { data: categoriesData } = useQuery({
     queryKey: ['categories'],
-    queryFn: () => api.get('/categories').then((r) => r.data.categories),
-    staleTime: Infinity,
+    queryFn: async () => {
+      try {
+        const res = await api.get('/categories')
+        const serverCats = res.data?.categories || []
+        const names = new Set(serverCats.map((c) => (c?.name || '').toLowerCase()))
+        const combined = [...serverCats]
+        for (const std of STUDIO_CATEGORIES) {
+          if (!names.has(std.name.toLowerCase())) {
+            combined.push({ _id: `cat_${std.name.toLowerCase().replace(/\s+/g, '_')}`, name: std.name, description: std.description })
+            names.add(std.name.toLowerCase())
+          }
+        }
+        return combined
+      } catch (e) {
+        return STUDIO_CATEGORIES.map((std) => ({ _id: `cat_${std.name.toLowerCase().replace(/\s+/g, '_')}`, name: std.name }))
+      }
+    },
+    staleTime: 60000,
   })
+
+  const categories = categoriesData && categoriesData.length > 0
+    ? categoriesData
+    : STUDIO_CATEGORIES.map((std) => ({ _id: `cat_${std.name.toLowerCase().replace(/\s+/g, '_')}`, name: std.name }))
 
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
@@ -79,7 +100,7 @@ export default function Products() {
           </motion.h1>
           <div className="h-0.5 w-16 bg-gradient-to-r from-pink-500 to-fuchsia-600 mx-auto my-3 rounded-full" />
           <p className="text-[#64748B] dark:text-charcoal-300 text-sm max-w-md mx-auto">
-            Explore {data?.total || 0} handcrafted bridal blouses, custom embroidery outfits, and luxury fabrics.
+            Explore {data?.total || products.length || 0} handcrafted bridal blouses, sarees, custom embroidery outfits, and luxury fabrics.
           </p>
         </div>
       </div>
@@ -132,7 +153,7 @@ export default function Products() {
                 className="flex-shrink-0 overflow-hidden"
               >
                 <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-5 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card space-y-6">
-                  <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB]">
+                  <div className="flex items-center justify-between pb-3 border-b border-[#E5E7EB] dark:border-charcoal-700">
                     <h3 className="font-display font-bold text-sm text-[#1F2937] dark:text-white">Filters</h3>
                     <button onClick={clearFilters} className="text-xs text-pink-600 font-bold hover:underline">Clear All</button>
                   </div>
@@ -140,18 +161,33 @@ export default function Products() {
                   {/* Categories */}
                   <div>
                     <h4 className="text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-200 mb-3">Category</h4>
-                    <div className="space-y-2">
+                    <div className="space-y-2 max-h-56 overflow-y-auto pr-1">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="radio"
+                          name="category"
+                          value=""
+                          checked={!filters.category}
+                          onChange={() => updateFilter('category', '')}
+                          className="accent-pink-600"
+                        />
+                        <span className={`text-xs font-medium transition-colors ${!filters.category ? 'text-pink-600 font-bold' : 'text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600'}`}>
+                          All Categories
+                        </span>
+                      </label>
                       {(categories || []).map((cat) => (
-                        <label key={cat._id} className="flex items-center gap-2 cursor-pointer group">
+                        <label key={cat._id || cat.name} className="flex items-center gap-2 cursor-pointer group">
                           <input
                             type="radio"
                             name="category"
-                            value={cat._id}
-                            checked={filters.category === cat._id}
+                            value={cat._id || cat.name}
+                            checked={filters.category === cat._id || filters.category === cat.name}
                             onChange={(e) => updateFilter('category', e.target.value)}
                             className="accent-pink-600"
                           />
-                          <span className="text-xs font-medium text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600 transition-colors">{cat.name}</span>
+                          <span className={`text-xs font-medium transition-colors ${filters.category === cat._id || filters.category === cat.name ? 'text-pink-600 font-bold' : 'text-[#64748B] dark:text-charcoal-300 group-hover:text-pink-600'}`}>
+                            {cat.name}
+                          </span>
                         </label>
                       ))}
                     </div>
