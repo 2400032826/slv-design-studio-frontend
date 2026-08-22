@@ -33,7 +33,6 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
   const [lightboxOpen, setLightboxOpen] = useState(false)
-
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
@@ -45,14 +44,15 @@ export default function ProductDetail() {
         try {
           const res = await api.get(`/products/${id}`)
           if (res.data?.product) return res.data.product
+          if (res.data && !res.data.product && res.data._id) return res.data
         } catch (err) {
           console.warn('Direct product ID fetch error:', err.message)
         }
       }
 
-      // 2. Fetch from full remote catalog to resolve by slug, id, or title
+      // 2. Fetch from catalog to resolve by slug, id, or exact title
       try {
-        const res = await api.get('/products?limit=100')
+        const res = await api.get(`/products?limit=100`)
         const products = res.data?.products || []
         const matched = products.find(
           (p) =>
@@ -66,63 +66,17 @@ export default function ProductDetail() {
         console.warn('Catalog list fetch error:', err.message)
       }
 
-      // 3. Fallback search via backend search API
-      try {
-        const res = await api.get(`/products?search=${encodeURIComponent(id)}`)
-        const products = res.data?.products || []
-        const matched = products.find(
-          (p) =>
-            p._id === id ||
-            p.slug === id ||
-            (p.name && p.name.toLowerCase() === id.toLowerCase()) ||
-            (p.slug && p.slug.toLowerCase() === id.toLowerCase())
-        )
-        if (matched) return matched
-      } catch (err) {}
-
-      // 4. Check Unified Gallery / Lookbook items
-      try {
-        const galleryItems = await getUnifiedGalleryItems('all')
-        const match = galleryItems.find((item) => String(item._id) === id || String(item.id) === id)
-        if (match) {
-          return {
-            _id: match._id || match.id,
-            name: match.title || 'Handcrafted Design Piece',
-            description: match.description || 'Exclusive designer collection piece from SLV Women’s Fashion Studio.',
-            price: 1499,
-            offerPrice: 1299,
-            mrp: 1899,
-            images: [{ url: match.url, alt: match.title }],
-            category: { _id: match.category, name: (match.category || 'Embroidery').toUpperCase() },
-            sizes: ['XS', 'S', 'M', 'L', 'XL', 'Custom Fit'],
-            colors: ['Antique Gold & Pink', 'Royal Navy', 'Crimson Red', 'Emerald Green', 'Custom Fabric'],
-            stock: 10,
-            isCustomizable: true,
-          }
-        }
-      } catch (err) {
-        console.warn('Gallery lookup error:', err)
-      }
-
-      // 5. Check persistent Cart items
-      try {
-        const cart = JSON.parse(localStorage.getItem('slv_cart') || '[]')
-        const cartMatch = cart.find((item) => String(item.product?._id) === id || String(item.product?.slug) === id)
-        if (cartMatch?.product) return cartMatch.product
-      } catch (err) {
-        console.warn('Cart lookup error:', err)
-      }
-
       return null
     },
-    staleTime: 10 * 60 * 1000,
   })
 
   const { data: relatedProducts } = useQuery({
-    queryKey: ['related-products', data?.category?._id],
-    queryFn: () => data?.category?._id ? api.get(`/products?category=${data.category._id}&limit=4`).then((r) => r.data?.products?.filter((p) => p._id !== data._id) || []) : Promise.resolve([]),
-    enabled: !!data?.category?._id,
-    staleTime: 10 * 60 * 1000,
+    queryKey: ['related-products', data?.category?._id || data?.category],
+    queryFn: () => {
+      const catId = data?.category?._id || (typeof data?.category === 'string' ? data.category : '')
+      return catId ? api.get(`/products?category=${catId}&limit=4`).then((r) => r.data?.products?.filter((p) => p._id !== data._id) || []) : Promise.resolve([])
+    },
+    enabled: !!(data?.category?._id || data?.category),
   })
 
   if (isLoading) return <ProductDetailSkeleton />

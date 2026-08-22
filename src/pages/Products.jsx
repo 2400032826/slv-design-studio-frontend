@@ -238,14 +238,27 @@ export default function Products() {
             {isLoading ? (
               <CatalogGridSkeleton count={12} />
             ) : products.length === 0 ? (
-              <div className="text-center py-20 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-800">
-                <p className="text-4xl mb-3">👗</p>
-                <h3 className="text-lg font-display font-bold text-[#1F2937] dark:text-white">No products found</h3>
-                <p className="text-[#64748B] text-xs mt-1">Try resetting or adjusting your filter criteria</p>
-                <button onClick={clearFilters} className="btn-primary mt-4 text-xs py-2.5">Clear All Filters</button>
+              <div className="text-center py-16 sm:py-24 px-4 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-800 shadow-soft">
+                <div className="w-16 h-16 bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-900 rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl">
+                  👗
+                </div>
+                <h3 className="text-lg sm:text-xl font-display font-bold text-[#1F2937] dark:text-white">
+                  No products available yet
+                </h3>
+                <p className="text-[#64748B] text-xs sm:text-sm mt-1 max-w-md mx-auto leading-relaxed">
+                  We are currently updating our atelier collection. Browse custom styling or check back shortly for new haute creations.
+                </p>
+                <div className="flex flex-wrap items-center justify-center gap-3 mt-6">
+                  <button onClick={clearFilters} className="btn-secondary text-xs py-2.5 px-4">
+                    Clear Filters
+                  </button>
+                  <a href="/customize" className="btn-primary text-xs py-2.5 px-5">
+                    Request Custom Tailoring →
+                  </a>
+                </div>
               </div>
             ) : (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4">
                 {products.map((product, i) => (
                   <motion.div key={product._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
                     <ProductCard product={product} priority={i < 4} />

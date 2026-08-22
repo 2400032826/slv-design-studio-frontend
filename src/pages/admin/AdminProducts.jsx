@@ -47,14 +47,23 @@ export default function AdminProducts() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-products', search],
-    queryFn: () => api.get(`/admin/products?search=${search}`, adminHeaders).then((r) => r.data),
+    queryFn: () => api.get(`/products?search=${encodeURIComponent(search)}&limit=100`, adminHeaders).then((r) => r.data),
   })
 
+  const invalidateAllProductQueries = () => {
+    queryClient.invalidateQueries({ queryKey: ['admin-products'] })
+    queryClient.invalidateQueries({ queryKey: ['products'] })
+    queryClient.invalidateQueries({ queryKey: ['featured-products'] })
+    queryClient.invalidateQueries({ queryKey: ['product'] })
+    queryClient.invalidateQueries({ queryKey: ['related-products'] })
+    queryClient.invalidateQueries({ queryKey: ['categories'] })
+  }
+
   const deleteMutation = useMutation({
-    mutationFn: (id) => api.delete(`/admin/products/${id}`, adminHeaders),
+    mutationFn: (id) => api.delete(`/products/${id}`, adminHeaders),
     onSuccess: () => {
-      toast.success('Product removed from catalog')
-      queryClient.invalidateQueries(['admin-products'])
+      toast.success('Product deleted from database! 🗑️')
+      invalidateAllProductQueries()
     },
     onError: (err) => {
       toast.error(err.response?.data?.message || 'Failed to delete product')
@@ -151,7 +160,7 @@ export default function AdminProducts() {
         })
 
         if (editingProduct) {
-          await api.put(`/admin/products/${editingProduct._id}`, formPayload, {
+          await api.put(`/products/${editingProduct._id}`, formPayload, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}`,
               'Content-Type': 'multipart/form-data',
@@ -159,7 +168,7 @@ export default function AdminProducts() {
           })
           toast.success('Product updated successfully! ✨')
         } else {
-          await api.post('/admin/products', formPayload, {
+          await api.post('/products', formPayload, {
             headers: {
               Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}`,
               'Content-Type': 'multipart/form-data',
@@ -193,16 +202,15 @@ export default function AdminProducts() {
         }
 
         if (editingProduct) {
-          await api.put(`/admin/products/${editingProduct._id}`, jsonPayload, adminHeaders)
+          await api.put(`/products/${editingProduct._id}`, jsonPayload, adminHeaders)
           toast.success('Product updated successfully! ✨')
         } else {
-          await api.post('/admin/products', jsonPayload, adminHeaders)
+          await api.post('/products', jsonPayload, adminHeaders)
           toast.success('New product created successfully! 👗')
         }
       }
 
-      queryClient.invalidateQueries(['admin-products'])
-      queryClient.invalidateQueries(['categories'])
+      invalidateAllProductQueries()
       setShowForm(false)
     } catch (err) {
       toast.error(err.response?.data?.message || 'Failed to save product')

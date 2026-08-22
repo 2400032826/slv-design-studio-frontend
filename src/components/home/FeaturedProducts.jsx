@@ -23,8 +23,11 @@ export default function FeaturedProducts() {
         return []
       }
     },
-    staleTime: 10 * 60 * 1000,
   })
+
+  if (!isLoading && (!data || data.length === 0)) {
+    return null
+  }
 
   return (
     <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
