@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Eye, Phone, MessageCircle, Printer, Trash2, X, FileText, Download, Sparkles } from 'lucide-react'
+import { Search, Eye, Phone, MessageCircle, Printer, Trash2, X, FileText, Download, Sparkles, Menu } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
@@ -37,7 +37,7 @@ const statusColors = {
 }
 
 export default function AdminOrders() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)
@@ -48,29 +48,25 @@ export default function AdminOrders() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-orders', search, statusFilter, page],
-    queryFn: () => api.get(`/orders?search=${search}&status=${statusFilter}&page=${page}&limit=50`, adminHeaders).then((r) => r.data),
+    queryFn: () => api.get(`/admin/orders?search=${search}&status=${statusFilter}&page=${page}`, adminHeaders).then((r) => r.data),
   })
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => api.put(`/orders/${id}/status`, { status }, adminHeaders),
+    mutationFn: ({ id, status }) => api.put(`/admin/orders/${id}/status`, { status }, adminHeaders),
     onSuccess: () => {
-      toast.success('Order status updated!')
+      toast.success('Production status updated')
       queryClient.invalidateQueries(['admin-orders'])
-      if (selectedOrder) {
-        setSelectedOrder((prev) => (prev ? { ...prev, status: prev._newStatus || prev.status } : null))
-      }
     },
-    onError: () => toast.error('Failed to update order status'),
+    onError: (err) => toast.error(err.response?.data?.message || 'Failed to update status'),
   })
 
   const deleteOrderMutation = useMutation({
-    mutationFn: (id) => api.delete(`/orders/${id}`, adminHeaders),
+    mutationFn: (id) => api.delete(`/admin/orders/${id}`, adminHeaders),
     onSuccess: () => {
-      toast.success('Order deleted successfully')
+      toast.success('Order deleted')
       queryClient.invalidateQueries(['admin-orders'])
-      setSelectedOrder(null)
     },
-    onError: () => toast.error('Failed to delete order'),
+    onError: (err) => toast.error(err.response?.data?.message || 'Failed to delete order'),
   })
 
   const orders = data?.orders || []
@@ -83,29 +79,38 @@ export default function AdminOrders() {
   return (
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
-          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Orders & Bookings Dispatch</h1>
+      <div className={`flex-1 min-w-0 transition-all duration-300 ml-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-soft">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 hover:bg-[#F5F7FA] dark:hover:bg-slate-800 rounded-xl border border-[#E5E7EB] dark:border-slate-700 text-[#64748B] md:hidden transition-colors"
+              aria-label="Toggle Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="font-display text-base sm:text-xl font-bold text-[#1F2937] dark:text-white truncate">Orders & Bookings</h1>
+          </div>
           <span className="badge badge-soft text-xs font-bold">{data?.total || 0} Total Orders</span>
         </div>
 
-        <div className="p-8 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl">
           {/* Filters */}
-          <div className="flex flex-wrap gap-3">
-            <div className="relative">
+          <div className="flex flex-col sm:flex-row gap-3">
+            <div className="relative flex-1">
               <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94A3B8]" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search by order # or client name..."
-                className="input-field pl-10 py-2 w-72 text-xs shadow-soft"
+                className="input-field pl-10 py-2 w-full text-xs shadow-soft"
               />
             </div>
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="input-field py-2 text-xs shadow-soft w-auto"
+              className="input-field py-2 text-xs shadow-soft w-full sm:w-auto"
             >
               <option value="">All Production Statuses</option>
               {ORDER_STATUSES.map((s) => (
@@ -114,8 +119,8 @@ export default function AdminOrders() {
             </select>
           </div>
 
-          {/* Orders Table */}
-          <div className="bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-800 overflow-hidden shadow-card">
+          {/* Desktop Orders Table */}
+          <div className="hidden md:block bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-800 overflow-hidden shadow-card">
             <div className="overflow-x-auto">
               <table className="w-full">
                 <thead className="bg-[#F5F7FA] dark:bg-charcoal-800 border-b border-[#E5E7EB]">
@@ -185,20 +190,17 @@ export default function AdminOrders() {
                           </td>
                           <td className="px-5 py-4">
                             <div className="flex items-center gap-1.5">
-                              {/* View Details */}
                               <button onClick={() => setSelectedOrder(order)}
                                 className="p-2 rounded-xl bg-[#F5F7FA] hover:bg-pink-50 text-pink-600 border border-[#E5E7EB] transition-colors" title="View Booking Details">
                                 <Eye className="w-3.5 h-3.5" />
                               </button>
 
-                              {/* Call Customer */}
                               {custPhone && (
                                 <a href={`tel:${custPhone}`} className="p-2 rounded-xl bg-emerald-50 hover:bg-emerald-100 text-emerald-600 border border-emerald-200 transition-colors" title="Call Customer">
                                   <Phone className="w-3.5 h-3.5" />
                                 </a>
                               )}
 
-                              {/* WhatsApp Chat */}
                               {cleanPhone && (
                                 <a
                                   href={`https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}`}
@@ -211,7 +213,6 @@ export default function AdminOrders() {
                                 </a>
                               )}
 
-                              {/* Delete Order */}
                               <button
                                 onClick={() => { if (window.confirm(`Delete booking order #${order.orderNumber}?`)) deleteOrderMutation.mutate(order._id) }}
                                 className="p-2 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-200 transition-colors"
@@ -228,6 +229,82 @@ export default function AdminOrders() {
                 </tbody>
               </table>
             </div>
+          </div>
+
+          {/* Mobile Orders Card List */}
+          <div className="md:hidden space-y-3">
+            {isLoading ? (
+              Array(4).fill(null).map((_, i) => (
+                <div key={i} className="p-4 bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-slate-800 animate-pulse space-y-3">
+                  <div className="h-4 w-1/3 bg-gray-200 dark:bg-slate-700 rounded" />
+                  <div className="h-3 w-1/2 bg-gray-100 dark:bg-slate-800 rounded" />
+                </div>
+              ))
+            ) : orders.length === 0 ? (
+              <div className="text-center py-12 bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] p-4 text-[#94A3B8]">
+                <FileText className="w-10 h-10 mx-auto mb-2 opacity-30 text-pink-400" />
+                <p className="text-sm font-semibold text-[#64748B]">No booking orders found</p>
+              </div>
+            ) : (
+              orders.map((order) => {
+                const custPhone = order.shippingAddress?.phone || order.user?.phone || ''
+                const cleanPhone = custPhone.replace(/[^0-9]/g, '')
+                return (
+                  <div key={order._id} className="p-4 bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-slate-800 shadow-soft space-y-3">
+                    <div className="flex items-start justify-between">
+                      <div>
+                        <p className="font-mono text-xs font-bold text-pink-600 dark:text-pink-400">#{order.orderNumber}</p>
+                        <p className="text-sm font-bold text-[#1F2937] dark:text-white mt-0.5">
+                          {order.shippingAddress?.fullName || order.user?.name || 'Customer'}
+                        </p>
+                        <p className="text-[11px] text-[#64748B]">{custPhone}</p>
+                      </div>
+                      <div className="text-right">
+                        {order.totalPrice === 0 || !order.totalPrice ? (
+                          <span className="text-[10px] font-bold text-pink-600 bg-pink-50 px-2 py-0.5 rounded-full border border-pink-200">
+                            Quote to Confirm
+                          </span>
+                        ) : (
+                          <p className="font-bold text-sm text-pink-600 dark:text-pink-400 price-tag">
+                            ₹{order.totalPrice.toLocaleString('en-IN')}
+                          </p>
+                        )}
+                        <p className="text-[10px] text-[#94A3B8] mt-0.5">
+                          {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 pt-2 border-t border-[#E5E7EB] dark:border-slate-800">
+                      <select
+                        value={order.status}
+                        onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                        className={`flex-1 text-[11px] px-2.5 py-1.5 rounded-xl border font-bold focus:outline-none ${statusColors[order.status] || 'bg-[#F5F7FA] text-gray-700 border-[#E5E7EB]'}`}
+                      >
+                        {ORDER_STATUSES.map((s) => (
+                          <option key={s} value={s}>{s.replace(/_/g, ' ')}</option>
+                        ))}
+                      </select>
+
+                      <button onClick={() => setSelectedOrder(order)} className="p-2 rounded-xl bg-[#F5F7FA] text-pink-600 border border-[#E5E7EB]">
+                        <Eye className="w-4 h-4" />
+                      </button>
+
+                      {cleanPhone && (
+                        <a
+                          href={`https://wa.me/${cleanPhone.startsWith('91') ? cleanPhone : '91' + cleanPhone}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="p-2 rounded-xl bg-emerald-50 text-emerald-600 border border-emerald-200"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                )
+              })
+            )}
           </div>
 
           {/* Pagination */}

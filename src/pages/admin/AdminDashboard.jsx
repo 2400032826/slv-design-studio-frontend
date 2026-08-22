@@ -132,7 +132,7 @@ function StatCard({ title, value, icon: Icon, gradient = 'from-pink-500 to-fuchs
 }
 
 export default function AdminDashboard() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-dashboard'],

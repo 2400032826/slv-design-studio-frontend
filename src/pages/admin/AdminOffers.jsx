@@ -1,12 +1,12 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Plus, Trash2, Tag, Edit2, Check, X, ToggleLeft, ToggleRight, Calendar, Percent, Sparkles } from 'lucide-react'
+import { Plus, Trash2, Tag, Edit2, Check, X, ToggleLeft, ToggleRight, Calendar, Percent, Sparkles, Menu } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 
 export default function AdminOffers() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
   const [editingCoupon, setEditingCoupon] = useState(null)
 
   const defaultForm = {
@@ -110,13 +110,22 @@ export default function AdminOffers() {
   return (
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
-          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Discount Coupons & Offers</h1>
+      <div className={`flex-1 min-w-0 transition-all duration-300 ml-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-soft">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 hover:bg-[#F5F7FA] dark:hover:bg-slate-800 rounded-xl border border-[#E5E7EB] dark:border-slate-700 text-[#64748B] md:hidden transition-colors"
+              aria-label="Toggle Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="font-display text-base sm:text-xl font-bold text-[#1F2937] dark:text-white truncate">Coupons & Offers</h1>
+          </div>
           <span className="badge badge-soft text-xs font-bold">{coupons.length} Active Codes</span>
         </div>
 
-        <div className="p-8 space-y-6 max-w-7xl">
+        <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl">
           {/* Create / Edit Coupon Form */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
             <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">

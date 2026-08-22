@@ -1,10 +1,10 @@
 import { useState } from 'react'
-import { Settings, Save, Phone, Mail, Globe, Clock, Sparkles } from 'lucide-react'
+import { Settings, Save, Phone, Mail, Globe, Clock, Sparkles, Menu } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 
 export default function AdminSettings() {
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
   const [settings, setSettings] = useState({
     businessName: "SLV Women's Fashion Studio",
     tagline: 'Crafting Bespoke Embroidery & Haute Tailoring for Discerning Women',
@@ -26,12 +26,21 @@ export default function AdminSettings() {
   return (
     <div className="min-h-screen bg-[#F5F7FA]/50 dark:bg-[#111827] flex">
       <AdminSidebar isOpen={sidebarOpen} onToggle={() => setSidebarOpen(!sidebarOpen)} />
-      <div className={`flex-1 transition-all duration-300 ${sidebarOpen ? 'ml-64' : 'ml-20'}`}>
-        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-8 py-4 flex items-center justify-between shadow-soft">
-          <h1 className="font-display text-xl font-bold text-[#1F2937] dark:text-white">Studio System Settings</h1>
+      <div className={`flex-1 min-w-0 transition-all duration-300 ml-0 ${sidebarOpen ? 'md:ml-64' : 'md:ml-20'}`}>
+        <div className="sticky top-0 z-30 bg-white dark:bg-[#1F2937] border-b border-[#E5E7EB] dark:border-charcoal-800 px-4 sm:px-8 py-3.5 sm:py-4 flex items-center justify-between shadow-soft">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+              className="p-2 hover:bg-[#F5F7FA] dark:hover:bg-slate-800 rounded-xl border border-[#E5E7EB] dark:border-slate-700 text-[#64748B] md:hidden transition-colors"
+              aria-label="Toggle Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+            <h1 className="font-display text-base sm:text-xl font-bold text-[#1F2937] dark:text-white truncate">Studio System Settings</h1>
+          </div>
         </div>
 
-        <div className="p-8 max-w-2xl space-y-6">
+        <div className="p-4 sm:p-6 md:p-8 max-w-2xl space-y-6">
           {/* Business Info */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
             <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">
