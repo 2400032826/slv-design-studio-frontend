@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom'
 import { ArrowRight, Sparkles } from 'lucide-react'
 import api from '../../api/axios'
 import ProductCard from '../products/ProductCard'
+import { ProductCardSkeleton } from '../common/LoadingSpinner'
 
 export default function FeaturedProducts() {
   const { data, isLoading } = useQuery({
@@ -22,9 +23,8 @@ export default function FeaturedProducts() {
         return []
       }
     },
+    staleTime: 10 * 60 * 1000,
   })
-
-  const skeleton = Array(4).fill(null)
 
   return (
     <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
@@ -48,14 +48,8 @@ export default function FeaturedProducts() {
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {isLoading
-            ? skeleton.map((_, i) => (
-                <div key={i} className="bg-white dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-slate-800 rounded-2xl p-4 shadow-card">
-                  <div className="skeleton aspect-[3/4] rounded-xl mb-4" />
-                  <div className="space-y-2">
-                    <div className="skeleton h-4 w-3/4 rounded" />
-                    <div className="skeleton h-4 w-1/2 rounded" />
-                  </div>
-                </div>
+            ? Array(4).fill(null).map((_, i) => (
+                <ProductCardSkeleton key={i} />
               ))
             : (data || []).map((product, i) => (
                 <motion.div
@@ -63,9 +57,9 @@ export default function FeaturedProducts() {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: i * 0.05 }}
+                  transition={{ delay: i * 0.08 }}
                 >
-                  <ProductCard product={product} />
+                  <ProductCard product={product} priority={i < 4} />
                 </motion.div>
               ))}
         </div>

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Filter, Grid3X3, List, ChevronDown, X, SlidersHorizontal, Sparkles } from 'lucide-react'
 import api from '../api/axios'
 import ProductCard from '../components/products/ProductCard'
-import { PageLoader } from '../components/common/LoadingSpinner'
+import { PageLoader, CatalogGridSkeleton } from '../components/common/LoadingSpinner'
 import { STUDIO_CATEGORIES } from '../utils/categoryHelper'
 
 const sortOptions = [
@@ -236,14 +236,7 @@ export default function Products() {
           {/* Products Grid */}
           <div className="flex-1">
             {isLoading ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-                {Array(12).fill(null).map((_, i) => (
-                  <div key={i} className="bg-white dark:bg-[#1F2937] rounded-2xl p-3.5 border border-[#E5E7EB]">
-                    <div className="skeleton aspect-[3/4] rounded-xl mb-3" />
-                    <div className="space-y-2"><div className="skeleton h-3.5 w-3/4 rounded" /><div className="skeleton h-3.5 w-1/2 rounded" /></div>
-                  </div>
-                ))}
-              </div>
+              <CatalogGridSkeleton count={12} />
             ) : products.length === 0 ? (
               <div className="text-center py-20 bg-[#F5F7FA] dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-800">
                 <p className="text-4xl mb-3">👗</p>
@@ -255,7 +248,7 @@ export default function Products() {
               <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {products.map((product, i) => (
                   <motion.div key={product._id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                    <ProductCard product={product} />
+                    <ProductCard product={product} priority={i < 4} />
                   </motion.div>
                 ))}
               </div>

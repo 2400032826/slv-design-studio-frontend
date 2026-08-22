@@ -6,9 +6,11 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../store/slices/cartSlice'
 import { toggleWishlistItem } from '../../store/slices/wishlistSlice'
 import { showLogin } from '../../store/slices/authSlice'
+import toast from 'react-hot-toast'
 import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
+import OptimizedImage from '../common/OptimizedImage'
 
-export default function ProductCard({ product }) {
+export default function ProductCard({ product, priority = false }) {
   const dispatch = useDispatch()
   const { isAuthenticated } = useSelector((s) => s.auth)
   const wishlist = useSelector((s) => s.wishlist.items)
@@ -19,8 +21,8 @@ export default function ProductCard({ product }) {
   const discount = product.mrp ? Math.round(((product.mrp - price) / product.mrp) * 100) : 0
 
   const fallbackImg = getCategoryFallbackImage(product)
-  const primaryImg = getProductImage(product, 0)
-  const secondaryImg = (product.images && product.images.length > 1) ? getProductImage(product, 1) : primaryImg
+  const primaryImg = getProductImage(product, 0, { width: 500, quality: 75 })
+  const secondaryImg = (product.images && product.images.length > 1) ? getProductImage(product, 1, { width: 500, quality: 75 }) : primaryImg
   const activeImg = (hovered && secondaryImg) ? secondaryImg : (primaryImg || fallbackImg)
 
   const handleAddToCart = (e) => {
@@ -56,15 +58,15 @@ export default function ProductCard({ product }) {
       >
         {/* Product Image Frame */}
         <div className="relative overflow-hidden aspect-[3/4] bg-[#F5F7FA] dark:bg-[#111827]">
-          <img
+          <OptimizedImage
             src={activeImg || fallbackImg}
             alt={product.name}
+            fallbackSrc={fallbackImg}
+            priority={priority}
+            width={500}
+            quality={75}
             className="w-full h-full object-cover object-center transition-transform duration-500 ease-out"
             style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
-            onError={(e) => {
-              e.target.onerror = null;
-              e.target.src = fallbackImg;
-            }}
           />
 
           {/* Badges */}

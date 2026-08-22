@@ -17,6 +17,8 @@ import toast from 'react-hot-toast'
 import ProductCard from '../components/products/ProductCard'
 import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../utils/imageUtils'
 import { getUnifiedGalleryItems } from '../utils/galleryService'
+import OptimizedImage from '../components/common/OptimizedImage'
+import { ProductDetailSkeleton } from '../components/common/LoadingSpinner'
 
 export default function ProductDetail() {
   const { id } = useParams()
@@ -113,30 +115,17 @@ export default function ProductDetail() {
 
       return null
     },
-    staleTime: 5 * 60 * 1000,
+    staleTime: 10 * 60 * 1000,
   })
 
   const { data: relatedProducts } = useQuery({
     queryKey: ['related-products', data?.category?._id],
-    queryFn: () => api.get(`/products?category=${data.category._id}&limit=4`).then((r) => r.data.products),
+    queryFn: () => data?.category?._id ? api.get(`/products?category=${data.category._id}&limit=4`).then((r) => r.data?.products?.filter((p) => p._id !== data._id) || []) : Promise.resolve([]),
     enabled: !!data?.category?._id,
+    staleTime: 10 * 60 * 1000,
   })
 
-  if (isLoading) return (
-    <div className="min-h-screen bg-white dark:bg-[#111827]">
-      <div className="section-container py-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-          <div className="skeleton aspect-square rounded-2xl" />
-          <div className="space-y-4">
-            <div className="skeleton h-8 w-3/4 rounded-xl" />
-            <div className="skeleton h-6 w-1/2 rounded-xl" />
-            <div className="skeleton h-24 w-full rounded-xl" />
-            <div className="skeleton h-12 w-full rounded-xl" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  if (isLoading) return <ProductDetailSkeleton />
 
   if (!data) return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827] px-4">
@@ -165,7 +154,7 @@ export default function ProductDetail() {
   const discount = data.mrp ? Math.round(((data.mrp - price) / data.mrp) * 100) : 0
 
   const fallbackImg = getCategoryFallbackImage(data)
-  const mainImgUrl = getProductImage(data, selectedImage) || fallbackImg
+  const mainImgUrl = getProductImage(data, selectedImage, { width: 1000, quality: 80 }) || fallbackImg
 
   const handleAddToCart = () => {
     if (data.sizes?.length > 0 && !selectedSize) return toast.error('Please select a size')
@@ -216,23 +205,20 @@ export default function ProductDetail() {
               className="relative aspect-square rounded-3xl overflow-hidden bg-[#F5F7FA] dark:bg-[#1F2937] mb-4 cursor-zoom-in group border border-[#E5E7EB] dark:border-charcoal-800 shadow-card"
               onClick={() => setLightboxOpen(true)}
             >
-              <motion.img
-                key={selectedImage}
+              <OptimizedImage
                 src={mainImgUrl}
                 alt={data.name}
+                fallbackSrc={fallbackImg}
+                priority={true}
+                width={1000}
+                quality={80}
                 className="w-full h-full object-cover"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = fallbackImg;
-                }}
               />
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
                 <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
               {discount > 0 && (
-                <div className="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-soft">
+                <div className="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-soft z-10">
                   {discount}% OFF
                 </div>
               )}
@@ -240,11 +226,11 @@ export default function ProductDetail() {
               {data.images?.length > 1 && (
                 <>
                   <button onClick={(e) => { e.stopPropagation(); setSelectedImage((p) => (p - 1 + data.images.length) % data.images.length) }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB]">
+                    className="absolute left-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB] z-10">
                     <ChevronLeft className="w-5 h-5" />
                   </button>
                   <button onClick={(e) => { e.stopPropagation(); setSelectedImage((p) => (p + 1) % data.images.length) }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB]">
+                    className="absolute right-3 top-1/2 -translate-y-1/2 w-9 h-9 bg-white/90 dark:bg-[#1F2937]/90 rounded-full flex items-center justify-center shadow-soft hover:bg-white text-[#1F2937] transition-colors border border-[#E5E7EB] z-10">
                     <ChevronRight className="w-5 h-5" />
                   </button>
                 </>
@@ -264,7 +250,7 @@ export default function ProductDetail() {
                         i === selectedImage ? 'border-pink-500 shadow-soft' : 'border-[#E5E7EB] dark:border-charcoal-700 opacity-60 hover:opacity-100'
                       }`}
                     >
-                      <img src={thumbUrl} alt="" className="w-full h-full object-cover" />
+                      <OptimizedImage src={thumbUrl} alt="" fallbackSrc={fallbackImg} width={150} quality={70} className="w-full h-full object-cover" />
                     </button>
                   )
                 })}
