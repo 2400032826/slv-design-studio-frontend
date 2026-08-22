@@ -15,7 +15,7 @@ import { showLogin } from '../store/slices/authSlice'
 import { openCart } from '../store/slices/cartSlice'
 import toast from 'react-hot-toast'
 import ProductCard from '../components/products/ProductCard'
-import { getImageUrl } from '../utils/imageUtils'
+import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../utils/imageUtils'
 import { getUnifiedGalleryItems } from '../utils/galleryService'
 
 export default function ProductDetail() {
@@ -164,7 +164,8 @@ export default function ProductDetail() {
   const price = data.offerPrice || data.price
   const discount = data.mrp ? Math.round(((data.mrp - price) / data.mrp) * 100) : 0
 
-  const mainImgUrl = getImageUrl(data.images?.[selectedImage])
+  const fallbackImg = getCategoryFallbackImage(data)
+  const mainImgUrl = getProductImage(data, selectedImage) || fallbackImg
 
   const handleAddToCart = () => {
     if (data.sizes?.length > 0 && !selectedSize) return toast.error('Please select a size')
@@ -215,24 +216,18 @@ export default function ProductDetail() {
               className="relative aspect-square rounded-3xl overflow-hidden bg-[#F5F7FA] dark:bg-[#1F2937] mb-4 cursor-zoom-in group border border-[#E5E7EB] dark:border-charcoal-800 shadow-card"
               onClick={() => setLightboxOpen(true)}
             >
-              {mainImgUrl ? (
-                <motion.img
-                  key={selectedImage}
-                  src={mainImgUrl}
-                  alt={data.name}
-                  className="w-full h-full object-cover"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  onError={(e) => {
-                    e.target.onerror = null;
-                    e.target.src = 'https://images.unsplash.com/photo-1583391733956-3750e0ff4e8b?w=800&q=80';
-                  }}
-                />
-              ) : (
-                <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center">
-                  <span className="text-6xl">👗</span>
-                </div>
-              )}
+              <motion.img
+                key={selectedImage}
+                src={mainImgUrl}
+                alt={data.name}
+                className="w-full h-full object-cover"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = fallbackImg;
+                }}
+              />
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center">
                 <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>

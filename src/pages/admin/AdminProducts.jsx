@@ -5,7 +5,7 @@ import { Plus, Search, Edit2, Trash2, Package, Star, X, Upload, Check, Image as 
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
-import { getImageUrl } from '../../utils/imageUtils'
+import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
 import { syncAndFetchCategories, resolveCategoryId, STUDIO_CATEGORIES } from '../../utils/categoryHelper'
 
 export default function AdminProducts() {
@@ -29,6 +29,8 @@ export default function AdminProducts() {
     description: '',
     material: '',
     embroideryType: '',
+    imageUrl: '',
+    existingImages: [],
     isFeatured: false,
     isNewArrival: false,
     isBestseller: false,
@@ -83,6 +85,8 @@ export default function AdminProducts() {
       description: '',
       material: '',
       embroideryType: '',
+      imageUrl: '',
+      existingImages: [],
       isFeatured: false,
       isNewArrival: false,
       isBestseller: false,
@@ -95,6 +99,7 @@ export default function AdminProducts() {
   const handleOpenEditModal = (product) => {
     setEditingProduct(product)
     const productCat = product.category?._id || product.category?.id || (typeof product.category === 'string' ? product.category : '') || categories[0]?._id || ''
+    const currentImgUrl = (typeof product.images?.[0] === 'string' ? product.images[0] : product.images?.[0]?.url) || product.image || product.imageUrl || ''
     setFormData({
       name: product.name || '',
       category: productCat,
@@ -105,6 +110,8 @@ export default function AdminProducts() {
       description: product.description || '',
       material: product.material || '',
       embroideryType: product.embroideryType || '',
+      imageUrl: currentImgUrl,
+      existingImages: product.images || [],
       isFeatured: !!product.isFeatured,
       isNewArrival: !!product.isNewArrival,
       isBestseller: !!product.isBestseller,
@@ -144,6 +151,13 @@ export default function AdminProducts() {
         Array.from(formData.files).forEach((file) => {
           dataPayload.append('images', file)
         })
+      } else if (formData.imageUrl && formData.imageUrl.trim()) {
+        dataPayload.append('imageUrl', formData.imageUrl.trim())
+      } else if (editingProduct && formData.existingImages && formData.existingImages.length > 0) {
+        dataPayload.append('images', JSON.stringify(formData.existingImages))
+      } else {
+        const autoFallback = getCategoryFallbackImage(formData.category || formData.name)
+        dataPayload.append('imageUrl', autoFallback)
       }
 
       const config = {
@@ -266,11 +280,15 @@ export default function AdminProducts() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3.5">
                             <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#F5F7FA] dark:bg-gray-800 flex-shrink-0 border border-[#E5E7EB]">
-                              {getImageUrl(product.images?.[0]) ? (
-                                <img src={getImageUrl(product.images[0])} alt={product.name} className="w-full h-full object-cover" />
-                              ) : (
-                                <div className="w-full h-full bg-[#FFF5F9] flex items-center justify-center text-sm text-pink-500">👗</div>
-                              )}
+                              <img
+                                src={getProductImage(product, 0)}
+                                alt={product.name}
+                                className="w-full h-full object-cover"
+                                onError={(e) => {
+                                  e.target.onerror = null;
+                                  e.target.src = getCategoryFallbackImage(product);
+                                }}
+                              />
                             </div>
                             <div>
                               <p className="font-bold text-xs sm:text-sm text-[#1F2937] dark:text-white line-clamp-1">{product.name}</p>
@@ -473,10 +491,10 @@ export default function AdminProducts() {
                     />
                   </div>
 
-                  {/* Image Files */}
-                  <div className="sm:col-span-2">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Design Photos</label>
-                    <div className="border-2 border-dashed border-[#E5E7EB] hover:border-pink-500 rounded-2xl p-6 text-center transition-colors cursor-pointer bg-[#F5F7FA]">
+                  {/* Image Files & Direct URL */}
+                  <div className="sm:col-span-2 space-y-3">
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300">Design Photos & Images</label>
+                    <div className="border-2 border-dashed border-[#E5E7EB] hover:border-pink-500 rounded-2xl p-5 text-center transition-colors cursor-pointer bg-[#F5F7FA]">
                       <label className="cursor-pointer flex flex-col items-center">
                         <ImageIcon className="w-8 h-8 text-pink-400 mb-2" />
                         <span className="text-xs font-bold text-[#1F2937]">
@@ -494,6 +512,41 @@ export default function AdminProducts() {
                         />
                       </label>
                     </div>
+
+                    <div>
+                      <label className="block text-[11px] font-semibold text-[#64748B] dark:text-gray-400 mb-1">Or Direct Web Image URL (Optional)</label>
+                      <input
+                        type="url"
+                        value={formData.imageUrl || ''}
+                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
+                        className="input-field text-xs"
+                        placeholder="https://... Cloudinary or Web URL"
+                      />
+                    </div>
+
+                    {/* Previews */}
+                    {(formData.files?.length > 0 || formData.imageUrl || (formData.existingImages?.length > 0)) && (
+                      <div className="flex items-center gap-2 overflow-x-auto py-1">
+                        {formData.files && formData.files.length > 0 && Array.from(formData.files).map((file, idx) => (
+                          <div key={idx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-pink-500 flex-shrink-0">
+                            <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
+                            <span className="absolute bottom-0 right-0 bg-pink-600 text-white text-[8px] px-1 font-bold">New</span>
+                          </div>
+                        ))}
+                        {formData.imageUrl && (!formData.files || formData.files.length === 0) && (
+                          <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-pink-500 flex-shrink-0">
+                            <img src={formData.imageUrl} alt="url preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none' }} />
+                            <span className="absolute bottom-0 right-0 bg-fuchsia-600 text-white text-[8px] px-1 font-bold">URL</span>
+                          </div>
+                        )}
+                        {(!formData.files || formData.files.length === 0) && !formData.imageUrl && formData.existingImages?.map((img, idx) => (
+                          <div key={idx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-gray-300 flex-shrink-0">
+                            <img src={getImageUrl(img)} alt="saved" className="w-full h-full object-cover" />
+                            <span className="absolute bottom-0 right-0 bg-gray-700 text-white text-[8px] px-1 font-bold">Saved</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </div>
 
                   {/* Flags */}

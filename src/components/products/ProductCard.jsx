@@ -6,8 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { addToCart } from '../../store/slices/cartSlice'
 import { toggleWishlistItem } from '../../store/slices/wishlistSlice'
 import { showLogin } from '../../store/slices/authSlice'
-import toast from 'react-hot-toast'
-import { getImageUrl } from '../../utils/imageUtils'
+import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
 
 export default function ProductCard({ product }) {
   const dispatch = useDispatch()
@@ -19,9 +18,10 @@ export default function ProductCard({ product }) {
   const price = product.offerPrice || product.price
   const discount = product.mrp ? Math.round(((product.mrp - price) / product.mrp) * 100) : 0
 
-  const primaryImg = getImageUrl(product.images?.[0])
-  const secondaryImg = getImageUrl(product.images?.[1])
-  const activeImg = (hovered && secondaryImg) ? secondaryImg : primaryImg
+  const fallbackImg = getCategoryFallbackImage(product)
+  const primaryImg = getProductImage(product, 0)
+  const secondaryImg = (product.images && product.images.length > 1) ? getProductImage(product, 1) : primaryImg
+  const activeImg = (hovered && secondaryImg) ? secondaryImg : (primaryImg || fallbackImg)
 
   const handleAddToCart = (e) => {
     e.preventDefault()
@@ -56,22 +56,16 @@ export default function ProductCard({ product }) {
       >
         {/* Product Image Frame */}
         <div className="relative overflow-hidden aspect-[3/4] bg-[#F5F7FA] dark:bg-[#111827]">
-          {activeImg ? (
-            <img
-              src={activeImg}
-              alt={product.name}
-              className="w-full h-full object-cover object-center transition-transform duration-500 ease-out"
-              style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=600&q=80';
-              }}
-            />
-          ) : (
-            <div className="w-full h-full bg-pink-50 dark:bg-pink-950/20 flex items-center justify-center">
-              <span className="text-3xl opacity-40">✨</span>
-            </div>
-          )}
+          <img
+            src={activeImg || fallbackImg}
+            alt={product.name}
+            className="w-full h-full object-cover object-center transition-transform duration-500 ease-out"
+            style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
+            onError={(e) => {
+              e.target.onerror = null;
+              e.target.src = fallbackImg;
+            }}
+          />
 
           {/* Badges */}
           <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
