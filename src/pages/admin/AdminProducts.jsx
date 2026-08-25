@@ -665,7 +665,7 @@ export default function AdminProducts() {
                     {submitting ? (
                       <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin mx-auto" />
                     ) : (
-                      <>{editingProduct ? 'Save Changes' : 'Create Product'}</>
+                      <>{editingProduct ? 'SAVE PRODUCT CHANGES' : 'SAVE PRODUCT'}</>
                     )}
                   </button>
                 </div>
