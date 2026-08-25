@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Link2,
@@ -184,7 +184,7 @@ export default function ProductImageManager({
                   handleRegisterImage(e);
                 }
               }}
-              placeholder="Paste Google Drive share link here..."
+              placeholder="Paste Google Drive image share link..."
               className={`input-field pl-10 py-3 text-xs w-full bg-white dark:bg-[#1F2937] shadow-soft ${
                 inputError ? 'border-rose-400 ring-1 ring-rose-400' : ''
               }`}
@@ -198,7 +198,7 @@ export default function ProductImageManager({
             className="btn-primary text-xs py-3 px-5 font-bold whitespace-nowrap shadow-soft flex items-center justify-center gap-2 hover:scale-[1.02] active:scale-[0.98] transition-all"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            <span>+ REGISTER IMAGE</span>
+            <span>REGISTER IMAGE</span>
           </button>
         </div>
 

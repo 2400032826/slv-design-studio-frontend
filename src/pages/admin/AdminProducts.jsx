@@ -139,83 +139,34 @@ export default function AdminProducts() {
     }
 
     const resolvedCategoryId = resolveCategoryId(formData.category, categories)
-
     setSubmitting(true)
     try {
-      if (formData.files && formData.files.length > 0) {
-        const formPayload = new FormData()
-        formPayload.append('name', formData.name)
-        formPayload.append('category', resolvedCategoryId)
-        formPayload.append('price', String(formData.price))
-        if (formData.mrp) formPayload.append('mrp', String(formData.mrp))
-        if (formData.offerPrice) formPayload.append('offerPrice', String(formData.offerPrice))
-        formPayload.append('stock', String(formData.stock))
-        formPayload.append('description', formData.description)
-        formPayload.append('material', formData.material)
-        formPayload.append('workType', formData.workType)
-        formPayload.append('isFeatured', String(formData.isFeatured))
-        formPayload.append('isNewArrival', String(formData.isNewArrival))
-        formPayload.append('isBestseller', String(formData.isBestseller))
-        formPayload.append('isCustomizable', String(formData.isCustomizable))
-        formPayload.append('isActive', String(formData.isActive))
+      const jsonPayload = {
+        name: formData.name.trim(),
+        category: resolvedCategoryId,
+        price: Number(formData.price),
+        mrp: formData.mrp ? Number(formData.mrp) : undefined,
+        offerPrice: formData.offerPrice ? Number(formData.offerPrice) : undefined,
+        stock: Number(formData.stock || 0),
+        description: formData.description,
+        material: formData.material,
+        workType: formData.workType,
+        isFeatured: Boolean(formData.isFeatured),
+        isNewArrival: Boolean(formData.isNewArrival),
+        isBestseller: Boolean(formData.isBestseller),
+        isCustomizable: Boolean(formData.isCustomizable),
+        isActive: Boolean(formData.isActive),
+        images: (formData.driveImages && formData.driveImages.length > 0)
+          ? formData.driveImages
+          : (formData.existingImages || []),
+      }
 
-        Array.from(formData.files).forEach((file) => {
-          formPayload.append('images', file)
-        })
-
-        if (editingProduct) {
-          await api.put(`/products/${editingProduct._id}`, formPayload, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          })
-          toast.success('Product updated successfully! ✨')
-        } else {
-          await api.post('/products', formPayload, {
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}`,
-              'Content-Type': 'multipart/form-data',
-            },
-          })
-          toast.success('New product added to catalog! 👗')
-        }
+      if (editingProduct) {
+        await api.put(`/products/${editingProduct._id}`, jsonPayload, adminHeaders)
+        toast.success('Product updated successfully! ✨')
       } else {
-        const jsonPayload = {
-          name: formData.name,
-          category: resolvedCategoryId,
-          price: Number(formData.price),
-          mrp: formData.mrp ? Number(formData.mrp) : undefined,
-          offerPrice: formData.offerPrice ? Number(formData.offerPrice) : undefined,
-          stock: Number(formData.stock),
-          description: formData.description,
-          material: formData.material,
-          workType: formData.workType,
-          isFeatured: formData.isFeatured,
-          isNewArrival: formData.isNewArrival,
-          isBestseller: formData.isBestseller,
-          isCustomizable: formData.isCustomizable,
-          isActive: formData.isActive,
-          driveImages: formData.driveImages || [],
-          images: (formData.driveImages && formData.driveImages.length > 0)
-            ? formData.driveImages
-            : (formData.existingImages || []),
-        }
-
-        if (formData.imageUrl && formData.imageUrl.trim()) {
-          jsonPayload.imageUrl = formData.imageUrl.trim()
-          if (!jsonPayload.images || jsonPayload.images.length === 0) {
-            jsonPayload.images = [{ url: formData.imageUrl.trim(), alt: formData.name }]
-          }
-        }
-
-        if (editingProduct) {
-          await api.put(`/products/${editingProduct._id}`, jsonPayload, adminHeaders)
-          toast.success('Product updated successfully! ✨')
-        } else {
-          await api.post('/products', jsonPayload, adminHeaders)
-          toast.success('New product created successfully! 👗')
-        }
+        await api.post('/products', jsonPayload, adminHeaders)
+        toast.success('New product saved to catalog! 👗')
       }
 
       invalidateAllProductQueries()
@@ -557,75 +508,12 @@ export default function AdminProducts() {
                     />
                   </div>
 
-                  {/* Product Images Section (Google Drive Direct Share Links) */}
+                  {/* PRODUCT IMAGES Section (Google Drive Direct Share Links) */}
                   <div className="sm:col-span-2">
                     <ProductImageManager
                       selectedImages={formData.driveImages || []}
                       onImagesChange={(imgs) => setFormData({ ...formData, driveImages: imgs })}
                     />
-                  </div>
-
-                  {/* Optional Direct Upload or URL Fallback */}
-                  <div className="sm:col-span-2 space-y-3 pt-2">
-                    <div className="flex items-center justify-between">
-                      <label className="block text-xs font-bold uppercase tracking-wider text-[#64748B] dark:text-gray-400">
-                        Alternative Upload Options (Optional)
-                      </label>
-                      <span className="text-[10px] text-[#94A3B8]">Manual local file / direct web URL</span>
-                    </div>
-
-                    <div className="border border-dashed border-[#E5E7EB] dark:border-charcoal-700 hover:border-pink-400 rounded-2xl p-4 text-center transition-colors cursor-pointer bg-[#F5F7FA] dark:bg-charcoal-800">
-                      <label className="cursor-pointer flex flex-col items-center">
-                        <ImageIcon className="w-6 h-6 text-pink-400 mb-1.5" />
-                        <span className="text-xs font-bold text-[#1F2937] dark:text-white">
-                          {formData.files && formData.files.length > 0
-                            ? `${formData.files.length} file(s) selected from device`
-                            : 'Upload image from this device'}
-                        </span>
-                        <span className="text-[10px] text-[#94A3B8] mt-0.5">Local JPG, PNG, WebP</span>
-                        <input
-                          type="file"
-                          multiple
-                          accept="image/*"
-                          className="hidden"
-                          onChange={(e) => setFormData({ ...formData, files: e.target.files })}
-                        />
-                      </label>
-                    </div>
-
-                    <div>
-                      <input
-                        type="url"
-                        value={formData.imageUrl || ''}
-                        onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
-                        className="input-field text-xs"
-                        placeholder="Or paste direct external image URL (optional)"
-                      />
-                    </div>
-
-                    {/* Previews */}
-                    {(formData.files?.length > 0 || formData.imageUrl || (formData.existingImages?.length > 0)) && (
-                      <div className="flex items-center gap-2 overflow-x-auto py-1">
-                        {formData.files && formData.files.length > 0 && Array.from(formData.files).map((file, idx) => (
-                          <div key={idx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-pink-500 flex-shrink-0">
-                            <img src={URL.createObjectURL(file)} alt="preview" className="w-full h-full object-cover" />
-                            <span className="absolute bottom-0 right-0 bg-pink-600 text-white text-[8px] px-1 font-bold">New</span>
-                          </div>
-                        ))}
-                        {formData.imageUrl && (!formData.files || formData.files.length === 0) && (
-                          <div className="relative w-14 h-14 rounded-lg overflow-hidden border border-pink-500 flex-shrink-0">
-                            <img src={formData.imageUrl} alt="url preview" className="w-full h-full object-cover" onError={(e) => { e.target.style.display = 'none' }} />
-                            <span className="absolute bottom-0 right-0 bg-fuchsia-600 text-white text-[8px] px-1 font-bold">URL</span>
-                          </div>
-                        )}
-                        {(!formData.files || formData.files.length === 0) && !formData.imageUrl && formData.existingImages?.map((img, idx) => (
-                          <div key={idx} className="relative w-14 h-14 rounded-lg overflow-hidden border border-gray-300 flex-shrink-0">
-                            <img src={getImageUrl(img)} alt="saved" className="w-full h-full object-cover" />
-                            <span className="absolute bottom-0 right-0 bg-gray-700 text-white text-[8px] px-1 font-bold">Saved</span>
-                          </div>
-                        ))}
-                      </div>
-                    )}
                   </div>
 
                   {/* Flags */}
