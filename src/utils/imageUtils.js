@@ -1,12 +1,59 @@
 /**
- * Helper to resolve complete image URLs for Cloudinary and local disk uploads.
- * Ensures images load properly in production and development environments.
+ * Helper to resolve complete image URLs for Google Drive, Cloudinary, and local disk uploads.
+ * Ensures images load quickly, reliably, and with proper responsiveness across desktop and mobile.
  */
 
 export const DEFAULT_PRODUCT_FALLBACK = 'https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=800&q=80';
 export const DEFAULT_JEWELLERY_FALLBACK = 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?w=800&q=80';
 export const DEFAULT_SAREE_FALLBACK = 'https://images.unsplash.com/photo-1617627143750-d86bc21e42bb?w=800&q=80';
 export const DEFAULT_BLOUSE_FALLBACK = 'https://images.unsplash.com/photo-1583391733956-6c78276477e2?w=800&q=80';
+
+/**
+ * Extracts a clean Google Drive file ID from a URL, object, or raw ID string.
+ */
+export const extractDriveFileId = (input) => {
+  if (!input) return null;
+  let str = '';
+  if (typeof input === 'string') {
+    str = input.trim();
+  } else if (typeof input === 'object') {
+    str = input.googleDriveFileId || input.fileId || input.url || '';
+  }
+
+  if (!str || typeof str !== 'string') return null;
+
+  // Format: https://drive.google.com/file/d/FILE_ID/view...
+  const dMatch = str.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+  if (dMatch && dMatch[1]) return dMatch[1];
+
+  // Format: https://drive.google.com/open?id=FILE_ID or ?id=FILE_ID
+  const idMatch = str.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (idMatch && idMatch[1]) return idMatch[1];
+
+  // Format: https://drive.google.com/uc?id=FILE_ID or export=view&id=FILE_ID
+  const ucMatch = str.match(/\/uc\?[^#]*id=([a-zA-Z0-9_-]+)/);
+  if (ucMatch && ucMatch[1]) return ucMatch[1];
+
+  // Format: https://lh3.googleusercontent.com/d/FILE_ID
+  const lh3Match = str.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (lh3Match && lh3Match[1]) return lh3Match[1];
+
+  // Raw alphanumeric Google Drive ID (typically 20 to 50 characters)
+  if (/^[a-zA-Z0-9_-]{20,}$/.test(str)) {
+    return str;
+  }
+
+  return null;
+};
+
+/**
+ * Builds high-performance Google Drive CDN URLs.
+ */
+export const getDriveImageUrl = (fileIdOrUrl, width = 600) => {
+  const fileId = extractDriveFileId(fileIdOrUrl);
+  if (!fileId) return null;
+  return `https://lh3.googleusercontent.com/d/${fileId}=w${width}`;
+};
 
 export const getCategoryFallbackImage = (productOrCategory) => {
   const name = typeof productOrCategory === 'string'
@@ -37,14 +84,30 @@ export const getCategoryFallbackImage = (productOrCategory) => {
 export const getImageUrl = (image) => {
   if (!image) return null;
 
+  // 1. Direct Google Drive file ID check
+  if (typeof image === 'object' && image !== null) {
+    if (image.googleDriveFileId) {
+      return `https://lh3.googleusercontent.com/d/${image.googleDriveFileId}=w600`;
+    }
+    if (image.fileId) {
+      return `https://lh3.googleusercontent.com/d/${image.fileId}=w600`;
+    }
+  }
+
   let url = '';
   if (typeof image === 'string') {
     url = image;
   } else if (typeof image === 'object' && image !== null) {
-    url = image.url || image.path || image.secure_url || image.src || image.preview || '';
+    url = image.url || image.path || image.secure_url || image.src || image.preview || image.thumbnailUrl || '';
   }
 
   if (!url || typeof url !== 'string') return null;
+
+  // 2. Google Drive URL detection
+  const driveId = extractDriveFileId(url);
+  if (driveId) {
+    return `https://lh3.googleusercontent.com/d/${driveId}=w600`;
+  }
 
   // Normalize Windows file path backslashes to forward slashes
   url = url.replace(/\\/g, '/');
@@ -55,14 +118,12 @@ export const getImageUrl = (image) => {
   }
 
   const RENDER_BACKEND_HOST = 'https://slv-design-studio-backend.onrender.com';
-
   const devDomainPattern = new RegExp(['local', 'host:5000'].join(''));
   const devIpPattern = new RegExp(['127.0.0.1', ':5000'].join(''));
   const devReplacePattern = new RegExp(['https?:\\/\\/(local\\w+:5000|127\\.0\\.0\\.1:5000)'].join(''));
 
   // Cloudinary or external absolute URL
   if (url.startsWith('http://') || url.startsWith('https://')) {
-    // If an image URL stored in DB contains a local dev domain, rewrite it to Render backend host
     if (devDomainPattern.test(url) || devIpPattern.test(url)) {
       return url.replace(devReplacePattern, RENDER_BACKEND_HOST);
     }
@@ -83,16 +144,24 @@ export const getImageUrl = (image) => {
   }
 
   const baseHost = apiUrl.replace(/\/api\/?$/, '');
-
   return `${baseHost}${cleanPath}`;
 };
 
 /**
  * Automatically applies modern WebP / AVIF compression and responsive width parameters
- * to Unsplash and Cloudinary hosted images. Drastically reduces mobile payload by 70-90%.
+ * to Google Drive, Cloudinary, and Unsplash hosted images. Drastically reduces mobile payload by 70-90%.
  */
 export const optimizeImageUrl = (url, { width = 600, quality = 75 } = {}) => {
   if (!url || typeof url !== 'string') return url;
+
+  // Optimize Google Drive CDN assets
+  if (url.includes('lh3.googleusercontent.com/d/')) {
+    return url.replace(/=w\d+/, `=w${width}`);
+  }
+  const driveId = extractDriveFileId(url);
+  if (driveId) {
+    return `https://lh3.googleusercontent.com/d/${driveId}=w${width}`;
+  }
 
   // Optimize Cloudinary assets with f_auto,q_auto,w_${width}
   if (url.includes('res.cloudinary.com') && url.includes('/upload/')) {
@@ -123,7 +192,13 @@ export const getProductImage = (product, index = 0, { width = 600, quality = 75 
 
   let imgCandidate = null;
   if (Array.isArray(product.images) && product.images.length > 0) {
-    imgCandidate = product.images[index] || product.images[0];
+    if (index === 0) {
+      // Find cover image first
+      const cover = product.images.find((img) => img && img.isCover);
+      imgCandidate = cover || product.images[0];
+    } else {
+      imgCandidate = product.images[index] || product.images[0];
+    }
   } else if (product.image) {
     imgCandidate = product.image;
   } else if (product.imageUrl) {

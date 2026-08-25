@@ -7,6 +7,7 @@ import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
 import { syncAndFetchCategories, resolveCategoryId, STUDIO_CATEGORIES } from '../../utils/categoryHelper'
+import GoogleDriveImagePicker from '../../components/admin/GoogleDriveImagePicker'
 
 export default function AdminProducts() {
   const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
@@ -34,6 +35,7 @@ export default function AdminProducts() {
     isBestseller: false,
     isCustomizable: true,
     isActive: true,
+    driveImages: [],
     files: null,
     imageUrl: '',
     existingImages: [],
@@ -87,6 +89,7 @@ export default function AdminProducts() {
       isBestseller: false,
       isCustomizable: true,
       isActive: true,
+      driveImages: [],
       files: null,
       imageUrl: '',
       existingImages: [],
@@ -121,6 +124,7 @@ export default function AdminProducts() {
       isBestseller: !!product.isBestseller,
       isCustomizable: product.isCustomizable !== false,
       isActive: product.isActive !== false,
+      driveImages: Array.isArray(product.images) ? product.images : [],
       files: null,
       imageUrl: '',
       existingImages: product.images || [],
@@ -192,13 +196,17 @@ export default function AdminProducts() {
           isBestseller: formData.isBestseller,
           isCustomizable: formData.isCustomizable,
           isActive: formData.isActive,
+          driveImages: formData.driveImages || [],
+          images: (formData.driveImages && formData.driveImages.length > 0)
+            ? formData.driveImages
+            : (formData.existingImages || []),
         }
 
         if (formData.imageUrl && formData.imageUrl.trim()) {
           jsonPayload.imageUrl = formData.imageUrl.trim()
-          jsonPayload.images = [{ url: formData.imageUrl.trim(), alt: formData.name }]
-        } else if (editingProduct && formData.existingImages?.length > 0) {
-          jsonPayload.images = formData.existingImages
+          if (!jsonPayload.images || jsonPayload.images.length === 0) {
+            jsonPayload.images = [{ url: formData.imageUrl.trim(), alt: formData.name }]
+          }
         }
 
         if (editingProduct) {
@@ -549,18 +557,32 @@ export default function AdminProducts() {
                     />
                   </div>
 
-                  {/* Image Files & Direct URL */}
-                  <div className="sm:col-span-2 space-y-3">
-                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300">Design Photos & Images</label>
-                    <div className="border-2 border-dashed border-[#E5E7EB] hover:border-pink-500 rounded-2xl p-5 text-center transition-colors cursor-pointer bg-[#F5F7FA]">
+                  {/* Google Drive Central Image Store */}
+                  <div className="sm:col-span-2">
+                    <GoogleDriveImagePicker
+                      selectedImages={formData.driveImages || []}
+                      onImagesChange={(imgs) => setFormData({ ...formData, driveImages: imgs })}
+                    />
+                  </div>
+
+                  {/* Optional Direct Upload or URL Fallback */}
+                  <div className="sm:col-span-2 space-y-3 pt-2">
+                    <div className="flex items-center justify-between">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-[#64748B] dark:text-gray-400">
+                        Alternative Upload Options (Optional)
+                      </label>
+                      <span className="text-[10px] text-[#94A3B8]">Manual local file / direct web URL</span>
+                    </div>
+
+                    <div className="border border-dashed border-[#E5E7EB] dark:border-charcoal-700 hover:border-pink-400 rounded-2xl p-4 text-center transition-colors cursor-pointer bg-[#F5F7FA] dark:bg-charcoal-800">
                       <label className="cursor-pointer flex flex-col items-center">
-                        <ImageIcon className="w-8 h-8 text-pink-400 mb-2" />
-                        <span className="text-xs font-bold text-[#1F2937]">
+                        <ImageIcon className="w-6 h-6 text-pink-400 mb-1.5" />
+                        <span className="text-xs font-bold text-[#1F2937] dark:text-white">
                           {formData.files && formData.files.length > 0
-                            ? `${formData.files.length} file(s) selected`
-                            : 'Click to upload design photographs'}
+                            ? `${formData.files.length} file(s) selected from device`
+                            : 'Upload image from this device'}
                         </span>
-                        <span className="text-[10px] text-[#94A3B8] mt-0.5">JPG, PNG, WebP supported</span>
+                        <span className="text-[10px] text-[#94A3B8] mt-0.5">Local JPG, PNG, WebP</span>
                         <input
                           type="file"
                           multiple
@@ -572,13 +594,12 @@ export default function AdminProducts() {
                     </div>
 
                     <div>
-                      <label className="block text-[11px] font-semibold text-[#64748B] dark:text-gray-400 mb-1">Or Direct Web Image URL (Optional)</label>
                       <input
                         type="url"
                         value={formData.imageUrl || ''}
                         onChange={(e) => setFormData({ ...formData, imageUrl: e.target.value })}
                         className="input-field text-xs"
-                        placeholder="https://... Cloudinary or Web URL"
+                        placeholder="Or paste direct external image URL (optional)"
                       />
                     </div>
 

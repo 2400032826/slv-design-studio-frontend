@@ -195,13 +195,13 @@ export default function ProductDetail() {
             {data.images?.length > 1 && (
               <div className="flex gap-2.5 overflow-x-auto pb-2">
                 {data.images.map((img, i) => {
-                  const thumbUrl = getImageUrl(img)
+                  const thumbUrl = getProductImage(data, i, { width: 200, quality: 70 }) || getImageUrl(img)
                   return (
                     <button
                       key={i}
                       onClick={() => setSelectedImage(i)}
                       className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all ${
-                        i === selectedImage ? 'border-pink-500 shadow-soft' : 'border-[#E5E7EB] dark:border-charcoal-700 opacity-60 hover:opacity-100'
+                        i === selectedImage ? 'border-pink-500 shadow-soft scale-105' : 'border-[#E5E7EB] dark:border-charcoal-700 opacity-70 hover:opacity-100'
                       }`}
                     >
                       <OptimizedImage src={thumbUrl} alt="" fallbackSrc={fallbackImg} width={150} quality={70} className="w-full h-full object-cover" />
