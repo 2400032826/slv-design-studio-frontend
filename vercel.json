@@ -1,8 +1,12 @@
-{
+﻿{
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
+    {
+      "source": "/api/drive/:match*",
+      "destination": "/api/drive/:match*"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"

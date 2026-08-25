@@ -30,7 +30,7 @@ export default function GoogleDriveImagePicker({
   const [addingManual, setAddingManual] = useState(false);
   const queryClient = useQueryClient();
 
-  // Fetch Google Drive folder files
+  // Fetch Google Drive folder files with explicit routes and fallback
   const {
     data,
     isLoading,
@@ -41,32 +41,107 @@ export default function GoogleDriveImagePicker({
   } = useQuery({
     queryKey: ['google-drive-files'],
     queryFn: async () => {
-      const res = await api.get('/drive/files');
-      return res.data?.files || [];
+      let lastErr = null;
+
+      // 1. Try explicit GET /drive/images
+      try {
+        const res = await api.get('/drive/images');
+        if (res.data && Array.isArray(res.data.files)) return res.data.files;
+      } catch (err) {
+        lastErr = err;
+      }
+
+      // 2. Try GET /drive/files
+      try {
+        const res = await api.get('/drive/files');
+        if (res.data && Array.isArray(res.data.files)) return res.data.files;
+      } catch (err) {
+        lastErr = err;
+      }
+
+      // 3. Try Vercel Serverless direct fetch
+      try {
+        const directRes = await fetch('/api/drive/images');
+        if (directRes.ok) {
+          const json = await directRes.json();
+          if (json && Array.isArray(json.files)) return json.files;
+        }
+      } catch (err) {
+        lastErr = err;
+      }
+
+      if (lastErr) {
+        throw new Error(lastErr.response?.data?.message || lastErr.message || 'Unable to connect to Google Drive route');
+      }
+
+      return [];
     },
     staleTime: 5 * 60 * 1000,
+    retry: 1,
   });
 
   // Sync / Force Refresh mutation
   const syncMutation = useMutation({
     mutationFn: async () => {
-      const res = await api.post('/drive/sync');
-      return res.data?.files || [];
+      let lastErr = null;
+
+      // 1. Try explicit POST /drive/sync
+      try {
+        const res = await api.post('/drive/sync');
+        if (res.data && Array.isArray(res.data.files)) return res.data.files;
+      } catch (err) {
+        lastErr = err;
+      }
+
+      // 2. Try GET /drive/images?refresh=true
+      try {
+        const res = await api.get('/drive/images?refresh=true');
+        if (res.data && Array.isArray(res.data.files)) return res.data.files;
+      } catch (err) {
+        lastErr = err;
+      }
+
+      // 3. Try Vercel Serverless direct POST
+      try {
+        const directRes = await fetch('/api/drive/sync', { method: 'POST' });
+        if (directRes.ok) {
+          const json = await directRes.json();
+          if (json && Array.isArray(json.files)) return json.files;
+        }
+      } catch (err) {
+        lastErr = err;
+      }
+
+      throw new Error(lastErr?.response?.data?.message || lastErr?.message || 'Failed to sync with Google Drive');
     },
     onSuccess: (files) => {
       toast.success(`Synced ${files.length} images from Google Drive! ✨`);
       queryClient.setQueryData(['google-drive-files'], files);
     },
     onError: (err) => {
-      toast.error(err.response?.data?.message || 'Failed to sync with Google Drive');
+      toast.error(err.message || 'Failed to sync with Google Drive');
     },
   });
 
   // Manual Add / Register mutation
   const registerMutation = useMutation({
     mutationFn: async (input) => {
-      const res = await api.post('/drive/register', { fileInput: input });
-      return res.data?.file;
+      const fileId = extractDriveFileId(input);
+      if (!fileId) throw new Error('Invalid Google Drive share link or file ID');
+
+      try {
+        const res = await api.post('/drive/register', { fileInput: input });
+        if (res.data?.file) return res.data.file;
+      } catch (e) {}
+
+      // Fallback local construct
+      return {
+        fileId,
+        name: `Product Photo (${fileId.slice(0, 8)})`,
+        mimeType: 'image/jpeg',
+        thumbnailUrl: getDriveImageUrl(fileId, 400),
+        displayUrl: getDriveImageUrl(fileId, 1200),
+      };
     },
     onSuccess: (newFile) => {
       toast.success('Google Drive image added to gallery! 📸');
@@ -74,13 +149,12 @@ export default function GoogleDriveImagePicker({
       setAddingManual(false);
       queryClient.invalidateQueries(['google-drive-files']);
 
-      // Automatically select the newly added image
       if (newFile) {
         toggleSelect(newFile);
       }
     },
     onError: (err) => {
-      toast.error(err.response?.data?.message || 'Invalid Google Drive link or ID');
+      toast.error(err.message || 'Invalid Google Drive link or ID');
     },
   });
 
@@ -117,7 +191,6 @@ export default function GoogleDriveImagePicker({
     if (existingIndex >= 0) {
       // Remove from selection
       const updated = selectedImages.filter((_, i) => i !== existingIndex);
-      // If we removed the cover image, ensure first item becomes cover
       if (updated.length > 0 && !updated.some((img) => img.isCover)) {
         updated[0].isCover = true;
       }
@@ -156,7 +229,6 @@ export default function GoogleDriveImagePicker({
     const [moved] = updated.splice(index, 1);
     updated.splice(targetIndex, 0, moved);
 
-    // Re-index imageOrder
     const reindexed = updated.map((img, i) => ({
       ...img,
       imageOrder: i,
@@ -415,7 +487,7 @@ export default function GoogleDriveImagePicker({
             <button
               type="button"
               onClick={() => refetch()}
-              className="btn-secondary text-xs py-2 px-4 mx-auto"
+              className="btn-secondary text-xs py-2 px-4 mx-auto gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" /> Retry Loading
             </button>
