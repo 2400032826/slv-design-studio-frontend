@@ -7,7 +7,7 @@ import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
 import { syncAndFetchCategories, resolveCategoryId, STUDIO_CATEGORIES } from '../../utils/categoryHelper'
-import GoogleDriveImagePicker from '../../components/admin/GoogleDriveImagePicker'
+import ProductImageManager from '../../components/admin/ProductImageManager'
 
 export default function AdminProducts() {
   const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
@@ -557,9 +557,9 @@ export default function AdminProducts() {
                     />
                   </div>
 
-                  {/* Google Drive Central Image Store */}
+                  {/* Product Images Section (Google Drive Direct Share Links) */}
                   <div className="sm:col-span-2">
-                    <GoogleDriveImagePicker
+                    <ProductImageManager
                       selectedImages={formData.driveImages || []}
                       onImagesChange={(imgs) => setFormData({ ...formData, driveImages: imgs })}
                     />
