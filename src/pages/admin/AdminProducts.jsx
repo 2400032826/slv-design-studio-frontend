@@ -134,16 +134,32 @@ export default function AdminProducts() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    if (!formData.name || !formData.category || !formData.price) {
-      return toast.error('Please fill required fields (Name, Category, Price)')
+    if (!formData.name || !formData.name.trim()) {
+      return toast.error('Please enter product name.')
+    }
+    if (!formData.category) {
+      return toast.error('Please select a category.')
+    }
+    if (!formData.price) {
+      return toast.error('Please enter a valid price.')
     }
 
-    const resolvedCategoryId = resolveCategoryId(formData.category, categories)
     setSubmitting(true)
     try {
+      const rawCat = typeof formData.category === 'object'
+        ? (formData.category?._id || formData.category?.id || '')
+        : String(formData.category || '')
+
+      const resolvedCategoryId = await resolveCategoryId(rawCat, categories)
+
+      if (!resolvedCategoryId || !/^[0-9a-fA-F]{24}$/.test(resolvedCategoryId)) {
+        setSubmitting(false)
+        return toast.error('Please select a valid category.')
+      }
+
       const jsonPayload = {
         name: formData.name.trim(),
-        category: resolvedCategoryId,
+        category: String(resolvedCategoryId),
         price: Number(formData.price),
         mrp: formData.mrp ? Number(formData.mrp) : undefined,
         offerPrice: formData.offerPrice ? Number(formData.offerPrice) : undefined,

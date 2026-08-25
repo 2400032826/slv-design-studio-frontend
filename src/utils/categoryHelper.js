@@ -185,6 +185,9 @@ export async function resolveCategoryId(categoryInput, categoriesList = []) {
     }
   }
 
-  // If all resolution fails, return original input
-  return categoryInput
+  // If all resolution fails, try returning the first valid category ID from DB or list
+  const fallbackCat = (categoriesList || []).find((c) => /^[0-9a-fA-F]{24}$/.test(c?._id))
+  if (fallbackCat) return fallbackCat._id
+
+  return /^[0-9a-fA-F]{24}$/.test(categoryInput) ? categoryInput : ''
 }
