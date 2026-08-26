@@ -79,6 +79,14 @@ export default function ProductDetail() {
     enabled: !!(data?.category?._id || data?.category),
   })
 
+  const { data: reviewsData } = useQuery({
+    queryKey: ['product-reviews', data?._id],
+    queryFn: () => data?._id ? api.get(`/reviews/${data._id}`).then((r) => r.data) : Promise.resolve({ reviews: [], total: 0 }),
+    enabled: !!data?._id,
+  })
+
+  const productReviews = reviewsData?.reviews || data?.reviews || []
+
   if (isLoading) return <ProductDetailSkeleton />
 
   if (!data) return (
@@ -389,26 +397,33 @@ export default function ProductDetail() {
             )}
             {activeTab === 'reviews' && (
               <div>
-                {data.reviews?.length === 0 ? (
-                  <p className="text-[#64748B] text-center text-xs py-8">No reviews yet for this design. Be the first to review!</p>
+                {productReviews.length === 0 ? (
+                  <p className="text-[#64748B] text-center text-xs py-8">No reviews yet for this design. Book your order to be the first to leave a verified review!</p>
                 ) : (
                   <div className="space-y-3">
-                    {data.reviews?.map((review) => (
-                      <div key={review._id} className="p-4 bg-[#F5F7FA] dark:bg-[#111827] rounded-xl border border-[#E5E7EB]">
-                        <div className="flex items-center gap-3 mb-2">
-                          <div className="w-7 h-7 bg-gradient-to-r from-pink-500 to-fuchsia-600 rounded-full flex items-center justify-center text-white text-xs font-bold">
-                            {review.user?.name?.[0] || 'U'}
-                          </div>
-                          <div>
-                            <p className="font-bold text-xs text-[#1F2937] dark:text-white">{review.user?.name}</p>
-                            <div className="flex">
-                              {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-[#E5E7EB]'}`} />
-                              ))}
+                    {productReviews.map((review) => (
+                      <div key={review._id} className="p-4 bg-[#F5F7FA] dark:bg-[#111827] rounded-2xl border border-[#E5E7EB] dark:border-charcoal-700">
+                        <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 bg-gradient-to-tr from-pink-500 to-rose-500 rounded-full flex items-center justify-center text-white text-xs font-bold">
+                              {review.user?.name?.[0]?.toUpperCase() || 'U'}
+                            </div>
+                            <div>
+                              <p className="font-bold text-xs text-[#1F2937] dark:text-white">{review.user?.name || 'Verified Customer'}</p>
+                              <div className="flex gap-0.5 mt-0.5">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star key={i} className={`w-3 h-3 ${i < review.rating ? 'fill-pink-500 text-pink-500' : 'text-gray-200 dark:text-charcoal-700'}`} />
+                                ))}
+                              </div>
                             </div>
                           </div>
+                          {review.isVerifiedPurchase && (
+                            <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full border border-emerald-200">
+                              ✓ Verified Purchase
+                            </span>
+                          )}
                         </div>
-                        <p className="text-xs text-[#64748B] dark:text-charcoal-300">{review.comment}</p>
+                        <p className="text-xs text-[#1F2937] dark:text-gray-300 leading-relaxed font-medium mt-1">“{review.comment}”</p>
                       </div>
                     ))}
                   </div>

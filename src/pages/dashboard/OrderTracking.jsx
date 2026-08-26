@@ -1,10 +1,12 @@
+import { useState } from 'react'
 import { useParams, useNavigate } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Package, CheckCircle, Clock, Truck, Home, XCircle, Phone, Sparkles } from 'lucide-react'
+import { ArrowLeft, Package, CheckCircle, Clock, Truck, Home, XCircle, Phone, Sparkles, Star } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { getImageUrl } from '../../utils/imageUtils'
+import ReviewModal from '../../components/reviews/ReviewModal'
 
 const statusSteps = [
   { key: 'Pending Confirmation', label: 'Pending Confirmation', icon: Clock },
@@ -21,6 +23,7 @@ export default function OrderTracking() {
   const { id } = useParams()
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const [reviewProduct, setReviewProduct] = useState(null)
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', id],
@@ -53,7 +56,10 @@ export default function OrderTracking() {
 
   const currentStatusIndex = statusSteps.findIndex((s) => s.key === order.status)
   const isCancelled = order.status === 'cancelled'
+  const isDelivered = order.status === 'delivered' || order.status === 'completed'
   const canCancel = ['Pending Confirmation', 'order_received', 'accepted'].includes(order.status)
+
+  const firstItem = order.items?.[0]
 
   return (
     <div className="space-y-6">
@@ -66,6 +72,40 @@ export default function OrderTracking() {
           <p className="text-[11px] text-[#64748B]">Placed on {new Date(order.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
         </div>
       </div>
+
+      {/* Review Request Card when Delivered */}
+      {isDelivered && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.98 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="p-5 sm:p-6 bg-gradient-to-r from-pink-50 via-fuchsia-50 to-rose-50 dark:from-pink-950/40 dark:via-charcoal-800 dark:to-rose-950/40 rounded-3xl border border-pink-200 dark:border-pink-900/40 shadow-soft"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-pink-500 text-white flex items-center justify-center shadow-soft flex-shrink-0">
+                <Sparkles className="w-6 h-6" />
+              </div>
+              <div>
+                <span className="badge badge-soft text-[10px] font-bold uppercase tracking-wider mb-1">Delivered</span>
+                <h4 className="font-display text-sm sm:text-base font-bold text-[#1F2937] dark:text-white">
+                  Your order has been delivered! How was your experience{firstItem ? ` with ${firstItem.name || firstItem.product?.name}` : ''}?
+                </h4>
+                <p className="text-xs text-[#64748B] dark:text-gray-300 mt-0.5">
+                  Share your verified feedback to help other boutique clients.
+                </p>
+              </div>
+            </div>
+            {firstItem && (
+              <button
+                onClick={() => setReviewProduct(firstItem.product || firstItem)}
+                className="btn-primary py-2.5 px-5 text-xs font-bold whitespace-nowrap flex items-center gap-1.5 shadow-soft self-start sm:self-auto"
+              >
+                <Star className="w-4 h-4 fill-white" /> Rate your experience
+              </button>
+            )}
+          </div>
+        </motion.div>
+      )}
 
       {/* Status Tracker */}
       {!isCancelled && (
@@ -109,38 +149,69 @@ export default function OrderTracking() {
         </div>
       )}
 
-      {/* Order Details */}
+      {/* Order Details & Booked Items */}
       <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
-        <h3 className="font-display font-bold text-sm text-[#1F2937] dark:text-white mb-4 pb-2 border-b border-[#E5E7EB]">Booked Items</h3>
+        <h3 className="font-display font-bold text-sm text-[#1F2937] dark:text-white mb-4 pb-2 border-b border-[#E5E7EB]">Booked Items & Purchase Snapshot</h3>
         <div className="space-y-3">
           {order.items?.map((item, i) => {
             const itemImg = getImageUrl(item.image || item.product?.images?.[0])
             return (
-              <div key={i} className="flex gap-3.5 p-3 rounded-xl bg-[#F5F7FA]/50 dark:bg-charcoal-800 border border-[#E5E7EB]">
-                <div className="w-14 h-14 rounded-xl overflow-hidden bg-white dark:bg-gray-700 flex-shrink-0 border border-[#E5E7EB]">
-                  {itemImg ? (
-                    <img src={itemImg} alt={item.name || item.product?.name} className="w-full h-full object-cover" />
-                  ) : (
-                    <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center text-xl">👗</div>
-                  )}
+              <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between gap-3.5 p-3.5 rounded-2xl bg-[#F5F7FA]/70 dark:bg-charcoal-800 border border-[#E5E7EB] dark:border-charcoal-700">
+                <div className="flex gap-3.5 items-center">
+                  <div className="w-14 h-14 rounded-xl overflow-hidden bg-white dark:bg-gray-700 flex-shrink-0 border border-[#E5E7EB]">
+                    {itemImg ? (
+                      <img src={itemImg} alt={item.name || item.product?.name} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-tr from-pink-500/10 to-fuchsia-500/10 flex items-center justify-center text-xl">👗</div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="font-bold text-xs sm:text-sm text-[#1F2937] dark:text-white line-clamp-1">{item.name || item.product?.name}</p>
+                    <p className="text-[11px] text-[#64748B]">Qty: {item.quantity} {item.size ? `• Size: ${item.size}` : ''} {item.color ? `• Color: ${item.color}` : ''}</p>
+                    <p className="text-pink-600 dark:text-pink-400 font-bold text-xs mt-0.5 price-tag">
+                      Purchase Price: ₹{(item.price || 0).toLocaleString('en-IN')} {item.quantity > 1 ? `(Subtotal: ₹${((item.price || 0) * item.quantity).toLocaleString('en-IN')})` : ''}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="font-bold text-xs text-[#1F2937] dark:text-white line-clamp-1">{item.name || item.product?.name}</p>
-                  <p className="text-[11px] text-[#64748B]">Qty: {item.quantity} {item.size ? `• Size: ${item.size}` : ''} {item.color ? `• Color: ${item.color}` : ''}</p>
-                  <p className="text-pink-600 dark:text-pink-400 font-bold text-xs mt-0.5 price-tag">₹{(item.price * item.quantity).toLocaleString('en-IN')}</p>
-                </div>
+
+                {isDelivered && (
+                  <button
+                    onClick={() => setReviewProduct(item.product || item)}
+                    className="btn-secondary py-2 px-3 text-xs font-bold flex items-center justify-center gap-1.5 self-start sm:self-center border-pink-200 text-pink-600 hover:bg-pink-50"
+                  >
+                    <Star className="w-3.5 h-3.5 fill-pink-500 text-pink-500" /> Write Review
+                  </button>
+                )}
               </div>
             )
           })}
         </div>
 
-        <div className="border-t border-[#E5E7EB] mt-4 pt-4 space-y-1.5 text-xs text-[#64748B]">
+        {/* Pricing Breakdown Snapshot */}
+        <div className="border-t border-[#E5E7EB] dark:border-charcoal-700 mt-5 pt-4 space-y-2 text-xs text-[#64748B] dark:text-gray-400">
           <div className="flex justify-between">
-            <span>Items Total</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.itemsPrice?.toLocaleString('en-IN')}</span>
+            <span>Items Subtotal</span>
+            <span className="font-semibold text-[#1F2937] dark:text-white price-tag">
+              ₹{(order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || order.totalPrice || 0).toLocaleString('en-IN')}
+            </span>
           </div>
-          {order.shippingCharge > 0 && (
+          {order.shippingCharge > 0 ? (
             <div className="flex justify-between">
               <span>Boutique Delivery</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.shippingCharge}</span>
+            </div>
+          ) : (
+            <div className="flex justify-between">
+              <span>Boutique Delivery</span><span className="font-semibold text-emerald-600">FREE</span>
+            </div>
+          )}
+          {order.expressCharge > 0 && (
+            <div className="flex justify-between">
+              <span>Express Crafting</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.expressCharge}</span>
+            </div>
+          )}
+          {order.giftWrapCharge > 0 && (
+            <div className="flex justify-between">
+              <span>Gift Packaging</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.giftWrapCharge}</span>
             </div>
           )}
           {order.couponDiscount > 0 && (
@@ -148,11 +219,30 @@ export default function OrderTracking() {
               <span>Promo Discount</span><span>-₹{order.couponDiscount}</span>
             </div>
           )}
-          <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] pt-2">
-            <span>Total Estimated</span><span className="text-pink-600 dark:text-pink-400 price-tag">₹{order.totalPrice?.toLocaleString('en-IN')}</span>
+          {order.taxPrice > 0 && (
+            <div className="flex justify-between">
+              <span>Applicable GST</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.taxPrice}</span>
+            </div>
+          )}
+          <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-3">
+            <span>Final Order Total</span>
+            <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{(order.totalPrice || 0).toLocaleString('en-IN')}</span>
           </div>
         </div>
       </div>
+
+      {/* Review Modal */}
+      <ReviewModal
+        isOpen={!!reviewProduct}
+        onClose={() => setReviewProduct(null)}
+        product={reviewProduct}
+        orderId={order._id}
+        orderNumber={order.orderNumber}
+        onSuccess={() => {
+          queryClient.invalidateQueries(['order', id])
+          queryClient.invalidateQueries(['my-orders'])
+        }}
+      />
 
       {/* Shipping Address */}
       <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
