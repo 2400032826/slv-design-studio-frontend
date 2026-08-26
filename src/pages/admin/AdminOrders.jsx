@@ -379,6 +379,26 @@ export default function AdminOrders() {
                 </div>
               </div>
 
+              {/* Cancellation Reason Notice if Cancelled */}
+              {selectedOrder.status === 'cancelled' && (
+                <div className="bg-rose-50 dark:bg-rose-950/30 border border-rose-200 dark:border-rose-900/40 rounded-2xl p-4 mb-5 space-y-1.5 text-rose-900 dark:text-rose-200">
+                  <div className="flex items-center gap-2 font-bold text-xs text-rose-600 dark:text-rose-400">
+                    <X className="w-4 h-4" /> Order Cancelled
+                  </div>
+                  {selectedOrder.cancellationReason && (
+                    <p className="text-xs">
+                      <span className="font-bold">Cancellation Reason:</span> {selectedOrder.cancellationReason}
+                      {selectedOrder.cancellationDetails && ` — "${selectedOrder.cancellationDetails}"`}
+                    </p>
+                  )}
+                  {selectedOrder.cancelledAt && (
+                    <p className="text-[11px] text-rose-700 dark:text-rose-400">
+                      Cancelled on: {new Date(selectedOrder.cancelledAt).toLocaleString('en-IN')}
+                    </p>
+                  )}
+                </div>
+              )}
+
               {/* Customer & Quick Action Bar */}
               <div className="bg-[#F5F7FA] dark:bg-charcoal-800 rounded-2xl p-4 mb-5 flex flex-wrap items-center justify-between gap-3 border border-[#E5E7EB] dark:border-charcoal-700">
                 <div>
@@ -410,7 +430,7 @@ export default function AdminOrders() {
 
               {/* Items List */}
               <div className="mb-5">
-                <h4 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Booked Items</h4>
+                <h4 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Booked Items & Price Snapshots</h4>
                 <div className="space-y-3">
                   {selectedOrder.items?.map((item, i) => {
                     const itemImg = getImageUrl(item.image || item.product?.images?.[0])
@@ -423,9 +443,17 @@ export default function AdminOrders() {
                             <div className="w-full h-full bg-[#FFF5F9] flex items-center justify-center text-sm">👗</div>
                           )}
                         </div>
-                        <div className="flex-1">
+                        <div className="flex-1 min-w-0">
                           <p className="font-bold text-xs sm:text-sm text-[#1F2937] dark:text-white">{item.name || item.product?.name}</p>
-                          <p className="text-xs text-[#64748B]">Qty: {item.quantity} {item.size ? `| Size: ${item.size}` : ''} {item.color ? `| Color: ${item.color}` : ''}</p>
+                          <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-[#64748B] mt-0.5">
+                            <span>Qty: <strong className="text-[#1F2937] dark:text-white">{item.quantity}</strong></span>
+                            <span>Purchase Price: <strong className="text-pink-600 dark:text-pink-400">₹{(item.price || 0).toLocaleString('en-IN')}</strong></span>
+                            {item.product?.price && item.product.price !== item.price && (
+                              <span className="text-[11px] text-[#94A3B8]">(Catalog: ₹{item.product.price})</span>
+                            )}
+                            {item.size && <span>Size: {item.size}</span>}
+                            {item.color && <span>Color: {item.color}</span>}
+                          </div>
                           {/* Customization Details */}
                           {item.customization && Object.keys(item.customization).length > 0 && (
                             <div className="mt-2 text-xs bg-white dark:bg-pink-950/20 p-2.5 rounded-xl border border-pink-200 text-pink-800 dark:text-pink-300 space-y-1">
@@ -451,7 +479,7 @@ export default function AdminOrders() {
                           </span>
                         ) : (
                           <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">
-                            ₹{(item.price * item.quantity).toLocaleString('en-IN')}
+                            ₹{((item.price || 0) * (item.quantity || 1)).toLocaleString('en-IN')}
                           </p>
                         )}
                       </div>

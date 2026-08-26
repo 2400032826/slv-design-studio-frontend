@@ -48,7 +48,7 @@ export default function Contact() {
               <h2 className="font-display text-xl font-bold text-[#1F2937] dark:text-white mb-6">Atelier Studio Details</h2>
               <div className="space-y-3.5">
                 {[
-                  { Icon: Phone, label: 'Direct Phone', value: '+91 9731912413', href: 'tel:+919731912413' },
+                  { Icon: MessageCircle, label: 'WhatsApp Support', value: '+91 9731912413 (Chat)', href: 'https://wa.me/919731912413' },
                   { Icon: Mail, label: 'Studio Email', value: 'slvfashionstudiio@gmail.com', href: 'mailto:slvfashionstudiio@gmail.com' },
                   { Icon: MapPin, label: 'Boutique Location', value: 'Karnataka, India', href: 'https://maps.google.com/?q=Karnataka,India' },
                   { Icon: Clock, label: 'Studio Timings', value: 'Mon-Sat: 9AM-8PM | Sun: 10AM-5PM', href: null },

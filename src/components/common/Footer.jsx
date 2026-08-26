@@ -112,12 +112,6 @@ export default function Footer() {
                 </div>
               </li>
               <li>
-                <a href="tel:+919731912413" className="flex items-center gap-3 text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
-                  <Phone className="w-4 h-4 text-pink-500 flex-shrink-0" />
-                  +91 9731912413
-                </a>
-              </li>
-              <li>
                 <a href="mailto:slvfashionstudiio@gmail.com" className="flex items-center gap-3 text-[#64707D] dark:text-slate-300 text-sm hover:text-pink-600 transition-colors">
                   <Mail className="w-4 h-4 text-pink-500 flex-shrink-0" />
                   slvfashionstudiio@gmail.com

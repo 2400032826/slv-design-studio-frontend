@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import {
   ShoppingCart, Heart, Search, Menu, X, User,
-  ChevronDown, Phone, Mail, Sparkles, LogOut, Settings, Package
+  ChevronDown, MessageCircle, Mail, Sparkles, LogOut, Settings, Package
 } from 'lucide-react'
 import { openCart, selectCartCount } from '../../store/slices/cartSlice'
 import { logout, showLogin } from '../../store/slices/authSlice'
@@ -52,8 +52,13 @@ export default function Navbar() {
       <div className="bg-[#F5F7FA] dark:bg-[#1F2937] text-[#64748B] dark:text-slate-300 text-xs py-2 border-b border-[#E5E7EB] dark:border-slate-800">
         <div className="section-container flex justify-between items-center">
           <div className="flex items-center gap-6">
-            <a href="tel:+919731912413" className="flex items-center gap-1.5 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium">
-              <Phone className="w-3.5 h-3.5 text-pink-500" /> +91 9731912413
+            <a
+              href="https://wa.me/919731912413"
+              target="_blank"
+              rel="noreferrer"
+              className="flex items-center gap-1.5 hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors font-medium text-emerald-700 dark:text-emerald-400"
+            >
+              <MessageCircle className="w-3.5 h-3.5" /> WhatsApp: +91 9731912413
             </a>
             <a href="mailto:slvfashionstudiio@gmail.com" className="hidden sm:flex items-center gap-1.5 hover:text-pink-600 dark:hover:text-pink-400 transition-colors font-medium">
               <Mail className="w-3.5 h-3.5 text-pink-500" /> slvfashionstudiio@gmail.com

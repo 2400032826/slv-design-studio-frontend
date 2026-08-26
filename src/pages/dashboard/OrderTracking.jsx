@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useParams, useNavigate } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Package, CheckCircle, Clock, Truck, Home, XCircle, Phone, Sparkles, Star } from 'lucide-react'
+import { ArrowLeft, Package, CheckCircle, Clock, Truck, Home, XCircle, Phone, Sparkles, Star, MessageCircle } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { getImageUrl } from '../../utils/imageUtils'
 import ReviewModal from '../../components/reviews/ReviewModal'
+import CancelOrderModal from '../../components/orders/CancelOrderModal'
 
 const statusSteps = [
   { key: 'Pending Confirmation', label: 'Pending Confirmation', icon: Clock },
@@ -24,6 +25,7 @@ export default function OrderTracking() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
   const [reviewProduct, setReviewProduct] = useState(null)
+  const [cancelModalOpen, setCancelModalOpen] = useState(false)
 
   const { data: order, isLoading } = useQuery({
     queryKey: ['order', id],
@@ -244,34 +246,60 @@ export default function OrderTracking() {
         }}
       />
 
-      {/* Shipping Address */}
-      <div className="bg-white dark:bg-[#1F2937] rounded-2xl p-6 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
-        <h3 className="font-display font-bold text-sm text-[#1F2937] dark:text-white mb-2">Delivery Details</h3>
-        <p className="text-xs text-[#64748B] dark:text-charcoal-400 leading-relaxed">
-          <span className="font-bold text-[#1F2937] dark:text-white">{order.shippingAddress?.fullName || order.shippingAddress?.name}</span><br />
-          {order.shippingAddress?.address}, {order.shippingAddress?.city}<br />
-          {order.shippingAddress?.state} - {order.shippingAddress?.pincode}<br />
-          <span className="flex items-center gap-1 mt-1 font-semibold text-[#1F2937] dark:text-white"><Phone className="w-3 h-3 text-pink-500" /> {order.shippingAddress?.phone}</span>
-        </p>
-      </div>
+      {/* Cancellation Banner if Cancelled */}
+      {isCancelled && (
+        <div className="bg-rose-50 dark:bg-rose-950/20 border border-rose-200 dark:border-rose-900/30 rounded-2xl p-5 space-y-2">
+          <div className="flex items-center gap-3">
+            <XCircle className="w-6 h-6 text-rose-500 flex-shrink-0" />
+            <div>
+              <p className="font-bold text-xs text-rose-600 dark:text-rose-400">Booking Cancelled</p>
+              <p className="text-[11px] text-rose-500">
+                This order was cancelled on {order.cancelledAt ? new Date(order.cancelledAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : new Date(order.updatedAt).toLocaleDateString('en-IN')}.
+              </p>
+            </div>
+          </div>
+          {order.cancellationReason && (
+            <div className="pt-2 border-t border-rose-200 dark:border-rose-900/40 text-xs text-rose-800 dark:text-rose-300">
+              <span className="font-bold">Cancellation Reason:</span> {order.cancellationReason}
+              {order.cancellationDetails && ` — "${order.cancellationDetails}"`}
+            </div>
+          )}
+        </div>
+      )}
 
-      {/* Cancel button */}
+      {/* Cancel Order Button */}
       {canCancel && (
         <button
-          onClick={() => { if (window.confirm('Cancel this order booking?')) cancelMutation.mutate() }}
-          disabled={cancelMutation.isLoading}
-          className="w-full py-3 border border-rose-300 text-rose-600 rounded-xl font-bold text-xs hover:bg-rose-50 dark:hover:bg-rose-950/20 transition-colors"
+          onClick={() => setCancelModalOpen(true)}
+          className="w-full py-3.5 border border-rose-300 dark:border-rose-900/50 bg-rose-50/50 hover:bg-rose-100/70 dark:bg-rose-950/20 dark:hover:bg-rose-950/40 text-rose-600 dark:text-rose-400 rounded-2xl font-bold text-xs transition-colors flex items-center justify-center gap-2 shadow-soft"
         >
-          {cancelMutation.isLoading ? 'Cancelling...' : 'Cancel Order Booking'}
+          <XCircle className="w-4 h-4" /> Cancel Order Booking
         </button>
       )}
 
-      {/* Contact for help */}
-      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border border-[#E5E7EB] rounded-2xl p-4 text-center">
-        <p className="text-xs text-[#64748B] mb-1.5">Need assistance or measurement alterations for this order?</p>
-        <a href="https://wa.me/919731912413" target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-xs hover:underline">
-          <Phone className="w-3.5 h-3.5" /> WhatsApp Atelier: +91 9731912413
+      {/* Cancel Order Modal */}
+      <CancelOrderModal
+        isOpen={cancelModalOpen}
+        onClose={() => setCancelModalOpen(false)}
+        order={order}
+        onSuccess={() => {
+          queryClient.invalidateQueries(['order', id])
+          queryClient.invalidateQueries(['my-orders'])
+          queryClient.invalidateQueries(['admin-orders'])
+          queryClient.invalidateQueries(['admin-dashboard'])
+        }}
+      />
+
+      {/* WhatsApp Atelier Consultation */}
+      <div className="bg-[#F5F7FA] dark:bg-[#1F2937] border border-[#E5E7EB] dark:border-charcoal-800 rounded-2xl p-4 text-center">
+        <p className="text-xs text-[#64748B] dark:text-gray-300 mb-2">Need assistance or custom alterations for this order?</p>
+        <a
+          href={`https://wa.me/919731912413?text=${encodeURIComponent(`Hello SLV Fashion Studio, I have a query regarding my order #${order.orderNumber}.`)}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-xl transition-colors shadow-soft"
+        >
+          <MessageCircle className="w-4 h-4" /> WhatsApp Atelier: +91 9731912413
         </a>
       </div>
     </div>

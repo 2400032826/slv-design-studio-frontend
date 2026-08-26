@@ -1,10 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit'
 
+const SESSION_DURATION_MS = 24 * 60 * 60 * 1000 // Exactly 24 hours
+
 const getStoredAuth = () => {
   try {
     const token = localStorage.getItem('slv_token')
     const user = localStorage.getItem('slv_user')
-    return { token: token || null, user: user ? JSON.parse(user) : null }
+    const expiresAt = localStorage.getItem('slv_auth_expires_at')
+
+    if (!token || !user) {
+      return { token: null, user: null }
+    }
+
+    // Check if the 24-hour session has expired
+    if (expiresAt && Date.now() >= Number(expiresAt)) {
+      localStorage.removeItem('slv_token')
+      localStorage.removeItem('slv_user')
+      localStorage.removeItem('slv_auth_expires_at')
+      return { token: null, user: null }
+    }
+
+    return { token, user: JSON.parse(user) }
   } catch {
     return { token: null, user: null }
   }
@@ -26,12 +42,14 @@ const authSlice = createSlice({
   },
   reducers: {
     loginSuccess: (state, action) => {
+      const expiresAt = action.payload.expiresAt || (Date.now() + SESSION_DURATION_MS)
       state.token = action.payload.token
       state.user = action.payload.user
       state.isAuthenticated = true
       state.showLoginModal = false
       localStorage.setItem('slv_token', action.payload.token)
       localStorage.setItem('slv_user', JSON.stringify(action.payload.user))
+      localStorage.setItem('slv_auth_expires_at', String(expiresAt))
     },
     logout: (state) => {
       state.token = null
@@ -39,6 +57,7 @@ const authSlice = createSlice({
       state.isAuthenticated = false
       localStorage.removeItem('slv_token')
       localStorage.removeItem('slv_user')
+      localStorage.removeItem('slv_auth_expires_at')
     },
     adminLoginSuccess: (state, action) => {
       state.adminToken = action.payload.token
