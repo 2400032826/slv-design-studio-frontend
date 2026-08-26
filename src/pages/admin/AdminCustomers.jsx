@@ -94,7 +94,7 @@ export default function AdminCustomers() {
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-1 text-xs">
                           <Package className="w-3.5 h-3.5 text-pink-500" />
-                          <span className="font-bold text-[#1F2937] dark:text-white">{user.orderCount || 0}</span>
+                          <span className="font-bold text-[#1F2937] dark:text-white">{user.totalOrders ?? user.orderCount ?? 0}</span>
                         </div>
                       </td>
                       <td className="px-5 py-4 text-xs text-[#64748B]">
@@ -158,7 +158,7 @@ export default function AdminCustomers() {
 
                   <div className="flex items-center justify-between text-xs pt-2 border-t border-[#E5E7EB] dark:border-slate-800">
                     <span className="text-[#64748B]">{user.phone || 'No phone'}</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white">{user.orderCount || 0} Bookings</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white">{user.totalOrders ?? user.orderCount ?? 0} Bookings</span>
                   </div>
 
                   <button

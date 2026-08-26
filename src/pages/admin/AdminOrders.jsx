@@ -48,23 +48,45 @@ export default function AdminOrders() {
 
   const { data, isLoading } = useQuery({
     queryKey: ['admin-orders', search, statusFilter, page],
-    queryFn: () => api.get(`/admin/orders?search=${search}&status=${statusFilter}&page=${page}`, adminHeaders).then((r) => r.data),
+    queryFn: async () => {
+      try {
+        const res = await api.get(`/admin/orders?search=${encodeURIComponent(search)}&status=${statusFilter}&page=${page}`, adminHeaders)
+        return res.data
+      } catch (err) {
+        const fallback = await api.get(`/orders?search=${encodeURIComponent(search)}&status=${statusFilter}&page=${page}`, adminHeaders)
+        return fallback.data
+      }
+    },
   })
 
   const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }) => api.put(`/admin/orders/${id}/status`, { status }, adminHeaders),
+    mutationFn: async ({ id, status }) => {
+      try {
+        return await api.put(`/admin/orders/${id}/status`, { status }, adminHeaders)
+      } catch (e) {
+        return await api.put(`/orders/${id}/status`, { status }, adminHeaders)
+      }
+    },
     onSuccess: () => {
       toast.success('Production status updated')
       queryClient.invalidateQueries(['admin-orders'])
+      queryClient.invalidateQueries(['admin-dashboard'])
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Failed to update status'),
   })
 
   const deleteOrderMutation = useMutation({
-    mutationFn: (id) => api.delete(`/admin/orders/${id}`, adminHeaders),
+    mutationFn: async (id) => {
+      try {
+        return await api.delete(`/admin/orders/${id}`, adminHeaders)
+      } catch (e) {
+        return await api.delete(`/orders/${id}`, adminHeaders)
+      }
+    },
     onSuccess: () => {
       toast.success('Order deleted')
       queryClient.invalidateQueries(['admin-orders'])
+      queryClient.invalidateQueries(['admin-dashboard'])
     },
     onError: (err) => toast.error(err.response?.data?.message || 'Failed to delete order'),
   })
@@ -435,6 +457,56 @@ export default function AdminOrders() {
                       </div>
                     )
                   })}
+                </div>
+              </div>
+
+              {/* Financial & Price Summary */}
+              <div className="mb-5 bg-[#F5F7FA] dark:bg-charcoal-800/60 p-4 rounded-2xl border border-[#E5E7EB] dark:border-charcoal-700 space-y-2">
+                <h4 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Price Breakdown</h4>
+                <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                  <span>Items Subtotal</span>
+                  <span className="font-semibold text-[#1F2937] dark:text-white">
+                    ₹{(selectedOrder.itemsPrice || selectedOrder.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || selectedOrder.totalPrice || 0).toLocaleString('en-IN')}
+                  </span>
+                </div>
+                {selectedOrder.shippingCharge > 0 ? (
+                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                    <span>Shipping & Delivery</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.shippingCharge}</span>
+                  </div>
+                ) : (
+                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                    <span>Shipping & Delivery</span>
+                    <span className="font-semibold text-emerald-600">FREE</span>
+                  </div>
+                )}
+                {selectedOrder.expressCharge > 0 && (
+                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                    <span>Express Crafting</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.expressCharge}</span>
+                  </div>
+                )}
+                {selectedOrder.giftWrapCharge > 0 && (
+                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                    <span>Gift Packaging</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.giftWrapCharge}</span>
+                  </div>
+                )}
+                {selectedOrder.couponDiscount > 0 && (
+                  <div className="flex justify-between text-xs text-pink-600 font-semibold">
+                    <span>Coupon Discount</span>
+                    <span>-₹{selectedOrder.couponDiscount}</span>
+                  </div>
+                )}
+                {selectedOrder.taxPrice > 0 && (
+                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                    <span>Applicable GST</span>
+                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.taxPrice}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-sm font-bold text-[#1F2937] dark:text-white pt-2 border-t border-[#E5E7EB] dark:border-charcoal-700">
+                  <span>Total Order Amount</span>
+                  <span className="text-pink-600 dark:text-pink-400 price-tag">₹{(selectedOrder.totalPrice || 0).toLocaleString('en-IN')}</span>
                 </div>
               </div>
 
