@@ -221,11 +221,6 @@ export default function OrderTracking() {
               <span>Promo Discount</span><span>-₹{order.couponDiscount}</span>
             </div>
           )}
-          {order.taxPrice > 0 && (
-            <div className="flex justify-between">
-              <span>Applicable GST</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.taxPrice}</span>
-            </div>
-          )}
           <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-3">
             <span>Final Order Total</span>
             <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{(order.totalPrice || 0).toLocaleString('en-IN')}</span>

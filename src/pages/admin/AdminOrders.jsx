@@ -526,12 +526,6 @@ export default function AdminOrders() {
                     <span>-₹{selectedOrder.couponDiscount}</span>
                   </div>
                 )}
-                {selectedOrder.taxPrice > 0 && (
-                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                    <span>Applicable GST</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.taxPrice}</span>
-                  </div>
-                )}
                 <div className="flex justify-between text-sm font-bold text-[#1F2937] dark:text-white pt-2 border-t border-[#E5E7EB] dark:border-charcoal-700">
                   <span>Total Order Amount</span>
                   <span className="text-pink-600 dark:text-pink-400 price-tag">₹{(selectedOrder.totalPrice || 0).toLocaleString('en-IN')}</span>
