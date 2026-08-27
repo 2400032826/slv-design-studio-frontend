@@ -177,6 +177,8 @@ export default function AdminOrders() {
                     orders.map((order) => {
                       const custPhone = order.shippingAddress?.phone || order.user?.phone || ''
                       const cleanPhone = custPhone.replace(/[^0-9]/g, '')
+                      const orderSubtotal = order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || 0
+                      const orderTrueTotal = Math.max(0, orderSubtotal + (order.shippingCharge || 0) + (order.expressCharge || 0) + (order.giftWrapCharge || 0) - (order.couponDiscount || 0))
                       return (
                         <tr key={order._id} className="hover:bg-[#F5F7FA]/60 dark:hover:bg-charcoal-800/40 transition-colors">
                           <td className="px-5 py-4">
@@ -188,13 +190,13 @@ export default function AdminOrders() {
                             <p className="text-[11px] text-[#64748B]">{order.shippingAddress?.phone || order.user?.email}</p>
                           </td>
                           <td className="px-5 py-4">
-                            {order.totalPrice === 0 || !order.totalPrice ? (
+                            {orderTrueTotal === 0 ? (
                               <span className="text-[10px] font-bold text-pink-600 dark:text-pink-400 bg-pink-50 dark:bg-pink-950/40 px-2 py-0.5 rounded-full border border-pink-200">
                                 Quote to Confirm
                               </span>
                             ) : (
                               <p className="font-bold text-xs sm:text-sm text-pink-600 dark:text-pink-400 price-tag">
-                                ₹{order.totalPrice.toLocaleString('en-IN')}
+                                ₹{orderTrueTotal.toLocaleString('en-IN')}
                               </p>
                             )}
                           </td>
@@ -491,48 +493,59 @@ export default function AdminOrders() {
               </div>
 
               {/* Financial & Price Summary */}
-              <div className="mb-5 bg-[#F5F7FA] dark:bg-charcoal-800/60 p-4 rounded-2xl border border-[#E5E7EB] dark:border-charcoal-700 space-y-2">
-                <h4 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Price Breakdown</h4>
-                <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                  <span>Items Subtotal</span>
-                  <span className="font-semibold text-[#1F2937] dark:text-white">
-                    ₹{(selectedOrder.itemsPrice || selectedOrder.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || selectedOrder.totalPrice || 0).toLocaleString('en-IN')}
-                  </span>
-                </div>
-                {selectedOrder.shippingCharge > 0 ? (
-                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                    <span>Shipping & Delivery</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.shippingCharge}</span>
+              {(() => {
+                const subtotal = selectedOrder.itemsPrice || selectedOrder.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
+                const shipping = selectedOrder.shippingCharge || 0;
+                const express = selectedOrder.expressCharge || 0;
+                const giftWrap = selectedOrder.giftWrapCharge || 0;
+                const discount = selectedOrder.couponDiscount || 0;
+                const trueTotal = Math.max(0, subtotal + shipping + express + giftWrap - discount);
+
+                return (
+                  <div className="mb-5 bg-[#F5F7FA] dark:bg-charcoal-800/60 p-4 rounded-2xl border border-[#E5E7EB] dark:border-charcoal-700 space-y-2">
+                    <h4 className="text-xs font-bold text-[#64748B] uppercase tracking-wider mb-2">Price Breakdown</h4>
+                    <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                      <span>Items Subtotal</span>
+                      <span className="font-semibold text-[#1F2937] dark:text-white">
+                        ₹{subtotal.toLocaleString('en-IN')}
+                      </span>
+                    </div>
+                    {shipping > 0 ? (
+                      <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                        <span>Shipping & Delivery</span>
+                        <span className="font-semibold text-[#1F2937] dark:text-white">₹{shipping}</span>
+                      </div>
+                    ) : (
+                      <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                        <span>Shipping & Delivery</span>
+                        <span className="font-semibold text-emerald-600">FREE</span>
+                      </div>
+                    )}
+                    {express > 0 && (
+                      <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                        <span>Express Crafting</span>
+                        <span className="font-semibold text-[#1F2937] dark:text-white">₹{express}</span>
+                      </div>
+                    )}
+                    {giftWrap > 0 && (
+                      <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
+                        <span>Gift Packaging</span>
+                        <span className="font-semibold text-[#1F2937] dark:text-white">₹{giftWrap}</span>
+                      </div>
+                    )}
+                    {discount > 0 && (
+                      <div className="flex justify-between text-xs text-pink-600 font-semibold">
+                        <span>Coupon Discount</span>
+                        <span>-₹{discount}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between text-sm font-bold text-[#1F2937] dark:text-white pt-2 border-t border-[#E5E7EB] dark:border-charcoal-700">
+                      <span>Total Order Amount</span>
+                      <span className="text-pink-600 dark:text-pink-400 price-tag">₹{trueTotal.toLocaleString('en-IN')}</span>
+                    </div>
                   </div>
-                ) : (
-                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                    <span>Shipping & Delivery</span>
-                    <span className="font-semibold text-emerald-600">FREE</span>
-                  </div>
-                )}
-                {selectedOrder.expressCharge > 0 && (
-                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                    <span>Express Crafting</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.expressCharge}</span>
-                  </div>
-                )}
-                {selectedOrder.giftWrapCharge > 0 && (
-                  <div className="flex justify-between text-xs text-[#64748B] dark:text-gray-400">
-                    <span>Gift Packaging</span>
-                    <span className="font-semibold text-[#1F2937] dark:text-white">₹{selectedOrder.giftWrapCharge}</span>
-                  </div>
-                )}
-                {selectedOrder.couponDiscount > 0 && (
-                  <div className="flex justify-between text-xs text-pink-600 font-semibold">
-                    <span>Coupon Discount</span>
-                    <span>-₹{selectedOrder.couponDiscount}</span>
-                  </div>
-                )}
-                <div className="flex justify-between text-sm font-bold text-[#1F2937] dark:text-white pt-2 border-t border-[#E5E7EB] dark:border-charcoal-700">
-                  <span>Total Order Amount</span>
-                  <span className="text-pink-600 dark:text-pink-400 price-tag">₹{(selectedOrder.totalPrice || 0).toLocaleString('en-IN')}</span>
-                </div>
-              </div>
+                );
+              })()}
 
               {/* Shipping Address */}
               <div className="mb-5">

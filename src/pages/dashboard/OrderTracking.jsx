@@ -190,42 +190,53 @@ export default function OrderTracking() {
         </div>
 
         {/* Pricing Breakdown Snapshot */}
-        <div className="border-t border-[#E5E7EB] dark:border-charcoal-700 mt-5 pt-4 space-y-2 text-xs text-[#64748B] dark:text-gray-400">
-          <div className="flex justify-between">
-            <span>Items Subtotal</span>
-            <span className="font-semibold text-[#1F2937] dark:text-white price-tag">
-              ₹{(order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || order.totalPrice || 0).toLocaleString('en-IN')}
-            </span>
-          </div>
-          {order.shippingCharge > 0 ? (
-            <div className="flex justify-between">
-              <span>Boutique Delivery</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.shippingCharge}</span>
+        {(() => {
+          const subtotal = order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
+          const shipping = order.shippingCharge || 0;
+          const express = order.expressCharge || 0;
+          const giftWrap = order.giftWrapCharge || 0;
+          const discount = order.couponDiscount || 0;
+          const trueTotal = Math.max(0, subtotal + shipping + express + giftWrap - discount);
+
+          return (
+            <div className="border-t border-[#E5E7EB] dark:border-charcoal-700 mt-5 pt-4 space-y-2 text-xs text-[#64748B] dark:text-gray-400">
+              <div className="flex justify-between">
+                <span>Items Subtotal</span>
+                <span className="font-semibold text-[#1F2937] dark:text-white price-tag">
+                  ₹{subtotal.toLocaleString('en-IN')}
+                </span>
+              </div>
+              {shipping > 0 ? (
+                <div className="flex justify-between">
+                  <span>Boutique Delivery</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{shipping}</span>
+                </div>
+              ) : (
+                <div className="flex justify-between">
+                  <span>Boutique Delivery</span><span className="font-semibold text-emerald-600">FREE</span>
+                </div>
+              )}
+              {express > 0 && (
+                <div className="flex justify-between">
+                  <span>Express Crafting</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{express}</span>
+                </div>
+              )}
+              {giftWrap > 0 && (
+                <div className="flex justify-between">
+                  <span>Gift Packaging</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{giftWrap}</span>
+                </div>
+              )}
+              {discount > 0 && (
+                <div className="flex justify-between text-emerald-600 font-semibold">
+                  <span>Promo Discount</span><span>-₹{discount}</span>
+                </div>
+              )}
+              <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-3">
+                <span>Final Order Total</span>
+                <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{trueTotal.toLocaleString('en-IN')}</span>
+              </div>
             </div>
-          ) : (
-            <div className="flex justify-between">
-              <span>Boutique Delivery</span><span className="font-semibold text-emerald-600">FREE</span>
-            </div>
-          )}
-          {order.expressCharge > 0 && (
-            <div className="flex justify-between">
-              <span>Express Crafting</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.expressCharge}</span>
-            </div>
-          )}
-          {order.giftWrapCharge > 0 && (
-            <div className="flex justify-between">
-              <span>Gift Packaging</span><span className="font-semibold text-[#1F2937] dark:text-white price-tag">₹{order.giftWrapCharge}</span>
-            </div>
-          )}
-          {order.couponDiscount > 0 && (
-            <div className="flex justify-between text-emerald-600 font-semibold">
-              <span>Promo Discount</span><span>-₹{order.couponDiscount}</span>
-            </div>
-          )}
-          <div className="flex justify-between font-bold text-sm text-[#1F2937] dark:text-white border-t border-[#E5E7EB] dark:border-charcoal-700 pt-3">
-            <span>Final Order Total</span>
-            <span className="text-pink-600 dark:text-pink-400 price-tag text-base">₹{(order.totalPrice || 0).toLocaleString('en-IN')}</span>
-          </div>
-        </div>
+          );
+        })()}
       </div>
 
       {/* Review Modal */}

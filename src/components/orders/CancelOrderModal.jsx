@@ -93,9 +93,15 @@ export default function CancelOrderModal({
                 <h3 className="font-display text-base sm:text-lg font-bold text-[#1F2937] dark:text-white">
                   Cancel Booking #{order.orderNumber}
                 </h3>
-                <p className="text-[11px] text-[#64748B] dark:text-gray-400">
-                  Total: ₹{(order.totalPrice || 0).toLocaleString('en-IN')}
-                </p>
+                {(() => {
+                  const modalSubtotal = order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
+                  const modalTrueTotal = Math.max(0, modalSubtotal + (order.shippingCharge || 0) + (order.expressCharge || 0) + (order.giftWrapCharge || 0) - (order.couponDiscount || 0));
+                  return (
+                    <p className="text-[11px] text-[#64748B] dark:text-gray-400">
+                      Total: ₹{modalTrueTotal.toLocaleString('en-IN')}
+                    </p>
+                  );
+                })()}
               </div>
             </div>
             <button

@@ -85,7 +85,15 @@ export default function Orders() {
                   <p className="text-[11px] text-[#94A3B8] mt-0.5">{order.items?.length} item(s) • Custom Atelier Booking</p>
                 </div>
                 <div className="text-right flex-shrink-0 flex flex-col items-end gap-1.5">
-                  <p className="font-bold text-pink-600 dark:text-pink-400 text-sm sm:text-base price-tag">₹{order.totalPrice?.toLocaleString('en-IN')}</p>
+                  {(() => {
+                    const orderSubtotal = order.itemsPrice || order.items?.reduce((acc, it) => acc + ((it.price || 0) * (it.quantity || 1)), 0) || 0;
+                    const orderTrueTotal = Math.max(0, orderSubtotal + (order.shippingCharge || 0) + (order.expressCharge || 0) + (order.giftWrapCharge || 0) - (order.couponDiscount || 0));
+                    return (
+                      <p className="font-bold text-pink-600 dark:text-pink-400 text-sm sm:text-base price-tag">
+                        ₹{orderTrueTotal.toLocaleString('en-IN')}
+                      </p>
+                    );
+                  })()}
                   {(order.status === 'delivered' || order.status === 'completed') && (
                     <span className="inline-flex items-center gap-1 text-[10px] font-bold text-pink-600 bg-pink-50 dark:bg-pink-950/40 px-2 py-0.5 rounded-full border border-pink-200">
                       ★ Review
