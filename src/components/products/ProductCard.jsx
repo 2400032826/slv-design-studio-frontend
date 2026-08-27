@@ -3,15 +3,18 @@ import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { Heart, ShoppingBag, Star, Share2 } from 'lucide-react'
 import { useDispatch, useSelector } from 'react-redux'
+import { useQueryClient } from '@tanstack/react-query'
 import { addToCart } from '../../store/slices/cartSlice'
 import { toggleWishlistItem } from '../../store/slices/wishlistSlice'
 import { showLogin } from '../../store/slices/authSlice'
+import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { getImageUrl, getProductImage, getCategoryFallbackImage } from '../../utils/imageUtils'
 import OptimizedImage from '../common/OptimizedImage'
 
 export default function ProductCard({ product, priority = false }) {
   const dispatch = useDispatch()
+  const queryClient = useQueryClient()
   const { isAuthenticated } = useSelector((s) => s.auth)
   const wishlist = useSelector((s) => s.wishlist.items)
   const [hovered, setHovered] = useState(false)
@@ -24,6 +27,30 @@ export default function ProductCard({ product, priority = false }) {
   const primaryImg = getProductImage(product, 0, { width: 500, quality: 75 })
   const secondaryImg = (product.images && product.images.length > 1) ? getProductImage(product, 1, { width: 500, quality: 75 }) : primaryImg
   const activeImg = (hovered && secondaryImg) ? secondaryImg : (primaryImg || fallbackImg)
+
+  // Smart prefetch on hover or touch to make navigation instant
+  const handlePrefetch = () => {
+    if (!product?._id) return
+
+    // Seed query cache with basic data immediately
+    queryClient.setQueryData(['product', product._id], (old) => old || product)
+    if (product.slug) {
+      queryClient.setQueryData(['product', product.slug], (old) => old || product)
+    }
+
+    // Prefetch detail data in background
+    queryClient.prefetchQuery({
+      queryKey: ['product', product._id],
+      queryFn: () => api.get(`/products/${product._id}`).then((r) => r.data?.product || r.data),
+      staleTime: 5 * 60 * 1000,
+    })
+
+    // Preload cover image into browser cache
+    if (primaryImg && typeof window !== 'undefined') {
+      const img = new Image()
+      img.src = primaryImg
+    }
+  }
 
   const handleAddToCart = (e) => {
     e.preventDefault()
@@ -50,7 +77,14 @@ export default function ProductCard({ product, priority = false }) {
   }
 
   return (
-    <Link to={`/products/${product._id || product.slug}`} className="block h-full group">
+    <Link
+      to={`/products/${product._id || product.slug}`}
+      state={{ initialProduct: product }}
+      onMouseEnter={() => { setHovered(true); handlePrefetch() }}
+      onMouseLeave={() => setHovered(false)}
+      onTouchStart={handlePrefetch}
+      className="block h-full group"
+    >
       <div
         className="product-card h-full flex flex-col justify-between"
         onMouseEnter={() => setHovered(true)}

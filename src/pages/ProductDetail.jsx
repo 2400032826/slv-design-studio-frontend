@@ -1,6 +1,6 @@
 import { useState } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import { useQuery } from '@tanstack/react-query'
+import { useParams, useNavigate, useLocation } from 'react-router-dom'
+import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useDispatch, useSelector } from 'react-redux'
 import {
@@ -22,8 +22,10 @@ import { ProductDetailSkeleton } from '../components/common/LoadingSpinner'
 
 export default function ProductDetail() {
   const { id } = useParams()
-  const dispatch = useDispatch()
+  const location = useLocation()
   const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const queryClient = useQueryClient()
   const { isAuthenticated } = useSelector((s) => s.auth)
   const wishlist = useSelector((s) => s.wishlist.items)
 
@@ -33,6 +35,11 @@ export default function ProductDetail() {
   const [quantity, setQuantity] = useState(1)
   const [activeTab, setActiveTab] = useState('description')
   const [lightboxOpen, setLightboxOpen] = useState(false)
+
+  // Use pre-passed navigation state or instant cache so the page renders on frame 0
+  const stateProduct = location.state?.initialProduct
+  const cachedProduct = stateProduct || queryClient.getQueryData(['product', id])
+
   const { data, isLoading } = useQuery({
     queryKey: ['product', id],
     queryFn: async () => {
@@ -46,6 +53,7 @@ export default function ProductDetail() {
       }
       return null
     },
+    initialData: cachedProduct ? { ...cachedProduct } : undefined,
     staleTime: 5 * 60 * 1000,
   })
 
@@ -66,7 +74,8 @@ export default function ProductDetail() {
 
   const productReviews = reviewsData?.reviews || data?.reviews || []
 
-  if (isLoading) return <ProductDetailSkeleton />
+  // Only show full skeleton if absolutely no cached or initial product data exists
+  if (isLoading && !data) return <ProductDetailSkeleton />
 
   if (!data) return (
     <div className="min-h-screen flex items-center justify-center bg-white dark:bg-[#111827] px-4">
