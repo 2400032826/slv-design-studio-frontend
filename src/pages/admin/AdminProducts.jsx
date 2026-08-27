@@ -12,11 +12,17 @@ import ProductImageManager from '../../components/admin/ProductImageManager'
 export default function AdminProducts() {
   const [sidebarOpen, setSidebarOpen] = useState(typeof window !== 'undefined' ? window.innerWidth >= 1024 : false)
   const [search, setSearch] = useState('')
+  const [debouncedSearch, setDebouncedSearch] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [showForm, setShowForm] = useState(false)
   const [editingProduct, setEditingProduct] = useState(null)
   const [submitting, setSubmitting] = useState(false)
   const queryClient = useQueryClient()
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(search), 300)
+    return () => clearTimeout(timer)
+  }, [search])
 
   const adminHeaders = { headers: { Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}` } }
 
@@ -48,8 +54,10 @@ export default function AdminProducts() {
   })
 
   const { data, isLoading } = useQuery({
-    queryKey: ['admin-products', search],
-    queryFn: () => api.get(`/products?search=${encodeURIComponent(search)}&limit=100`, adminHeaders).then((r) => r.data),
+    queryKey: ['admin-products', debouncedSearch],
+    queryFn: () => api.get(`/products?search=${encodeURIComponent(debouncedSearch)}&limit=100`, adminHeaders).then((r) => r.data),
+    placeholderData: (prev) => prev,
+    staleTime: 30000,
   })
 
   const invalidateAllProductQueries = () => {
@@ -298,7 +306,14 @@ export default function AdminProducts() {
                         <td className="px-5 py-4">
                           <div className="flex items-center gap-3.5">
                             <div className="w-12 h-12 rounded-xl overflow-hidden bg-[#F5F7FA] dark:bg-gray-800 flex-shrink-0 border border-[#E5E7EB]">
-                              <img src={getProductImage(product, 0)} alt={product.name} className="w-full h-full object-cover" />
+                              <img
+                                src={getProductImage(product, 0, { width: 120, quality: 70 })}
+                                alt={product.name}
+                                loading="lazy"
+                                decoding="async"
+                                className="w-full h-full object-cover"
+                                onError={(e) => { e.target.onerror = null; e.target.src = getCategoryFallbackImage(product) }}
+                              />
                             </div>
                             <div>
                               <p className="font-bold text-sm text-[#1F2937] dark:text-white line-clamp-1">{product.name}</p>
@@ -346,13 +361,13 @@ export default function AdminProducts() {
               </div>
             ) : (
               products.map((product) => {
-                const prodImg = getProductImage(product, 0)
+                const prodImg = getProductImage(product, 0, { width: 140, quality: 70 })
                 const fallbackImg = getCategoryFallbackImage(product)
                 return (
                   <div key={product._id} className="p-3.5 bg-white dark:bg-[#1F2937] rounded-2xl border border-[#E5E7EB] dark:border-slate-800 shadow-soft space-y-3">
                     <div className="flex gap-3">
                       <div className="w-16 h-16 rounded-xl overflow-hidden bg-[#F5F7FA] dark:bg-gray-800 flex-shrink-0 border border-[#E5E7EB]">
-                        <img src={prodImg} alt={product.name} className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = fallbackImg }} />
+                        <img src={prodImg} alt={product.name} loading="lazy" decoding="async" className="w-full h-full object-cover" onError={(e) => { e.target.onerror = null; e.target.src = fallbackImg }} />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-1">

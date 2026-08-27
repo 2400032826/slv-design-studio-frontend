@@ -10,19 +10,10 @@ export default function FeaturedProducts() {
   const { data, isLoading } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
-      try {
-        const res = await api.get('/products/featured')
-        if (res.data?.products && res.data.products.length > 0) {
-          return res.data.products
-        }
-      } catch (e) {}
-      try {
-        const fallbackRes = await api.get('/products?limit=8')
-        return fallbackRes.data?.products || []
-      } catch (e) {
-        return []
-      }
+      const res = await api.get('/products/featured')
+      return res.data?.products || []
     },
+    staleTime: 5 * 60 * 1000,
   })
 
   if (!isLoading && (!data || data.length === 0)) {

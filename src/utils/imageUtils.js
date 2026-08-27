@@ -81,16 +81,16 @@ export const getCategoryFallbackImage = (productOrCategory) => {
   return DEFAULT_PRODUCT_FALLBACK;
 };
 
-export const getImageUrl = (image) => {
+export const getImageUrl = (image, width = 500) => {
   if (!image) return null;
 
   // 1. Direct Google Drive file ID check
   if (typeof image === 'object' && image !== null) {
     if (image.googleDriveFileId) {
-      return `https://lh3.googleusercontent.com/d/${image.googleDriveFileId}=w600`;
+      return `https://lh3.googleusercontent.com/d/${image.googleDriveFileId}=w${width}`;
     }
     if (image.fileId) {
-      return `https://lh3.googleusercontent.com/d/${image.fileId}=w600`;
+      return `https://lh3.googleusercontent.com/d/${image.fileId}=w${width}`;
     }
   }
 
@@ -106,7 +106,7 @@ export const getImageUrl = (image) => {
   // 2. Google Drive URL detection
   const driveId = extractDriveFileId(url);
   if (driveId) {
-    return `https://lh3.googleusercontent.com/d/${driveId}=w600`;
+    return `https://lh3.googleusercontent.com/d/${driveId}=w${width}`;
   }
 
   // Normalize Windows file path backslashes to forward slashes

@@ -47,7 +47,8 @@ export default function Products() {
   const { data, isLoading, isFetching } = useQuery({
     queryKey: ['products', queryString],
     queryFn: () => api.get(`/products?${queryString}`).then((r) => r.data),
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
+    staleTime: 3 * 60 * 1000,
   })
 
   const { data: categoriesData } = useQuery({

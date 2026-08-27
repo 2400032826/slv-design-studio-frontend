@@ -37,37 +37,16 @@ export default function ProductDetail() {
     queryKey: ['product', id],
     queryFn: async () => {
       if (!id) return null
-
-      // 1. Direct Remote API product fetch by ID
-      const isHexId = /^[0-9a-fA-F]{24}$/.test(id)
-      if (isHexId) {
-        try {
-          const res = await api.get(`/products/${id}`)
-          if (res.data?.product) return res.data.product
-          if (res.data && !res.data.product && res.data._id) return res.data
-        } catch (err) {
-          console.warn('Direct product ID fetch error:', err.message)
-        }
-      }
-
-      // 2. Fetch from catalog to resolve by slug, id, or exact title
       try {
-        const res = await api.get(`/products?limit=100`)
-        const products = res.data?.products || []
-        const matched = products.find(
-          (p) =>
-            p._id === id ||
-            p.slug === id ||
-            (p.name && p.name.toLowerCase() === id.toLowerCase()) ||
-            (p.slug && p.slug.toLowerCase() === id.toLowerCase())
-        )
-        if (matched) return matched
+        const res = await api.get(`/products/${id}`)
+        if (res.data?.product) return res.data.product
+        if (res.data && res.data._id) return res.data
       } catch (err) {
-        console.warn('Catalog list fetch error:', err.message)
+        console.warn('Direct product fetch error:', err.message)
       }
-
       return null
     },
+    staleTime: 5 * 60 * 1000,
   })
 
   const { data: relatedProducts } = useQuery({
