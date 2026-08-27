@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, X, ArrowRight, Check } from 'lucide-react';
 import toast from 'react-hot-toast';
