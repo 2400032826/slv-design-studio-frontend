@@ -45,11 +45,17 @@ export default function CancelOrderModal({
         details: selectedReason === 'Other' ? otherDetails.trim() : otherDetails.trim() || undefined,
       };
 
-      const res = await api.patch(/orders//cancel, payload);
+      const adminToken = localStorage.getItem('slv_admin_token');
+      const userToken = localStorage.getItem('slv_user_token');
+      const token = adminToken || userToken;
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+
+      const res = await api.patch(`/orders/${order._id}/cancel`, payload, config);
       toast.success(res.data?.message || 'Order cancelled successfully');
       if (onSuccess) onSuccess(res.data?.order);
       handleClose();
     } catch (err) {
+      console.error('Cancellation error:', err);
       toast.error(err.response?.data?.message || 'Failed to cancel order');
     } finally {
       setLoading(false);

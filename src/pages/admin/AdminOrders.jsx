@@ -1,11 +1,12 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, Eye, Phone, MessageCircle, Printer, Trash2, X, FileText, Download, Sparkles, Menu } from 'lucide-react'
+import { Search, Eye, Phone, MessageCircle, Printer, Trash2, X, FileText, Download, Sparkles, Menu, Ban } from 'lucide-react'
 import api from '../../api/axios'
 import toast from 'react-hot-toast'
 import { AdminSidebar } from './AdminDashboard'
 import { getImageUrl } from '../../utils/imageUtils'
+import CancelOrderModal from '../../components/orders/CancelOrderModal'
 
 const ORDER_STATUSES = [
   'Pending Confirmation',
@@ -42,6 +43,7 @@ export default function AdminOrders() {
   const [statusFilter, setStatusFilter] = useState('')
   const [page, setPage] = useState(1)
   const [selectedOrder, setSelectedOrder] = useState(null)
+  const [cancellingOrder, setCancellingOrder] = useState(null)
   const queryClient = useQueryClient()
 
   const adminHeaders = { headers: { Authorization: `Bearer ${localStorage.getItem('slv_admin_token')}` } }
@@ -557,17 +559,47 @@ export default function AdminOrders() {
                   </select>
                 </div>
 
-                <button
-                  onClick={() => { if (window.confirm('Delete this order?')) deleteOrderMutation.mutate(selectedOrder._id) }}
-                  className="px-4 py-2 bg-rose-50 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-rose-200"
-                >
-                  <Trash2 className="w-3.5 h-3.5" /> Remove Record
-                </button>
+                <div className="flex items-center gap-2">
+                  {selectedOrder.status !== 'cancelled' && selectedOrder.status !== 'delivered' && (
+                    <button
+                      onClick={() => setCancellingOrder(selectedOrder)}
+                      className="px-3.5 py-1.5 bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 hover:bg-amber-100 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-amber-200 dark:border-amber-900/40"
+                    >
+                      <Ban className="w-3.5 h-3.5" /> Cancel Order
+                    </button>
+                  )}
+
+                  <button
+                    onClick={() => { if (window.confirm('Delete this order permanently from records?')) deleteOrderMutation.mutate(selectedOrder._id) }}
+                    className="px-3.5 py-1.5 bg-rose-50 dark:bg-rose-950/30 text-rose-600 hover:bg-rose-100 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-rose-200"
+                  >
+                    <Trash2 className="w-3.5 h-3.5" /> Delete Record
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Cancel Order Confirmation Modal */}
+      <CancelOrderModal
+        isOpen={!!cancellingOrder}
+        onClose={() => setCancellingOrder(null)}
+        order={cancellingOrder}
+        onSuccess={(updatedOrder) => {
+          if (selectedOrder && (selectedOrder._id === updatedOrder?._id || selectedOrder._id === cancellingOrder?._id)) {
+            setSelectedOrder((prev) => ({
+              ...prev,
+              ...(updatedOrder || {}),
+              status: 'cancelled',
+            }))
+          }
+          queryClient.invalidateQueries(['admin-orders'])
+          queryClient.invalidateQueries(['admin-dashboard'])
+          queryClient.invalidateQueries(['order'])
+        }}
+      />
     </div>
   )
 }
