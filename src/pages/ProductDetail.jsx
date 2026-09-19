@@ -100,8 +100,19 @@ export default function ProductDetail() {
   )
 
   const inWishlist = wishlist.some((p) => p._id === data._id)
-  const price = data.offerPrice || data.price
-  const discount = data.mrp ? Math.round(((data.mrp - price) / data.mrp) * 100) : 0
+  const sellingPrice = (data.offerPrice && data.offerPrice > 0) ? data.offerPrice : data.price
+  const originalPrice = (data.mrp && data.mrp > sellingPrice) 
+    ? data.mrp 
+    : (data.offerPrice && data.price > data.offerPrice) 
+      ? data.price 
+      : null
+
+  const discount = (data.discountPercent && data.discountPercent > 0) 
+    ? data.discountPercent 
+    : (originalPrice && originalPrice > sellingPrice) 
+      ? Math.round(((originalPrice - sellingPrice) / originalPrice) * 100) 
+      : 0
+  const price = sellingPrice
 
   const fallbackImg = getCategoryFallbackImage(data)
   const mainImgUrl = getProductImage(data, selectedImage, { width: 1000, quality: 80 }) || fallbackImg
@@ -226,10 +237,10 @@ export default function ProductDetail() {
             </div>
 
             {/* Price */}
-            <div className="flex items-center gap-3">
-              <span className="text-3xl font-bold text-[#1F2937] dark:text-white price-tag">₹{price.toLocaleString('en-IN')}</span>
-              {data.mrp && data.mrp > price && (
-                <span className="text-base text-[#64748B] line-through price-tag">₹{data.mrp.toLocaleString('en-IN')}</span>
+            <div className="flex items-center flex-wrap gap-3">
+              <span className="text-3xl font-bold text-[#1F2937] dark:text-white price-tag">₹{sellingPrice.toLocaleString('en-IN')}</span>
+              {originalPrice && originalPrice > sellingPrice && (
+                <span className="text-base text-[#64748B] line-through price-tag">₹{originalPrice.toLocaleString('en-IN')}</span>
               )}
               {discount > 0 && (
                 <span className="bg-rose-50 dark:bg-rose-950/30 text-rose-600 text-xs font-bold px-2.5 py-1 rounded-full border border-rose-200">{discount}% OFF</span>

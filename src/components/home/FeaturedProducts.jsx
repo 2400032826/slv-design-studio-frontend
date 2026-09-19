@@ -10,8 +10,19 @@ export default function FeaturedProducts() {
   const { data, isLoading } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
-      const res = await api.get('/products/featured')
-      return res.data?.products || []
+      try {
+        const res = await api.get('/products/featured')
+        const feat = res.data?.products || []
+        if (feat.length > 0) return feat
+      } catch (err) {
+        console.warn('Featured fetch fallback:', err)
+      }
+      try {
+        const fallbackRes = await api.get('/products?limit=8')
+        return fallbackRes.data?.products || fallbackRes.data || []
+      } catch (err) {
+        return []
+      }
     },
     staleTime: 5 * 60 * 1000,
   })
@@ -21,14 +32,14 @@ export default function FeaturedProducts() {
   }
 
   return (
-    <section className="py-20 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
+    <section className="py-12 sm:py-16 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
       <div className="section-container">
         {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 gap-4">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
           <div>
-            <span className="section-subtitle">Curated Boutique Collection</span>
+            <span className="section-subtitle">Curated Atelier Collection</span>
             <h2 className="section-title text-[#1F2937] dark:text-white">
-              Featured <span className="text-gradient-pink">Designs</span>
+              Our Latest <span className="text-gradient-pink">Designs</span>
             </h2>
           </div>
           <Link

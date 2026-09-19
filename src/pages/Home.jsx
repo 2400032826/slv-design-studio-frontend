@@ -20,8 +20,8 @@ export default function Home() {
   return (
     <main>
       <HeroSection />
-      <ServicesSection />
       <FeaturedProducts />
+      <ServicesSection />
       <GallerySection />
       <WhyChooseUs />
       <OffersSection />

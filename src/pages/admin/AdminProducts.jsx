@@ -32,6 +32,7 @@ export default function AdminProducts() {
     price: '',
     mrp: '',
     offerPrice: '',
+    discountPercent: '',
     stock: '10',
     description: '',
     material: '',
@@ -88,6 +89,7 @@ export default function AdminProducts() {
       price: '',
       mrp: '',
       offerPrice: '',
+      discountPercent: '',
       stock: '10',
       description: '',
       material: 'Silk & Raw Silk',
@@ -117,12 +119,17 @@ export default function AdminProducts() {
       }
     }
 
+    const priceNum = Number(product.price || 0)
+    const offerNum = Number(product.offerPrice || 0)
+    const calculatedDiscount = product.discountPercent || (priceNum > 0 && offerNum > 0 && priceNum > offerNum ? Math.round(((priceNum - offerNum) / priceNum) * 100) : '')
+
     setFormData({
       name: product.name || '',
       category: matchedCat || (categories[0]?._id || ''),
       price: product.price || '',
       mrp: product.mrp || '',
       offerPrice: product.offerPrice || '',
+      discountPercent: calculatedDiscount || '',
       stock: product.stock ?? 10,
       description: product.description || '',
       material: product.material || '',
@@ -171,6 +178,7 @@ export default function AdminProducts() {
         price: Number(formData.price),
         mrp: formData.mrp ? Number(formData.mrp) : undefined,
         offerPrice: formData.offerPrice ? Number(formData.offerPrice) : undefined,
+        discountPercent: formData.discountPercent ? Number(formData.discountPercent) : undefined,
         stock: Number(formData.stock || 0),
         description: formData.description,
         material: formData.material,
@@ -484,10 +492,41 @@ export default function AdminProducts() {
                     <input
                       type="number"
                       value={formData.price}
-                      onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+                      onChange={(e) => {
+                        const newPrice = e.target.value
+                        let newOfferPrice = formData.offerPrice
+                        if (formData.discountPercent && Number(newPrice) > 0) {
+                          newOfferPrice = Math.round(Number(newPrice) * (1 - Number(formData.discountPercent) / 100))
+                        }
+                        setFormData({ ...formData, price: newPrice, offerPrice: newOfferPrice })
+                      }}
                       className="input-field text-xs"
                       placeholder="1499"
                       required
+                    />
+                  </div>
+
+                  {/* Offer Percentage */}
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-[#1F2937] dark:text-gray-300 mb-1">Offer Percentage (% OFF)</label>
+                    <input
+                      type="number"
+                      value={formData.discountPercent || ''}
+                      onChange={(e) => {
+                        const pct = e.target.value
+                        const priceNum = Number(formData.price || 0)
+                        let newOffer = formData.offerPrice
+                        if (pct && priceNum > 0) {
+                          newOffer = Math.round(priceNum * (1 - Number(pct) / 100))
+                        } else if (!pct) {
+                          newOffer = ''
+                        }
+                        setFormData({ ...formData, discountPercent: pct, offerPrice: newOffer })
+                      }}
+                      className="input-field text-xs"
+                      placeholder="e.g. 15"
+                      min="0"
+                      max="99"
                     />
                   </div>
 
@@ -497,7 +536,17 @@ export default function AdminProducts() {
                     <input
                       type="number"
                       value={formData.offerPrice}
-                      onChange={(e) => setFormData({ ...formData, offerPrice: e.target.value })}
+                      onChange={(e) => {
+                        const offVal = e.target.value
+                        const priceNum = Number(formData.price || 0)
+                        let newPct = formData.discountPercent
+                        if (offVal && priceNum > Number(offVal)) {
+                          newPct = Math.round(((priceNum - Number(offVal)) / priceNum) * 100)
+                        } else if (!offVal) {
+                          newPct = ''
+                        }
+                        setFormData({ ...formData, offerPrice: offVal, discountPercent: newPct })
+                      }}
                       className="input-field text-xs"
                       placeholder="1299 (optional)"
                     />
