@@ -10,18 +10,36 @@ export default function FeaturedProducts() {
   const { data, isLoading } = useQuery({
     queryKey: ['featured-products'],
     queryFn: async () => {
+      let products = []
       try {
         const res = await api.get('/products/featured')
-        const feat = res.data?.products || []
-        if (feat.length > 0) return feat
+        products = res.data?.products || []
       } catch (err) {
         console.warn('Featured fetch fallback:', err)
       }
+      if (!products || products.length === 0) {
+        try {
+          const fallbackRes = await api.get('/products?limit=8')
+          products = fallbackRes.data?.products || fallbackRes.data || []
+        } catch (err) {
+          products = []
+        }
+      }
+      if (products.length > 0) {
+        try {
+          localStorage.setItem('slv_featured_cache', JSON.stringify(products))
+        } catch (e) {
+          console.warn('Cache write warning:', e)
+        }
+      }
+      return products
+    },
+    initialData: () => {
       try {
-        const fallbackRes = await api.get('/products?limit=8')
-        return fallbackRes.data?.products || fallbackRes.data || []
-      } catch (err) {
-        return []
+        const cached = localStorage.getItem('slv_featured_cache')
+        return cached ? JSON.parse(cached) : undefined
+      } catch {
+        return undefined
       }
     },
     staleTime: 5 * 60 * 1000,
@@ -30,6 +48,8 @@ export default function FeaturedProducts() {
   if (!isLoading && (!data || data.length === 0)) {
     return null
   }
+
+  const showSkeleton = isLoading && (!data || data.length === 0)
 
   return (
     <section className="py-12 sm:py-16 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
@@ -52,7 +72,7 @@ export default function FeaturedProducts() {
 
         {/* Product Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {isLoading
+          {showSkeleton
             ? Array(4).fill(null).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))
