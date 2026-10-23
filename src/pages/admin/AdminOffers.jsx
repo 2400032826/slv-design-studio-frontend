@@ -128,9 +128,38 @@ export default function AdminOffers() {
         <div className="p-4 sm:p-6 md:p-8 space-y-6 max-w-7xl">
           {/* Create / Edit Coupon Form */}
           <div className="bg-white dark:bg-[#1F2937] rounded-3xl p-6 sm:p-8 border border-[#E5E7EB] dark:border-charcoal-800 shadow-card">
-            <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white mb-5 flex items-center gap-2">
-              <Tag className="w-4 h-4 text-pink-500" /> {editingCoupon ? 'Edit Discount Voucher' : 'Issue New Studio Promo Code'}
-            </h2>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-4 mb-4 border-b border-[#E5E7EB] dark:border-slate-800 gap-2">
+              <h2 className="font-display text-base font-bold text-[#1F2937] dark:text-white flex items-center gap-2">
+                <Tag className="w-4 h-4 text-pink-500" /> {editingCoupon ? 'Edit Discount Voucher' : 'Issue New Studio Promo Code'}
+              </h2>
+              <div className="flex flex-wrap items-center gap-1.5">
+                <span className="text-[10px] font-bold uppercase text-[#64748B]">Boutique Presets:</span>
+                <button
+                  type="button"
+                  onClick={() => setForm({ code: 'WELCOME10', type: 'percentage', value: '10', minOrderAmount: '500', usageLimit: '', expiresAt: '' })}
+                  className="px-2 py-0.5 bg-pink-50 hover:bg-pink-100 text-pink-700 rounded-lg text-[11px] font-bold border border-pink-200 transition-colors"
+                  title="Apply WELCOME10 Preset"
+                >
+                  WELCOME10
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ code: 'BRIDAL500', type: 'fixed', value: '500', minOrderAmount: '2500', usageLimit: '', expiresAt: '' })}
+                  className="px-2 py-0.5 bg-purple-50 hover:bg-purple-100 text-purple-700 rounded-lg text-[11px] font-bold border border-purple-200 transition-colors"
+                  title="Apply BRIDAL500 Preset"
+                >
+                  BRIDAL500
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setForm({ code: 'STUDIOFREE', type: 'fixed', value: '50', minOrderAmount: '499', usageLimit: '', expiresAt: '' })}
+                  className="px-2 py-0.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 rounded-lg text-[11px] font-bold border border-emerald-200 transition-colors"
+                  title="Apply STUDIOFREE Preset"
+                >
+                  STUDIOFREE
+                </button>
+              </div>
+            </div>
             <form onSubmit={handleSubmit}>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
                 <div>
@@ -249,9 +278,10 @@ export default function AdminOffers() {
                     ))
                   ) : coupons.length === 0 ? (
                     <tr>
-                      <td colSpan={7} className="text-center py-16 text-[#94A3B8]">
+                      <td colSpan={7} className="text-center py-16 px-4 text-[#94A3B8]">
                         <Tag className="w-12 h-12 mx-auto mb-2 opacity-30 text-pink-400" />
-                        <p className="text-sm font-semibold text-[#64748B]">No promo codes created yet</p>
+                        <p className="text-sm font-semibold text-[#1F2937] dark:text-white">No active promo codes in database</p>
+                        <p className="text-xs text-[#94A3B8] mt-1">Use the form above or click a Boutique Preset (e.g. WELCOME10) to create and activate your first discount voucher.</p>
                       </td>
                     </tr>
                   ) : (

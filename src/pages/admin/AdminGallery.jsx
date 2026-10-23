@@ -31,6 +31,24 @@ export default function AdminGallery() {
     staleTime: 1 * 60 * 1000,
   })
 
+  // Query all items to compute real-time category counts
+  const { data: allItems = [] } = useQuery({
+    queryKey: ['admin-gallery-all'],
+    queryFn: () => getUnifiedGalleryItems('all'),
+    staleTime: 1 * 60 * 1000,
+  })
+
+  const getCategoryCount = (cat) => {
+    if (cat === 'all') return allItems.length
+    if (cat === 'other') {
+      return allItems.filter((item) => {
+        const c = (item.category || '').toLowerCase()
+        return !c || !['embroidery', 'printing', 'stitching', 'wedding', 'bridal', 'jewellery'].includes(c)
+      }).length
+    }
+    return allItems.filter((item) => (item.category || '').toLowerCase() === cat.toLowerCase()).length
+  }
+
   // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: (id) => deleteGalleryItem(id),
@@ -168,22 +186,34 @@ export default function AdminGallery() {
             </form>
           </div>
 
-          {/* Category Filter Tabs */}
+          {/* Category Filter Tabs with dynamic counts */}
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-xs font-bold text-[#64748B] mr-2">Filter View:</span>
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                className={`px-3.5 py-1.5 font-bold text-xs uppercase tracking-wider rounded-xl transition-all ${
-                  activeCategory === cat
-                    ? 'btn-primary text-white shadow-soft'
-                    : 'bg-white dark:bg-[#1F2937] text-[#64748B] border border-[#E5E7EB] hover:border-pink-300'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
+            {CATEGORIES.map((cat) => {
+              const count = getCategoryCount(cat)
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setActiveCategory(cat)}
+                  className={`px-3 py-1.5 font-bold text-xs uppercase tracking-wider rounded-xl transition-all flex items-center gap-1.5 ${
+                    activeCategory === cat
+                      ? 'btn-primary text-white shadow-soft'
+                      : 'bg-white dark:bg-[#1F2937] text-[#64748B] border border-[#E5E7EB] hover:border-pink-300'
+                  }`}
+                >
+                  <span>{cat}</span>
+                  <span
+                    className={`text-[10px] px-1.5 py-0.2 rounded-full font-bold ${
+                      activeCategory === cat
+                        ? 'bg-white/20 text-white'
+                        : 'bg-gray-100 dark:bg-slate-800 text-[#64748B]'
+                    }`}
+                  >
+                    {count}
+                  </span>
+                </button>
+              )
+            })}
           </div>
 
           {/* Gallery Grid */}
@@ -245,10 +275,18 @@ export default function AdminGallery() {
           </div>
 
           {items.length === 0 && !isLoading && (
-            <div className="text-center py-16 bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-700">
+            <div className="text-center py-16 px-4 bg-white dark:bg-[#1F2937] rounded-3xl border border-[#E5E7EB] dark:border-charcoal-700">
               <Image className="w-12 h-12 mx-auto mb-3 opacity-30 text-pink-400" />
-              <p className="text-sm font-semibold text-[#64748B]">No gallery items in "{activeCategory}" category</p>
-              <p className="text-xs text-[#94A3B8] mt-0.5">Upload new images above to populate this section</p>
+              <p className="text-sm font-semibold text-[#1F2937] dark:text-white">No gallery items in "{activeCategory}" category</p>
+              <p className="text-xs text-[#94A3B8] mt-1 max-w-sm mx-auto">Upload new images using the form above to populate this category, or switch back to view all portfolio items.</p>
+              {activeCategory !== 'all' && (
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className="mt-4 btn-primary text-xs py-2 px-4 shadow-soft"
+                >
+                  View All Portfolio Items ({allItems.length})
+                </button>
+              )}
             </div>
           )}
         </div>

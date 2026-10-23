@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, SlidersHorizontal, ArrowUpDown } from 'lucide-react'
+import { X, SlidersHorizontal, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 import api from '../api/axios'
 import ProductCard from '../components/products/ProductCard'
 import { CatalogGridSkeleton } from '../components/common/LoadingSpinner'
@@ -28,7 +28,8 @@ export default function Products() {
   const [searchParams, setSearchParams] = useSearchParams()
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [sort, setSort] = useState(searchParams.get('sort') || '-createdAt')
-  const [page, setPage] = useState(1)
+  const initialPage = parseInt(searchParams.get('page'), 10) || 1
+  const [page, setPage] = useState(initialPage)
   const [filters, setFilters] = useState({
     search: searchParams.get('search') || '',
     category: searchParams.get('category') || '',
@@ -39,6 +40,14 @@ export default function Products() {
     inStock: '',
   })
 
+  // Keep page in sync if URL search params change
+  useEffect(() => {
+    const pageFromUrl = parseInt(searchParams.get('page'), 10) || 1
+    if (pageFromUrl !== page) {
+      setPage(pageFromUrl)
+    }
+  }, [searchParams])
+
   // Prevent background scrolling on mobile when filters drawer is open
   useEffect(() => {
     if (filtersOpen && typeof window !== 'undefined') {
@@ -47,11 +56,11 @@ export default function Products() {
         document.body.style.overflow = 'hidden'
       }
     } else if (typeof window !== 'undefined') {
-      document.body.style.overflow = 'unset'
+      document.body.style.overflow = ''
     }
     return () => {
       if (typeof window !== 'undefined') {
-        document.body.style.overflow = 'unset'
+        document.body.style.overflow = ''
       }
     }
   }, [filtersOpen])
@@ -97,11 +106,43 @@ export default function Products() {
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }))
     setPage(1)
+    setSearchParams((prev) => {
+      const updated = new URLSearchParams(prev)
+      updated.delete('page')
+      return updated
+    })
   }
 
   const clearFilters = () => {
     setFilters({ search: '', category: '', minPrice: '', maxPrice: '', rating: '', featured: '', inStock: '' })
     setPage(1)
+    setSearchParams((prev) => {
+      const updated = new URLSearchParams(prev)
+      updated.delete('page')
+      return updated
+    })
+  }
+
+  const handlePageChange = (newPage) => {
+    if (newPage < 1 || (data?.totalPages && newPage > data.totalPages) || newPage === page) return
+    setPage(newPage)
+    setSearchParams((prev) => {
+      const updated = new URLSearchParams(prev)
+      if (newPage > 1) {
+        updated.set('page', newPage.toString())
+      } else {
+        updated.delete('page')
+      }
+      return updated
+    })
+
+    // Scroll smoothly to top of product catalog section
+    const catalogElement = document.getElementById('catalog-products')
+    if (catalogElement) {
+      catalogElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      window.scrollTo({ top: 180, behavior: 'smooth' })
+    }
   }
 
   const activeFilterCount = Object.entries(filters).filter(([k, v]) => Boolean(v) && k !== 'search').length
@@ -223,7 +264,7 @@ export default function Products() {
 
       <div className="section-container py-6 pb-24 md:pb-12">
         {/* Toolbar Controls */}
-        <div className="flex flex-wrap items-center justify-between gap-3 mb-6">
+        <div id="catalog-products" className="flex flex-wrap items-center justify-between gap-3 mb-6 scroll-mt-24">
           {/* Mobile & Desktop Filter Button */}
           <button
             onClick={() => setFiltersOpen(!filtersOpen)}
@@ -399,23 +440,53 @@ export default function Products() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex justify-center gap-2 mt-10">
+              <div className="flex items-center justify-center gap-2 mt-10">
+                {/* Previous Page Button */}
+                <button
+                  onClick={() => handlePageChange(page - 1)}
+                  disabled={page <= 1}
+                  className={`px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1 transition-all ${
+                    page <= 1
+                      ? 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-[#1F2937] text-[#64748B]'
+                      : 'bg-white dark:bg-[#1F2937] text-[#1F2937] dark:text-white border border-[#E5E7EB] dark:border-slate-700 hover:border-pink-300 shadow-soft active:scale-95'
+                  }`}
+                  aria-label="Previous Page"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  <span className="hidden sm:inline">Previous</span>
+                </button>
+
+                {/* Page Number Buttons */}
                 {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
                   <button
                     key={p}
-                    onClick={() => {
-                      setPage(p)
-                      window.scrollTo({ top: 0, behavior: 'smooth' })
-                    }}
+                    onClick={() => handlePageChange(p)}
                     className={`w-9 h-9 rounded-xl font-bold text-xs transition-all ${
                       p === page
-                        ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft'
-                        : 'bg-white dark:bg-[#1F2937] text-[#64748B] dark:text-slate-300 border border-[#E5E7EB] hover:border-pink-300'
+                        ? 'bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft ring-2 ring-pink-300 dark:ring-pink-800'
+                        : 'bg-white dark:bg-[#1F2937] text-[#64748B] dark:text-slate-300 border border-[#E5E7EB] dark:border-slate-700 hover:border-pink-300'
                     }`}
+                    aria-label={`Page ${p}`}
+                    aria-current={p === page ? 'page' : undefined}
                   >
                     {p}
                   </button>
                 ))}
+
+                {/* Next Page Button */}
+                <button
+                  onClick={() => handlePageChange(page + 1)}
+                  disabled={page >= totalPages}
+                  className={`px-3 py-2 rounded-xl font-bold text-xs flex items-center gap-1 transition-all ${
+                    page >= totalPages
+                      ? 'opacity-40 cursor-not-allowed bg-gray-100 dark:bg-[#1F2937] text-[#64748B]'
+                      : 'bg-white dark:bg-[#1F2937] text-[#1F2937] dark:text-white border border-[#E5E7EB] dark:border-slate-700 hover:border-pink-300 shadow-soft active:scale-95'
+                  }`}
+                  aria-label="Next Page"
+                >
+                  <span className="hidden sm:inline">Next</span>
+                  <ChevronRight className="w-4 h-4" />
+                </button>
               </div>
             )}
           </div>

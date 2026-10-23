@@ -150,7 +150,14 @@ export async function getUnifiedGalleryItems(categoryFilter = 'all') {
     const itemUpdate = updates[id] || updates[item._id] || {}
     const merged = { ...item, ...itemUpdate }
 
-    if (categoryFilter === 'all' || merged.category?.toLowerCase() === categoryFilter.toLowerCase()) {
+    const cat = (merged.category || '').toLowerCase()
+    const isOther = !cat || !['embroidery', 'printing', 'stitching', 'wedding', 'bridal', 'jewellery'].includes(cat)
+
+    if (
+      categoryFilter === 'all' ||
+      cat === categoryFilter.toLowerCase() ||
+      (categoryFilter.toLowerCase() === 'other' && isOther)
+    ) {
       result.push(merged)
     }
   }
