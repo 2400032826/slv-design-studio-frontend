@@ -52,7 +52,7 @@ export default function FeaturedProducts() {
   const showSkeleton = isLoading && (!data || data.length === 0)
 
   return (
-    <section className="py-12 sm:py-16 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
+    <section id="featured-designs" className="py-8 sm:py-12 bg-white dark:bg-[#111827] border-b border-[#E5E7EB] dark:border-slate-800">
       <div className="section-container">
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 gap-4">
