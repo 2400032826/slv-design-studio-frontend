@@ -178,11 +178,6 @@ export default function ProductDetail() {
               <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors flex items-center justify-center pointer-events-none">
                 <ZoomIn className="w-8 h-8 text-white opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
-              {discount > 0 && (
-                <div className="absolute top-4 left-4 bg-gradient-to-r from-pink-500 to-rose-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-soft z-10">
-                  {discount}% OFF
-                </div>
-              )}
               {/* Nav arrows */}
               {data.images?.length > 1 && (
                 <>

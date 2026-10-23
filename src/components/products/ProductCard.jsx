@@ -114,25 +114,6 @@ export default function ProductCard({ product, priority = false }) {
             style={{ transform: hovered ? 'scale(1.05)' : 'scale(1)' }}
           />
 
-          {/* Badges */}
-          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10 pointer-events-none">
-            {product.isNewArrival && (
-              <span className="badge bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
-                New
-              </span>
-            )}
-            {product.isBestseller && (
-              <span className="badge bg-[#1F2937] text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
-                Bestseller
-              </span>
-            )}
-            {discount > 0 && (
-              <span className="badge bg-rose-500 text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
-                {discount}% OFF
-              </span>
-            )}
-          </div>
-
           {/* Floating Action Buttons */}
           <div
             className={`absolute top-2 right-2 flex flex-col gap-1.5 z-10 transition-all duration-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100`}
