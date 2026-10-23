@@ -115,19 +115,19 @@ export default function ProductCard({ product, priority = false }) {
           />
 
           {/* Badges */}
-          <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10">
+          <div className="absolute top-2 left-2 flex flex-col gap-1 z-10 pointer-events-none">
             {product.isNewArrival && (
-              <span className="badge bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft text-[10px]">
+              <span className="badge bg-gradient-to-r from-pink-500 to-fuchsia-600 text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
                 New
               </span>
             )}
             {product.isBestseller && (
-              <span className="badge bg-[#1F2937] text-white shadow-soft text-[10px]">
+              <span className="badge bg-[#1F2937] text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
                 Bestseller
               </span>
             )}
             {discount > 0 && (
-              <span className="badge bg-rose-500 text-white shadow-soft text-[10px]">
+              <span className="badge bg-rose-500 text-white shadow-soft text-[9px] sm:text-[10px] px-1.5 py-0.5">
                 {discount}% OFF
               </span>
             )}
@@ -171,7 +171,7 @@ export default function ProductCard({ product, priority = false }) {
         </div>
 
         {/* Details Container */}
-        <div className="p-3 sm:p-4 flex-1 flex flex-col justify-between bg-white dark:bg-[#1F2937]">
+        <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between bg-white dark:bg-[#1F2937]">
           <div>
             <p className="text-[9px] sm:text-[10px] text-pink-600 dark:text-pink-400 uppercase tracking-wider font-bold mb-0.5 sm:mb-1">
               {product.category?.name || 'Designer Collection'}
@@ -189,7 +189,7 @@ export default function ProductCard({ product, priority = false }) {
                   {[...Array(5)].map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${
+                      className={`w-2.5 h-2.5 sm:w-3 sm:h-3 ${
                         i < Math.round(product.rating)
                           ? 'fill-amber-400 text-amber-400'
                           : 'text-[#E5E7EB] dark:text-slate-700'
@@ -202,21 +202,31 @@ export default function ProductCard({ product, priority = false }) {
             )}
 
             {/* Pricing */}
-            <div className="flex items-baseline flex-wrap gap-2 mt-1">
-              <span className="font-bold text-base text-[#1F2937] dark:text-white price-tag">
+            <div className="flex items-baseline flex-wrap gap-1.5 sm:gap-2 mt-1">
+              <span className="font-bold text-sm sm:text-base text-[#1F2937] dark:text-white price-tag">
                 ₹{sellingPrice.toLocaleString('en-IN')}
               </span>
               {originalPrice && originalPrice > sellingPrice && (
-                <span className="text-xs text-[#64748B] line-through price-tag">
+                <span className="text-[10px] sm:text-xs text-[#64748B] line-through price-tag">
                   ₹{originalPrice.toLocaleString('en-IN')}
                 </span>
               )}
               {discount > 0 && (
-                <span className="text-[11px] font-bold text-rose-500">
+                <span className="text-[10px] sm:text-[11px] font-bold text-rose-500">
                   {discount}% OFF
                 </span>
               )}
             </div>
+
+            {/* Mobile Thumb-Accessible Add to Bag Button */}
+            <button
+              onClick={handleAddToCart}
+              className="mt-2.5 sm:hidden w-full py-1.5 px-2 bg-pink-50 dark:bg-pink-950/40 border border-pink-200 dark:border-pink-800 text-pink-700 dark:text-pink-300 active:bg-pink-600 active:text-white rounded-lg text-[11px] font-bold flex items-center justify-center gap-1.5 transition-colors shadow-xs"
+              title="Add to Bag"
+            >
+              <ShoppingBag className="w-3 h-3" />
+              <span>Add to Bag</span>
+            </button>
           </div>
         </div>
       </div>
